@@ -14,21 +14,22 @@ const CallbackPage = ({ setUser }) => {
     if (code && !isCalled.current) {
       isCalled.current = true;
       
-      // Backend'e kodu gönder
       axios.post(`${import.meta.env.VITE_API_URL}/api/auth/github-login`, JSON.stringify(code), {
-        headers: { 'Content-Type': 'application/json' }
+        headers: { 'Content-Type': 'application/json' },
+        withCredentials: true
       })
       .then(res => {
-        localStorage.setItem('user', JSON.stringify(res.data));
-        setUser(res.data);
-        navigate('/dashboard'); // Başarılıysa içeri al
+        const userData = res.data.user || res.data;
+        localStorage.setItem('user', JSON.stringify(userData));
+        setUser(userData);
+        navigate('/dashboard');
       })
       .catch(err => {
         console.error(err);
-        navigate('/login'); // Hata varsa kapıya geri at
+        navigate('/login');
       });
     }
-  }, []);
+  }, [navigate, setUser]);
 
   return (
     <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020617' }}>
