@@ -6,6 +6,7 @@ import CallbackPage from './pages/CallbackPage';
 import LoginPage from './pages/LoginPage';
 import MainLayout from './layouts/MainLayout';
 import DashboardPage from './pages/DashboardPage';
+import AnalysisResultPage from './pages/AnalysisResultPage';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -34,6 +35,7 @@ function App() {
 
           <Route element={user ? <MainLayout user={user} setUser={setUser} /> : <Navigate to="/login" replace />}>
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/analysis/results" element={<AnalysisResultPage />} />
             <Route path="/history" element={<div>Burası Geçmiş Analizler</div>} />
             <Route path="/settings" element={<div>Ayarlar</div>} />
           </Route>

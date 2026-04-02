@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, Card, Tag, Spin, message, Modal, List, Button, Row, Col, Statistic } from 'antd'; 
-import { CodeOutlined, FolderOpenOutlined, ConsoleSqlOutlined, CheckCircleOutlined, DashboardOutlined } from '@ant-design/icons';
-import { Gauge } from '@ant-design/plots'; // Grafiği import ettik
+import { useNavigate } from 'react-router-dom';
+import { Typography, Card, Tag, Spin, message } from 'antd'; 
+import { CodeOutlined, FolderOpenOutlined, ConsoleSqlOutlined } from '@ant-design/icons';
 import { githubService } from '../services/githubService'; 
 import { analysisService } from '../services/analysisService'; 
-import CodeVisualizer from '../components/CodeVisualizer/CodeVisualizer';
 
 const { Title, Text } = Typography;
 
@@ -12,8 +11,7 @@ const DashboardPage = () => {
   const [repos, setRepos] = useState([]);
   const [isLoadingRepos, setIsLoadingRepos] = useState(true);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCSharpRepos();
@@ -38,10 +36,9 @@ const DashboardPage = () => {
     
     try {
       const report = await analysisService.startAnalysis(url);
-      setAnalysisResult(report);
-      setIsModalOpen(true);
       hideLoading();
       message.success({ content: 'Analiz tamamlandı!', key: 'analyze', duration: 2 });
+      navigate('/analysis/results', { state: { analysisResult: report } });
     } catch (error) {
       hideLoading();
       message.error({ content: "Analiz başarısız oldu.", key: 'analyze' });
@@ -50,33 +47,9 @@ const DashboardPage = () => {
     }
   };
 
-  const healthScore = analysisResult?.totalFilesScanned > 0 ? 0.85 : 0;
-
-  const gaugeConfig = {
-    percent: healthScore,
-    range: {
-      color: 'l(0) 0:#14b8a6 1:#10b981', 
-    },
-    startAngle: Math.PI,
-    endAngle: 2 * Math.PI,
-    indicator: null,
-    statistic: {
-      title: {
-        offsetY: -36,
-        style: { fontSize: '12px', color: '#64748b' },
-        formatter: () => 'SAĞLIK SKORU',
-      },
-      content: {
-        style: { fontSize: '24px', color: '#f8fafc', fontWeight: 'bold' },
-        formatter: () => `${(healthScore * 100).toFixed(0)}%`,
-      },
-    },
-  };
-
   return (
     <div className="flex flex-col items-center py-12 min-h-[80vh] w-full bg-[#020617] text-slate-300">
       <div className="w-full max-w-6xl px-6">
-        {/* Üst Başlık */}
         <div className="flex items-center gap-4 mb-10 border-b border-slate-800/80 pb-5">
           <div className="p-3 bg-teal-500/10 rounded-xl border border-teal-500/20 shadow-[0_0_15px_rgba(20,184,166,0.1)]">
             <FolderOpenOutlined className="text-3xl text-teal-400" />
@@ -115,58 +88,6 @@ const DashboardPage = () => {
           </div>
         )}
       </div>
-
-    <Modal
-       
-        open={isModalOpen}
-        onCancel={() => setIsModalOpen(false)}
-        footer={[
-          <Button key="close" type="primary" onClick={() => setIsModalOpen(false)} className="bg-teal-500 hover:!bg-teal-400 border-none px-10 font-mono text-xs rounded-md shadow-lg shadow-teal-500/20">
-            TERMINATE_SESSION
-          </Button>
-        ]}
-        centered
-        width={800} 
-        styles={{ 
-            content: { backgroundColor: '#020617', border: '1px solid #1e293b', borderRadius: '16px' }, 
-            header: { backgroundColor: '#020617', borderBottom: '1px solid #1e293b', paddingBottom: '16px' } 
-        }}
-      >
-        <div className="py-2">
-          {(analysisResult?.graph || analysisResult?.Graph) ? (
-            <div className="mt-4 mb-6">
-              <div className="flex justify-between items-center mb-2 px-1">
-                <div className="text-slate-500 text-[10px] font-mono tracking-widest uppercase">
-                  3D_CODE_SPACE_RENDER // [ONLINE]
-                </div>
-               
-              </div>
-              <CodeVisualizer graphData={analysisResult.graph || analysisResult.Graph} />
-            </div>
-          ) : (
-             <div className="h-[200px] flex items-center justify-center border border-dashed border-slate-800 rounded-xl my-6">
-                <Text className="text-slate-600 font-mono text-xs animate-pulse">WAITING_FOR_DATA_STREAM...</Text>
-             </div>
-          )}
-
-          <div className="mt-4">
-            <div className="text-slate-600 text-[9px] font-mono mb-2 ml-1 tracking-[0.2em]">SYSTEM_OUTPUT_LOG</div>
-            <div className="bg-black/60 p-4 rounded-xl border border-slate-800 max-h-40 overflow-auto scrollbar-thin scrollbar-thumb-slate-800">
-              <List
-                dataSource={analysisResult?.issues || []}
-                renderItem={item => (
-                  <List.Item className="border-none py-1 px-0">
-                    <Text className="text-emerald-500 text-[11px] font-mono leading-relaxed">
-                      <span className="text-slate-700 mr-2">[{new Date().toLocaleTimeString()}]</span>
-                      <span className="text-teal-600">INF:</span> {item}
-                    </Text>
-                  </List.Item>
-                )}
-              />
-            </div>
-          </div>
-        </div>
-      </Modal>
     </div>
   );
 };
