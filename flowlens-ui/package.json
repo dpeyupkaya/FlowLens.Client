@@ -12,6 +12,7 @@
   "dependencies": {
     "@ant-design/icons": "^6.1.1",
     "@ant-design/plots": "^2.6.8",
+    "@microsoft/signalr": "^10.0.0",
     "@tailwindcss/vite": "^4.2.2",
     "antd": "^6.3.5",
     "axios": "^1.14.0",

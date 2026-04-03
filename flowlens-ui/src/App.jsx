@@ -35,8 +35,7 @@ function App() {
 
           <Route element={user ? <MainLayout user={user} setUser={setUser} /> : <Navigate to="/login" replace />}>
             <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/analysis/results" element={<AnalysisResultPage />} />
-            <Route path="/history" element={<div>Burası Geçmiş Analizler</div>} />
+            <Route path="/analysis/results" element={<AnalysisResultPage />} />ss
             <Route path="/settings" element={<div>Ayarlar</div>} />
           </Route>
         </Routes>

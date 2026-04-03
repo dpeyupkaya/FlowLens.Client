@@ -1,202 +1,191 @@
-import React, { useRef, useMemo, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import ForceGraph2D from 'react-force-graph-2d';
 import { FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons';
+import * as d3 from 'd3-force';
+import { useGraphData } from '../../hooks/useGraphData';
+import { getLayerColor, NODE_TYPES } from '../../utils/graphHelpers';
+import GraphLegend from './GraphLegend';
 
 const CodeVisualizer = ({ graphData }) => {
   const fgRef = useRef();
   const containerRef = useRef();
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [dimensions, setDimensions] = useState({ width: 0, height: 500 });
-  
+  const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [expandedClasses, setExpandedClasses] = useState(new Set());
   const [expandedMethods, setExpandedMethods] = useState(new Set());
 
-  const COLORS = {
-    Class: '#14b8a6',     
-    Method: '#f43f5e',    
-    Parameter: '#fbbf24', 
-    Link: '#1e293b',
-    Particle: '#2dd4bf'
+  const data = useGraphData(graphData, expandedClasses, expandedMethods);
+
+  const updateLayout = () => {
+    if (!containerRef.current) return;
+    const isFull = !!document.fullscreenElement;
+    const newWidth = isFull ? window.innerWidth : containerRef.current.offsetWidth;
+    const newHeight = isFull ? window.innerHeight : 600;
+    
+    setDimensions({ width: newWidth, height: newHeight });
+    
+    if (fgRef.current) {
+      fgRef.current.d3Force('center', d3.forceCenter(newWidth / 2, newHeight / 2));
+      fgRef.current.d3ReheatSimulation();
+      
+      setTimeout(() => fgRef.current.zoomToFit(400, 50), 300);
+    }
   };
 
   useEffect(() => {
-    const handleResize = () => {
-      if (containerRef.current) {
-        setDimensions({
-          width: containerRef.current.offsetWidth,
-          height: isFullscreen ? window.innerHeight : 500
-        });
-      }
-    };
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
-      setTimeout(handleResize, 100); 
+      setTimeout(updateLayout, 150); 
     };
-    window.addEventListener('resize', handleResize);
+    window.addEventListener('resize', updateLayout);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    handleResize();
+    updateLayout();
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener('resize', updateLayout);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
     };
-  }, [isFullscreen]);
+  }, []);
 
-  const toggleFullscreen = () => {
-    if (!isFullscreen) containerRef.current.requestFullscreen();
-    else document.exitFullscreen();
-  };
+  useEffect(() => {
+    if (fgRef.current && data.nodes.length > 0) {
+      const fg = fgRef.current;
 
-  // VERİ İŞLEME MANTIĞI (Burada Parametreleri Filtreliyoruz)
-  const data = useMemo(() => {
-    const rawNodes = graphData?.nodes || graphData?.Nodes || [];
-    const rawEdges = graphData?.edges || graphData?.Edges || [];
+      fg.d3Force('charge', d3.forceManyBody().strength(-200));
 
-    const visibleMethodIds = new Set();
-    const visibleParamIds = new Set();
+      fg.d3Force('collide', d3.forceCollide().radius(node => (node.val || 10) + 15));
 
-    rawEdges.forEach(e => {
-      const sourceId = e.source?.id || e.source?.Id || e.source || e.Source;
-      const targetId = e.target?.id || e.target?.Id || e.target || e.Target;
-      const relation = e.relation || e.Relation || e.relationType || e.RelationType;
-
-      // Sınıf açıksa metodunu göster
-      if (relation === 'Contains' && expandedClasses.has(sourceId)) {
-        visibleMethodIds.add(targetId);
-      }
-      if (relation === 'HasParameter' && expandedMethods.has(sourceId) && visibleMethodIds.has(sourceId)) {
-        visibleParamIds.add(targetId);
-      }
-    });
-
-    const filteredNodes = rawNodes
-      .filter(n => {
-        const type = n.type || n.Type;
-        const id = n.id || n.Id;
-        if (type === 'Class') return true;
-        if (type === 'Method') return visibleMethodIds.has(id);
-        if (type === 'Parameter') return visibleParamIds.has(id);
-        return false;
-      })
-      .map(n => {
-        const type = n.type || n.Type;
-        const id = n.id || n.Id;
-        return {
-          ...n,
-          id,
-          name: n.name || n.Name || n.label || n.Label,
-          type,
-          val: type === 'Class' ? 5 : type === 'Method' ? 3 : 1.5,
-          isExpanded: type === 'Class' ? expandedClasses.has(id) : expandedMethods.has(id)
-        };
-      });
-
-    const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
-    const filteredLinks = rawEdges
-      .filter(e => {
-        const sId = e.source?.id || e.source?.Id || e.source || e.Source;
-        const tId = e.target?.id || e.target?.Id || e.target || e.Target;
-        return filteredNodeIds.has(sId) && filteredNodeIds.has(tId);
-      })
-      .map(e => ({
-        source: e.source?.id || e.source?.Id || e.source || e.Source,
-        target: e.target?.id || e.target?.Id || e.target || e.Target,
-        relation: e.relation || e.Relation || e.relationType || e.RelationType
+      fg.d3Force('link', d3.forceLink().distance(link => {
+        if (link.relation === 'Contains' || link.relation === 'HasParameter') return 30;
+        if (link.relation === 'Inherits' || link.relation === 'Implements') return 80;
+        if (link.relation === 'DependsOn' || link.relation === 'Instantiates') return 150; 
+        return 50;
       }));
 
-    return { nodes: filteredNodes, links: filteredLinks };
-  }, [graphData, expandedClasses, expandedMethods]);
-
-  const handleNodeClick = (node) => {
-    if (node.type === 'Class') {
-      setExpandedClasses(prev => {
-        const newSet = new Set(prev);
-        newSet.has(node.id) ? newSet.delete(node.id) : newSet.add(node.id);
-        return newSet;
-      });
-    } else if (node.type === 'Method') {
-      setExpandedMethods(prev => {
-        const newSet = new Set(prev);
-        newSet.has(node.id) ? newSet.delete(node.id) : newSet.add(node.id);
-        return newSet;
-      });
+      fg.d3ReheatSimulation();
     }
-    
-    if (fgRef.current) {
-      fgRef.current.centerAt(node.x, node.y, 600);
-      fgRef.current.zoom(node.type === 'Class' ? 2 : 4, 600);
-    }
-  };
+  }, [data]);
 
   return (
-    <div ref={containerRef} className={`w-full bg-[#020617] rounded-xl overflow-hidden border border-slate-800 relative ${isFullscreen ? 'h-screen' : 'h-[600px]'}`}>
-      
-      <div className="absolute top-4 left-4 z-50 flex flex-col gap-2 pointer-events-none bg-slate-900/60 p-3 rounded-lg border border-slate-700/50 backdrop-blur-md">
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#14b8a6] shadow-[0_0_8px_#14b8a6]"></div>
-          <span className="text-[10px] font-mono text-slate-400 uppercase">Class</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#f43f5e] shadow-[0_0_8px_#f43f5e]"></div>
-          <span className="text-[10px] font-mono text-slate-400 uppercase">Method</span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 rounded-full bg-[#fbbf24] shadow-[0_0_8px_#fbbf24]"></div>
-          <span className="text-[10px] font-mono text-slate-400 uppercase">Parameter</span>
-        </div>
-      </div>
+    <div 
+      ref={containerRef} 
+      className={`w-full bg-[#020617] rounded-xl overflow-hidden border border-slate-800 relative ${
+        isFullscreen ? 'fixed inset-0 z-[9999] h-screen w-screen' : 'h-[600px]'
+      }`}
+    >
+      <GraphLegend layers={data.uniqueLayers} />
 
-      <div className="absolute top-4 right-4 z-50">
-        <button onClick={toggleFullscreen} className="p-2 bg-slate-900/80 border border-slate-700 rounded-lg text-teal-400 hover:border-teal-500 transition-all">
+      <div className="absolute top-4 right-4 z-[10000]">
+        <button 
+          onClick={() => isFullscreen ? document.exitFullscreen?.() : containerRef.current.requestFullscreen?.()} 
+          className="p-2 bg-slate-900/90 border border-slate-700 rounded-lg text-teal-400 hover:border-teal-500 shadow-xl transition-all"
+        >
           {isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
         </button>
       </div>
 
       <ForceGraph2D
         ref={fgRef}
+        key={isFullscreen ? 'full' : 'normal'}
         graphData={data}
         width={dimensions.width}
         height={dimensions.height}
-        onNodeClick={handleNodeClick}
-        nodeLabel={(node) => `
-          <div style="background: #0f172a; color: #f8fafc; padding: 8px; border-radius: 8px; border: 1px solid #334155; font-family: 'JetBrains Mono', monospace; font-size: 11px;">
-            <strong style="color: ${COLORS[node.type]}">[${node.type}]</strong> ${node.name}
-            ${node.Metadata?.DataType ? `<br/><span style="color: #94a3b8">Type: ${node.Metadata.DataType}</span>` : ''}
+        backgroundColor="#020617"
+        nodeLabel={n => `
+          <div class="p-3 font-mono text-[11px] bg-slate-950 border border-slate-800 rounded-lg shadow-2xl">
+            <div class="flex justify-between gap-4 mb-1">
+              <b style="color:${n.color}">[${n.layer}]</b>
+              <span class="text-slate-500 text-[9px] uppercase">${n.type}</span>
+            </div>
+            <div class="text-white mb-2 border-b border-slate-800 pb-1 font-bold">${n.name}</div>
+            ${n.metadata?.Complexity ? `
+              <div class="flex flex-col gap-1">
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400 text-[10px]">Complexity:</span>
+                  <b class="${n.metadata.HealthStatus === 'Warning' ? 'text-red-500' : 'text-emerald-400'}">${n.metadata.Complexity}</b>
+                </div>
+                <div class="flex justify-between items-center">
+                  <span class="text-slate-400 text-[10px]">Lines:</span>
+                  <b class="text-blue-400">${n.metadata.LinesOfCode}</b>
+                </div>
+              </div>
+            ` : ''}
           </div>
         `}
+        onNodeClick={(node) => {
+          if (node.type === NODE_TYPES.CLASS || node.type === NODE_TYPES.EXTERNAL) {
+            setExpandedClasses(prev => {
+              const s = new Set(prev);
+              s.has(node.id) ? s.delete(node.id) : s.add(node.id);
+              return s;
+            });
+          } else if (node.type === NODE_TYPES.METHOD) {
+            setExpandedMethods(prev => {
+              const s = new Set(prev);
+              s.has(node.id) ? s.delete(node.id) : s.add(node.id);
+              return s;
+            });
+          }
+          fgRef.current.centerAt(node.x, node.y, 600);
+          fgRef.current.zoom(4, 600);
+        }}
         nodeCanvasObject={(node, ctx, globalScale) => {
           const r = node.val;
-          ctx.beginPath();
-          ctx.arc(node.x, node.y, r, 0, 2 * Math.PI, false);
-          ctx.fillStyle = COLORS[node.type] || '#fff';
-          
-          if (globalScale > 1.2) {
-            ctx.shadowBlur = 15 / globalScale;
-            ctx.shadowColor = ctx.fillStyle;
-          }
-          ctx.fill();
-          ctx.shadowBlur = 0;
+          const isWarning = node.metadata?.HealthStatus === 'Warning';
 
-          if (node.isExpanded) {
+          if (isWarning) {
             ctx.beginPath();
-            ctx.arc(node.x, node.y, r + 1.5, 0, 2 * Math.PI, false);
-            ctx.strokeStyle = COLORS.Particle;
-            ctx.lineWidth = 0.5;
+            ctx.arc(node.x, node.y, r * 1.6, 0, 2 * Math.PI, false);
+            ctx.fillStyle = 'rgba(239, 68, 68, 0.15)';
+            ctx.fill();
+
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, r * 1.3, 0, 2 * Math.PI, false);
+            ctx.strokeStyle = '#ef4444';
+            ctx.lineWidth = 2 / globalScale;
             ctx.stroke();
           }
 
-          if (globalScale > 2.5) {
-            const fontSize = 10 / globalScale;
-            ctx.font = `${fontSize}px JetBrains Mono`;
+          ctx.beginPath(); ctx.arc(node.x, node.y, r, 0, 2 * Math.PI, false);
+          ctx.fillStyle = node.color;
+          
+          if (globalScale > 1.2) {
+            ctx.shadowBlur = (isWarning ? 20 : 10) / globalScale;
+            ctx.shadowColor = node.color;
+          }
+          
+          ctx.fill();
+          ctx.shadowBlur = 0;
+          
+          if (globalScale > 3) {
+            const fontSize = 11 / globalScale;
+            ctx.font = `${node.type === NODE_TYPES.CLASS ? 'bold' : ''} ${fontSize}px JetBrains Mono`;
             ctx.textAlign = 'center';
-            ctx.fillStyle = '#94a3b8';
+            ctx.fillStyle = isWarning ? '#f87171' : '#94a3b8';
             ctx.fillText(node.name, node.x, node.y + r + fontSize + 2);
           }
         }}
-        linkDirectionalParticles={node => node.relation === 'Contains' ? 2 : 0}
-        linkDirectionalParticleSpeed={0.005}
+        linkDirectionalArrowLength={l => 
+          ['DependsOn', 'Inherits', 'Implements', 'Instantiates'].includes(l.relation) ? 4 : 0
+        }
+        linkDirectionalArrowRelPos={1}
+        linkCurvature={l => 
+          ['DependsOn', 'Instantiates'].includes(l.relation) ? 0.2 : 
+          ['Inherits', 'Implements'].includes(l.relation) ? 0.1 : 0
+        }
+        linkDashArray={l => {
+          if (l.relation === 'DependsOn' || l.relation === 'Instantiates') return [2, 2];
+          if (l.relation === 'Implements') return [4, 2];
+          return null;
+        }}
+        linkColor={l => {
+          if (l.relation === 'DependsOn') return '#475569';
+          if (l.relation === 'Instantiates') return '#7c3aed';
+          if (l.relation === 'Inherits') return '#ef4444';
+          if (l.relation === 'Implements') return '#10b981';
+          return '#1e293b';
+        }}
+        linkDirectionalParticles={l => l.relation === 'Contains' ? 2 : 0}
         linkDirectionalParticleWidth={1.5}
-        linkDirectionalParticleColor={() => COLORS.Particle}
-        linkColor={() => '#1e293b'}
       />
     </div>
   );

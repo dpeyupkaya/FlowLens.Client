@@ -12,7 +12,8 @@ export const analysisService = {
   startAnalysis: async (url) => {
     try {
       const response = await apiClient.post('/api/analysis/start', { 
-        RepoUrl: url 
+        RepoUrl: url ,
+        AccessToken: ""
       });
       return response.data;
     } catch (error) {

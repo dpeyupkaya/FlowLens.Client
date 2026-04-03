@@ -17,7 +17,6 @@ const AppSidebar = ({ collapsed, onLogout }) => {
 
   const menuItems = [
     { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: '/history', icon: <HistoryOutlined />, label: 'Geçmiş Analizler' },
     { key: '/settings', icon: <SettingOutlined />, label: 'Ayarlar' },
     { 
       key: 'logout', 
