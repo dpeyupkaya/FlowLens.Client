@@ -1,40 +1,58 @@
 import { useMemo } from 'react';
 import { getLayerColor, NODE_TYPES } from '../utils/graphHelpers';
+import { useFlowStore } from '../store/useFlowStore';
 
-export const useGraphData = (graphData, expandedClasses, expandedMethods) => {
+export const useGraphData = () => {
+  const rawNodes = useFlowStore(state => state.rawNodes);
+  const rawEdges = useFlowStore(state => state.rawEdges);
+  const expandedClasses = useFlowStore(state => state.expandedClasses);
+  const expandedMethods = useFlowStore(state => state.expandedMethods);
+
   return useMemo(() => {
-    const rawNodes = graphData?.nodes || graphData?.Nodes || [];
-    const rawEdges = graphData?.edges || graphData?.Edges || [];
-    
+    if (!rawNodes || rawNodes.length === 0) return { nodes: [], edges: [], uniqueLayers: [] };
+
     const visibleMethodIds = new Set();
     const visibleParamIds = new Set();
+    const nodesWithConnections = new Set();
 
     rawEdges.forEach(e => {
-      const sId = e.source?.id || e.source?.Id || e.source || e.Source;
-      const tId = e.target?.id || e.target?.Id || e.target || e.Target;
-      const rel = e.relation || e.Relation || e.relationType || e.RelationType;
+      const sId = typeof e.source === 'object' ? (e.source?.id || e.source?.Id) : e.source;
+      const tId = typeof e.target === 'object' ? (e.target?.id || e.target?.Id) : e.target;
+      const rel = e.relationType || e.relation || e.Relation || e.RelationType;
       
-      if (rel === 'Contains' && expandedClasses.has(sId)) visibleMethodIds.add(tId);
-      if (rel === 'HasParameter' && expandedMethods.has(sId) && visibleMethodIds.has(sId)) visibleParamIds.add(tId);
+      nodesWithConnections.add(sId);
+      nodesWithConnections.add(tId);
+
+      if (rel === 'Contains' && expandedClasses.has(sId)) {
+        visibleMethodIds.add(tId);
+      }
+      if (rel === 'HasParameter' && expandedMethods.has(sId) && visibleMethodIds.has(sId)) {
+        visibleParamIds.add(tId);
+      }
     });
 
     const filteredNodes = rawNodes
       .filter(n => {
         const type = n.type || n.Type;
         const id = n.id || n.Id;
+        
+        if ((type === NODE_TYPES.CLASS || type === NODE_TYPES.EXTERNAL) && !nodesWithConnections.has(id)) {
+            return false; 
+        }
+
         return type === NODE_TYPES.CLASS || type === NODE_TYPES.EXTERNAL || visibleMethodIds.has(id) || visibleParamIds.has(id);
       })
       .map(n => {
         const type = n.type || n.Type;
-        const metadata = n.metadata || n.Metadata || {}; // Backend'den gelen metrikler
-        const layer = metadata.Layer || 'Other';
-        let color = getLayerColor(layer);
+        const metadata = n.metadata || n.Metadata || {};
+        const layer = metadata.Layer || 'Unknown';
         
+        let color = getLayerColor(layer);
         if (type === NODE_TYPES.METHOD) {
           color = metadata.HealthStatus === 'Warning' ? '#ef4444' : '#e2e8f0';
+        } else if (type === NODE_TYPES.PARAMETER) {
+          color = '#94a3b8';
         }
-        
-        if (type === NODE_TYPES.PARAMETER) color = '#94a3b8';
 
         return {
           ...n,
@@ -43,29 +61,31 @@ export const useGraphData = (graphData, expandedClasses, expandedMethods) => {
           type,
           layer,
           color,
-          metadata,
-          val: type === NODE_TYPES.CLASS ? 6 : type === NODE_TYPES.METHOD ? 4 : 1.5
+          metadata
         };
       });
 
     const filteredNodeIds = new Set(filteredNodes.map(n => n.id));
     
-    const filteredLinks = rawEdges
+    // 4. Kenarları (Edges) Filtrele
+    const filteredEdges = rawEdges
       .filter(e => {
-        const sId = e.source?.id || e.source?.Id || e.source || e.Source;
-        const tId = e.target?.id || e.target?.Id || e.target || e.Target;
+        const sId = typeof e.source === 'object' ? (e.source?.id || e.source?.Id) : e.source;
+        const tId = typeof e.target === 'object' ? (e.target?.id || e.target?.Id) : e.target;
         return filteredNodeIds.has(sId) && filteredNodeIds.has(tId);
       })
       .map(e => ({
-        source: e.source?.id || e.source?.Id || e.source || e.Source,
-        target: e.target?.id || e.target?.Id || e.target || e.Target,
-        relation: e.relation || e.Relation || e.relationType || e.RelationType
+        source: typeof e.source === 'object' ? (e.source?.id || e.source?.Id) : e.source,
+        target: typeof e.target === 'object' ? (e.target?.id || e.target?.Id) : e.target,
+        relationType: e.relationType || e.relation || e.Relation || e.RelationType,
+        originalRelation: e.relationType || e.relation || e.Relation || e.RelationType // Stilleme için saklıyoruz
       }));
 
     const uniqueLayers = [...new Set(filteredNodes
       .filter(n => n.type === NODE_TYPES.CLASS || n.type === NODE_TYPES.EXTERNAL)
-      .map(n => n.layer))];
+      .map(n => n.layer)
+    )];
 
-    return { nodes: filteredNodes, links: filteredLinks, uniqueLayers };
-  }, [graphData, expandedClasses, expandedMethods]);
+    return { nodes: filteredNodes, edges: filteredEdges, uniqueLayers };
+  }, [rawNodes, rawEdges, expandedClasses, expandedMethods]);
 };
