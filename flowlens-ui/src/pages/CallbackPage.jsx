@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spin } from 'antd';
 import axios from 'axios';
+import Hyperspeed from '../components/backgrounds/Hyperspeed'; 
 
 const CallbackPage = ({ setUser }) => {
   const navigate = useNavigate();
@@ -32,8 +33,31 @@ const CallbackPage = ({ setUser }) => {
   }, [navigate, setUser]);
 
   return (
-    <div style={{ height: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#020617' }}>
-      <Spin size="large" tip="GitHub ile bağlantı kuruluyor..." />
+    <div className="relative w-full h-screen overflow-hidden bg-[#020617]">
+      
+      <div className="absolute inset-0 z-0">
+        <Hyperspeed />
+      </div>
+
+      <div className="absolute inset-0 z-10 bg-black/50 backdrop-blur-[2px]"></div>
+
+      <div className="relative z-20 h-full flex flex-col items-center justify-center">
+        <div style={{
+          background: 'rgba(15, 23, 42, 0.7)',
+          padding: '40px 60px',
+          borderRadius: '24px',
+          border: '1px solid rgba(20, 184, 166, 0.2)',
+          boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
+          textAlign: 'center'
+        }}>
+          <Spin 
+            size="large" 
+            tip={<span style={{ color: '#14b8a6', marginTop: '20px', display: 'block', fontWeight: '500' }}>GitHub ile bağlantı kuruluyor...</span>} 
+          />
+          
+        </div>
+      </div>
+
     </div>
   );
 };

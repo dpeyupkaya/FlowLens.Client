@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
-import { Layout, Button, theme, Avatar, Space, Typography } from 'antd';
-import { MenuUnfoldOutlined, MenuFoldOutlined, UserOutlined } from '@ant-design/icons';
+import { Layout } from 'antd';
 import { Outlet, useNavigate } from 'react-router-dom';
 import AppSidebar from '../components/layout/AppSidebar';
+import AppNavbar from '../components/layout/AppNavbar'; 
 
-const { Header, Content } = Layout;
-const { Text } = Typography;
+const { Content } = Layout;
 
 const MainLayout = ({ user, setUser }) => {
   const [collapsed, setCollapsed] = useState(false);
@@ -13,7 +12,7 @@ const MainLayout = ({ user, setUser }) => {
   
   const handleLogout = () => {
     localStorage.clear();
-    setUser(null);
+    if (setUser) setUser(null);
     navigate('/');
   };
 
@@ -26,44 +25,16 @@ const MainLayout = ({ user, setUser }) => {
         transition: 'all 0.2s',
         background: '#020617' 
       }}>
-        <Header style={{ 
-          padding: '0 24px', 
-          background: '#020617', 
-          display: 'flex', 
-          alignItems: 'center', 
-          justifyContent: 'space-between',
-          borderBottom: '1px solid #1e293b',
-          position: 'sticky',
-          top: 0,
-          zIndex: 1
-        }}>
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ fontSize: '16px', color: '#fff' }}
-          />
-          
-          <Space size="middle">
-            <div style={{ textAlign: 'right' }}>
-              <Text strong style={{ color: '#fff', display: 'block', lineHeight: '1' }}>{user?.username}</Text>
-              <Text type="secondary" style={{ fontSize: '12px' }}>Geliştirici</Text>
-            </div>
-            <Avatar 
-              src={user?.avatarUrl} 
-              icon={<UserOutlined />} 
-              style={{ border: '1px solid #14b8a6' }}
-            />
-          </Space>
-        </Header>
+        
+       
+        <AppNavbar 
+          collapsed={collapsed} 
+          onToggle={() => setCollapsed(!collapsed)} 
+          user={user} 
+          onLogout={handleLogout} 
+        />
 
-        <Content style={{ 
-          padding: '24px', 
-          minHeight: 280, 
-          background: '#020617',
-          overflowY: 'auto'
-        }}>
-          {/* Dashboard içeriği buraya gelecek */}
+        <Content className="p-4 lg:p-6 bg-[#020617] overflow-y-auto" style={{ minHeight: 280 }}>
           <Outlet />
         </Content>
       </Layout>

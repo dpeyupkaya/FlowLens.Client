@@ -20,6 +20,8 @@ const nodeTypes = { customNode: FlowNode };
 const VisualizerContent = ({ graphData }) => {
   const containerRef = useRef();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  
+  const initialFitDone = useRef(false);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -35,6 +37,8 @@ const VisualizerContent = ({ graphData }) => {
   const activeStep = useFlowStore(state => state.activeStep);
 
   useEffect(() => {
+    initialFitDone.current = false;
+    
     const rNodes = graphData?.graph?.nodes || graphData?.nodes || graphData?.Nodes || [];
     const rEdges = graphData?.graph?.edges || graphData?.edges || graphData?.Edges || [];
     setRawData(rNodes, rEdges);
@@ -47,7 +51,6 @@ const VisualizerContent = ({ graphData }) => {
     startMp4Recording, stopMp4Recording, isCapturingMp4
   } = useExecutionDebugger(data.edges);
 
-  
   useEffect(() => {
     const actualNodes = data?.nodes || [];
     const actualEdges = data?.edges || [];
@@ -98,8 +101,11 @@ const VisualizerContent = ({ graphData }) => {
       setNodes(layoutedNodes);
       setEdges(layoutedEdges);
 
-      if (!isTraceMode && activeStep === -1) {
-          setTimeout(() => fitView({ padding: 0.1, duration: 800 }), 150);
+      if (!initialFitDone.current && layoutedNodes.length > 0) {
+        setTimeout(() => {
+          fitView({ padding: 0.1, duration: 800 });
+          initialFitDone.current = true;
+        }, 150);
       }
     };
 
@@ -134,7 +140,7 @@ const VisualizerContent = ({ graphData }) => {
     <div ref={containerRef} className={`w-full bg-[#020617] rounded-xl overflow-hidden border border-slate-800 relative transition-all ${isFullscreen ? 'fixed inset-0 z-[9999] h-screen w-screen' : 'h-[700px]'}`}>
       
       <ExportMenu isFullscreen={isFullscreen} toggleFullscreen={toggleFullscreen} />
-      <ContextInspector activeNodeId={tracePath[activeStep]} rawNodes={rawNodes} rawEdges={rawEdges} />
+      <ContextInspector activeNodeId={tracePath[activeStep]} rawNodes={rawNodes} />
 
       <ReactFlow
         nodes={nodes}
@@ -146,7 +152,6 @@ const VisualizerContent = ({ graphData }) => {
         nodeTypes={nodeTypes}
         minZoom={0.05}
         maxZoom={3}
-        fitView
         className="bg-[#020617]"
       >
         <Background color="#1e293b" gap={20} size={1.5} />

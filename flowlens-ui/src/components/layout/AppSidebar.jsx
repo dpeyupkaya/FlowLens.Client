@@ -2,7 +2,6 @@ import React from 'react';
 import { Layout, Menu } from 'antd';
 import { 
   DashboardOutlined, 
-  HistoryOutlined, 
   SettingOutlined, 
   LogoutOutlined,
   CodeOutlined 
@@ -22,8 +21,7 @@ const AppSidebar = ({ collapsed, onLogout }) => {
       key: 'logout', 
       icon: <LogoutOutlined />, 
       label: 'Çıkış Yap', 
-      danger: true,
-      onClick: onLogout 
+      danger: true
     },
   ];
 
@@ -58,7 +56,13 @@ const AppSidebar = ({ collapsed, onLogout }) => {
         mode="inline"
         selectedKeys={[location.pathname]}
         items={menuItems}
-        onClick={({ key }) => key !== 'logout' && navigate(key)}
+        onClick={({ key }) => {
+          if (key === 'logout') {
+            if (onLogout) onLogout();
+          } else {
+            navigate(key);
+          }
+        }}
         style={{ background: 'transparent', border: 'none' }}
       />
     </Sider>

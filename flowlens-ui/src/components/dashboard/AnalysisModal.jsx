@@ -25,7 +25,7 @@ const AnalysisModal = ({ visible, status, progress, logs, onCancel, onConfirm, o
       width={500}
       bodyStyle={{ backgroundColor: '#0f172a', padding: '32px', borderRadius: '16px' }}
     >
-      {/* Scrollbar'ı gizlemek için inline style bloğu */}
+  
       <style>{`
         .hide-scrollbar::-webkit-scrollbar {
           display: none !important;
@@ -58,7 +58,6 @@ const AnalysisModal = ({ visible, status, progress, logs, onCancel, onConfirm, o
 
           <div 
             ref={scrollRef}
-            // "hide-scrollbar" sınıfını ekledik, "custom-scrollbar" varsa onu sildik
             className="bg-black/40 border border-slate-800 rounded-xl p-4 h-64 overflow-y-auto font-mono text-[11px] shadow-inner hide-scrollbar"
           >
             {logs.map((log, index) => (

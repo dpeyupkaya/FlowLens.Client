@@ -15,7 +15,8 @@ const DashboardPage = () => {
   const navigate = useNavigate();
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedRepoUrl, setSelectedRepoUrl] = useState('');
+  const [selectedRepo, setSelectedRepo] = useState(null); 
+  
   const [analysisStatus, setAnalysisStatus] = useState('idle');
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState([]);
@@ -27,17 +28,20 @@ const DashboardPage = () => {
 
   const fetchRepos = async () => {
     try {
+      setIsLoadingRepos(true);
       const data = await githubService.getCSharpRepos();
-      setRepos(Array.isArray(data) ? data : data.repos || []);
+      const finalData = Array.isArray(data) ? data : (data.repos || []);
+      setRepos(finalData);
     } catch (error) {
+      console.error(error);
       message.error("Sistem hatası: Repolar yüklenemedi.");
     } finally {
       setIsLoadingRepos(false);
     }
   };
 
-  const handleAnalyzeClick = (url) => {
-    setSelectedRepoUrl(url);
+  const handleAnalyzeClick = (repo) => {
+    setSelectedRepo(repo); 
     setLogs([]);
     setProgress(0);
     setAnalysisData(null);
@@ -65,14 +69,15 @@ const DashboardPage = () => {
         setProgress(prev => Math.min(prev + 5, 99));
       });
 
-      const report = await analysisService.startAnalysis(selectedRepoUrl);
+      const report = await analysisService.startAnalysis(selectedRepo);
       
       setAnalysisData(report);
       setProgress(100);
       setLogs(prev => [...prev, "[BAŞARI] Analiz süreci tamamlandı. Rapor hazır."]);
 
     } catch (err) {
-      message.error("Bağlantı hatası oluştu.");
+      console.error(err);
+      message.error("Bağlantı hatası veya analiz hatası oluştu.");
       setAnalysisStatus('idle');
     } finally {
       if (connection.state === signalR.HubConnectionState.Connected) {
@@ -83,24 +88,37 @@ const DashboardPage = () => {
 
   const handleShowResults = () => {
     setModalVisible(false);
-    navigate('/analysis/results', { state: { analysisResult: analysisData } });
+    const enrichedData = {
+      ...analysisData,
+      repoName: selectedRepo?.name || "Bilinmeyen Repo", 
+    };
+    navigate('/analysis/results', { state: { analysisResult: enrichedData } });
   };
 
   return (
-    <div className="flex flex-col items-center py-12 min-h-screen w-full bg-[#020617] text-slate-300">
-      <div className="w-full max-w-6xl px-6">
-        <DashboardHeader />
+    <div className="flex flex-col items-center py-10 min-h-screen w-full bg-[#020617] text-slate-300">
+      <div className="w-full max-w-7xl px-8">
+        
+        <DashboardHeader 
+          totalRepos={repos.length} 
+          loading={isLoadingRepos} 
+        />
 
         {isLoadingRepos ? (
-          <div className="flex justify-center py-20"><Spin size="large" /></div>
+          <div className="flex flex-col items-center justify-center py-32 gap-4">
+            <Spin size="large" />
+            <span className="text-slate-500 font-mono animate-pulse uppercase tracking-widest text-xs">
+              GitHub Repoları taranıyor...
+            </span>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
             {repos.map((repo) => (
               <RepoCard 
                 key={repo.id} 
                 repo={repo} 
-                onAnalyze={handleAnalyzeClick} 
-                isAnalyzing={analysisStatus === 'analyzing'} 
+                onAnalyze={() => handleAnalyzeClick(repo)} 
+                isAnalyzing={analysisStatus === 'analyzing' && selectedRepo?.id === repo.id} 
               />
             ))}
           </div>
