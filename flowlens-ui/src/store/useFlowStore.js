@@ -2,6 +2,10 @@ import { create } from 'zustand';
 
 export const useFlowStore = create((set, get) => ({
 
+  settings: null,
+  setSettings: (newSettings) => set({ settings: newSettings }),
+
+
   rawNodes: [],
   rawEdges: [],
   setRawData: (nodes, edges) => set({ rawNodes: nodes, rawEdges: edges }),
@@ -26,7 +30,6 @@ export const useFlowStore = create((set, get) => ({
   activeStep: -1,    
   isPlaying: false,   
 
- 
   setIsRecording: (isRec) => set({ 
     isRecording: isRec, 
     tracePath: [], 

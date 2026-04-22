@@ -13,7 +13,7 @@ const LoginFormCard = () => {
   const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 
   const handleGitHubLogin = () => {
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user:email`;
+    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user:email,repo`;
   };
 
   return (

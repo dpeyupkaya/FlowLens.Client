@@ -1,8 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Spin } from 'antd';
-import axios from 'axios';
 import Hyperspeed from '../components/backgrounds/Hyperspeed'; 
+import { authService } from '../services/authService';
 
 const CallbackPage = ({ setUser }) => {
   const navigate = useNavigate();
@@ -15,20 +15,17 @@ const CallbackPage = ({ setUser }) => {
     if (code && !isCalled.current) {
       isCalled.current = true;
       
-      axios.post(`${import.meta.env.VITE_API_URL}/api/auth/github-login`, JSON.stringify(code), {
-        headers: { 'Content-Type': 'application/json' },
-        withCredentials: true
-      })
-      .then(res => {
-        const userData = res.data.user || res.data;
-        localStorage.setItem('user', JSON.stringify(userData));
-        setUser(userData);
-        navigate('/dashboard');
-      })
-      .catch(err => {
-        console.error(err);
-        navigate('/login');
-      });
+      authService.githubLogin(code)
+        .then(data => {
+          const userData = data.user || data;
+          localStorage.setItem('user', JSON.stringify(userData));
+          setUser(userData);
+          navigate('/dashboard');
+        })
+        .catch(err => {
+          console.error("GitHub Login Hatası:", err);
+          navigate('/login'); 
+        });
     }
   }, [navigate, setUser]);
 
@@ -54,7 +51,6 @@ const CallbackPage = ({ setUser }) => {
             size="large" 
             tip={<span style={{ color: '#14b8a6', marginTop: '20px', display: 'block', fontWeight: '500' }}>GitHub ile bağlantı kuruluyor...</span>} 
           />
-          
         </div>
       </div>
 

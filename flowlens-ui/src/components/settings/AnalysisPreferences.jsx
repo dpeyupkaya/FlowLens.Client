@@ -1,13 +1,26 @@
-import React from 'react';
-import { Form, Select, Slider, Switch, Button, message } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Select, Slider, Switch, Button } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 
-const AnalysisPreferences = () => {
+const AnalysisPreferences = ({ settings, onSave, saving }) => {
   const [form] = Form.useForm();
 
+  useEffect(() => {
+    if (settings) {
+      form.setFieldsValue({
+        excludedFolders: settings.excludedFolders || [],
+        maxAnalysisDepth: settings.maxAnalysisDepth || 3,
+        showExternalLibs: settings.showExternalLibs || false
+      });
+    }
+  }, [settings, form]);
+
   const onFinish = (values) => {
-    console.log('Analiz ayarları kaydedildi:', values);
-    message.success('Analiz motoru tercihleri güncellendi!');
+    onSave({
+      excludedFolders: values.excludedFolders,
+      maxAnalysisDepth: values.maxAnalysisDepth,
+      showExternalLibs: values.showExternalLibs
+    });
   };
 
   return (
@@ -21,15 +34,10 @@ const AnalysisPreferences = () => {
         form={form} 
         layout="vertical" 
         onFinish={onFinish}
-        initialValues={{
-          ignoreList: ['bin', 'obj', 'Tests', 'Migrations'],
-          depth: 3,
-          includeExternal: false
-        }}
       >
         <Form.Item 
           label={<span className="text-gray-300 font-medium">Kara Liste (Yoksayılacak Klasörler)</span>} 
-          name="ignoreList"
+          name="excludedFolders" 
           extra={<span className="text-gray-500 text-xs">Bu klasörler kod mimarisi grafiğine dahil edilmez. Yeni eklemek için yazıp Enter'a basın.</span>}
         >
           <Select 
@@ -43,7 +51,7 @@ const AnalysisPreferences = () => {
 
         <Form.Item 
           label={<span className="text-gray-300 font-medium">Maksimum Analiz Derinliği</span>} 
-          name="depth"
+          name="maxAnalysisDepth" 
           extra={<span className="text-gray-500 text-xs">1: Sadece Projeler, 5: Metot içindeki çağrılara kadar (Performansı etkileyebilir).</span>}
           className="mt-8"
         >
@@ -60,14 +68,21 @@ const AnalysisPreferences = () => {
             <h4 className="text-white font-medium mb-1">Harici Kütüphaneleri (NuGet) Göster</h4>
             <p className="text-gray-500 text-xs">Proje dışı bağımlılıkları analiz haritasında ayrı bir renk ile gösterir.</p>
           </div>
-          <Form.Item name="includeExternal" valuePropName="checked" className="mb-0">
+          <Form.Item name="showExternalLibs" valuePropName="checked" className="mb-0">
             <Switch className="bg-slate-600 checked:bg-[#14b8a6]" />
           </Form.Item>
         </div>
 
         <Form.Item className="mt-8">
-          <Button type="primary" htmlType="submit" icon={<SaveOutlined />} size="large" className="bg-[#14b8a6] hover:bg-teal-500 border-none">
-            Motor Ayarlarını Kaydet
+          <Button 
+            type="primary" 
+            htmlType="submit" 
+            icon={<SaveOutlined />} 
+            size="large" 
+            loading={saving} // Yükleniyor animasyonu eklendi
+            className="bg-[#14b8a6] hover:bg-teal-500 border-none"
+          >
+            {saving ? 'Kaydediliyor...' : 'Motor Ayarlarını Kaydet'}
           </Button>
         </Form.Item>
       </Form>

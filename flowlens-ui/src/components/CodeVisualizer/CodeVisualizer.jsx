@@ -20,7 +20,6 @@ const nodeTypes = { customNode: FlowNode };
 const VisualizerContent = ({ graphData }) => {
   const containerRef = useRef();
   const [isFullscreen, setIsFullscreen] = useState(false);
-  
   const initialFitDone = useRef(false);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -35,10 +34,16 @@ const VisualizerContent = ({ graphData }) => {
   const isRecording = useFlowStore(state => state.isRecording);
   const tracePath = useFlowStore(state => state.tracePath);
   const activeStep = useFlowStore(state => state.activeStep);
+  
+  const settings = useFlowStore(state => state.settings);
+  const graphicsSettings = settings?.graphics || {
+    highPerformanceMode: false,
+    showMinimap: true,
+    nodeDetailLevel: 'Detailed'
+  };
 
   useEffect(() => {
     initialFitDone.current = false;
-    
     const rNodes = graphData?.graph?.nodes || graphData?.nodes || graphData?.Nodes || [];
     const rEdges = graphData?.graph?.edges || graphData?.edges || graphData?.Edges || [];
     setRawData(rNodes, rEdges);
@@ -65,7 +70,7 @@ const VisualizerContent = ({ graphData }) => {
         id: n.id,
         type: 'customNode',
         position: n.position,
-        data: { ...n, ...getDebugStateForNode(n.id) }
+        data: { ...n, ...getDebugStateForNode(n.id), detailLevel: graphicsSettings.nodeDetailLevel }
       }));
 
       const layoutedEdges = actualEdges.map(e => {
@@ -82,17 +87,23 @@ const VisualizerContent = ({ graphData }) => {
         if (rel === 'Inherits') { strokeColor = '#ef4444'; }
         if (rel === 'Implements') { strokeColor = '#10b981'; dash = '8 4'; }
 
+        const shouldAnimate = graphicsSettings.highPerformanceMode 
+          ? false 
+          : (isTraceActive || rel === 'Contains' || rel === 'HasParameter');
+          
+        const transitionStyle = graphicsSettings.highPerformanceMode ? 'none' : 'all 0.5s ease';
+
         return {
           id: `${e.source}-${e.target}`,
           source: e.source,
           target: e.target,
-          animated: isTraceActive || rel === 'Contains' || rel === 'HasParameter',
+          animated: shouldAnimate,
           style: {
             strokeDasharray: dash,
             stroke: isTraceActive ? '#10b981' : strokeColor,
             strokeWidth: isTraceActive ? 4 : 1,
             opacity: (isTraceMode && !isTraceEdge) ? 0.1 : 1,
-            transition: 'all 0.5s ease'
+            transition: transitionStyle
           },
           markerEnd: { type: MarkerType.ArrowClosed, color: isTraceActive ? '#10b981' : strokeColor }
         };
@@ -110,7 +121,7 @@ const VisualizerContent = ({ graphData }) => {
     };
 
     processLayout();
-  }, [data, tracePath, activeStep, isRecording, getDebugStateForNode, setNodes, setEdges, fitView]);
+  }, [data, tracePath, activeStep, isRecording, getDebugStateForNode, setNodes, setEdges, fitView, graphicsSettings.highPerformanceMode, graphicsSettings.nodeDetailLevel]);
 
   useEffect(() => {
     const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
@@ -156,7 +167,11 @@ const VisualizerContent = ({ graphData }) => {
       >
         <Background color="#1e293b" gap={20} size={1.5} />
         <Controls className="bg-slate-900 border-slate-700 fill-white" />
-        <MiniMap nodeColor={(node) => getLayerColor(node.data?.metadata?.Layer)} maskColor="rgba(2, 6, 23, 0.8)" className="bg-slate-950 border border-slate-800 rounded-lg" />
+        
+        {graphicsSettings.showMinimap && (
+          <MiniMap nodeColor={(node) => getLayerColor(node.data?.metadata?.Layer)} maskColor="rgba(2, 6, 23, 0.8)" className="bg-slate-950 border border-slate-800 rounded-lg" />
+        )}
+        
         <Panel position="top-left">{data?.uniqueLayers && <GraphLegend layers={data.uniqueLayers} />}</Panel>
       </ReactFlow>
 

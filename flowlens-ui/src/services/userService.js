@@ -16,5 +16,14 @@ export const userService = {
     } catch (error) {
       throw error.response ? error.response.data : error;
     }
+  },
+
+  updateUserSettings: async (settingsData) => {
+    try {
+      const response = await apiClient.put('/api/users/me/settings', settingsData);
+      return response.data;
+    } catch (error) {
+      throw error.response ? error.response.data : error;
+    }
   }
 };

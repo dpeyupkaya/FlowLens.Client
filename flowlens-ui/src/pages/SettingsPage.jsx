@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Tabs } from 'antd';
+import { Tabs, message } from 'antd';
 import { UserOutlined, SettingOutlined, EyeOutlined, DatabaseOutlined } from '@ant-design/icons';
 
 import { userService } from '../services/userService';
+import { useFlowStore } from '../store/useFlowStore'; 
+
 import AccountSettings from '../components/settings/AccountSettings';
 import AnalysisPreferences from '../components/settings/AnalysisPreferences';
 import GraphAppearanceSettings from '../components/settings/GraphAppearanceSettings';
@@ -10,19 +12,56 @@ import DataManagementSettings from '../components/settings/DataManagementSetting
 
 const SettingsPage = () => {
   const [profileData, setProfileData] = useState(null);
+  const [settings, setSettings] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false); 
+
+  const setGlobalSettings = useFlowStore(state => state.setSettings);
 
   useEffect(() => {
     userService.getUserMe()
       .then(data => {
         setProfileData(data);
+        
+        const fetchedSettings = data.settings || {
+          analysis: { excludedFolders: [], maxAnalysisDepth: 3, showExternalLibs: false },
+          graphics: { nodeDetailLevel: 'Detailed', highPerformanceMode: false, showMinimap: true },
+          data: { repoVisibility: 'All' }
+        };
+        
+        setSettings(fetchedSettings);
+        setGlobalSettings(fetchedSettings); 
+        
         setLoading(false);
       })
       .catch(err => {
         console.error(err);
+        message.error('Kullanıcı bilgileri çekilirken bir hata oluştu.');
         setLoading(false);
       });
-  }, []);
+  }, [setGlobalSettings]);
+
+  const handleSaveSettings = async (updatedSectionData, sectionName) => {
+    setSaving(true);
+    try {
+      const newSettings = {
+        ...settings,
+        [sectionName]: { ...settings[sectionName], ...updatedSectionData }
+      };
+
+      await userService.updateUserSettings(newSettings);
+      
+      setSettings(newSettings); 
+      setGlobalSettings(newSettings); 
+      
+      message.success('Ayarlar başarıyla güncellendi!');
+    } catch (error) {
+      console.error(error);
+      message.error('Ayarlar kaydedilirken bir sorun oluştu.');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const items = [
     {
@@ -33,17 +72,29 @@ const SettingsPage = () => {
     {
       key: 'analysis',
       label: <span className="flex items-center gap-2 px-2 py-1"><SettingOutlined /> Analiz Tercihleri</span>,
-      children: <AnalysisPreferences />,
+      children: <AnalysisPreferences 
+                  settings={settings?.analysis} 
+                  onSave={(data) => handleSaveSettings(data, 'analysis')} 
+                  saving={saving} 
+                />,
     },
     {
       key: 'appearance',
       label: <span className="flex items-center gap-2 px-2 py-1"><EyeOutlined /> Grafik & Görünüm</span>,
-      children: <GraphAppearanceSettings />,
+      children: <GraphAppearanceSettings 
+                  settings={settings?.graphics} 
+                  onSave={(data) => handleSaveSettings(data, 'graphics')} 
+                  saving={saving} 
+                />,
     },
     {
       key: 'data',
       label: <span className="flex items-center gap-2 px-2 py-1"><DatabaseOutlined /> Veri Yönetimi</span>,
-      children: <DataManagementSettings />,
+      children: <DataManagementSettings 
+                  settings={settings?.data} 
+                  onSave={(data) => handleSaveSettings(data, 'data')} 
+                  saving={saving} 
+                />,
     },
   ];
 
