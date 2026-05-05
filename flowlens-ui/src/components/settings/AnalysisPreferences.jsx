@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Form, Select, Slider, Switch, Button } from 'antd';
+import { Form, Select, Slider, Button } from 'antd';
 import { SaveOutlined } from '@ant-design/icons';
 
 const AnalysisPreferences = ({ settings, onSave, saving }) => {
@@ -9,8 +9,7 @@ const AnalysisPreferences = ({ settings, onSave, saving }) => {
     if (settings) {
       form.setFieldsValue({
         excludedFolders: settings.excludedFolders || [],
-        maxAnalysisDepth: settings.maxAnalysisDepth || 3,
-        showExternalLibs: settings.showExternalLibs || false
+        maxAnalysisDepth: settings.maxAnalysisDepth || 3
       });
     }
   }, [settings, form]);
@@ -18,8 +17,7 @@ const AnalysisPreferences = ({ settings, onSave, saving }) => {
   const onFinish = (values) => {
     onSave({
       excludedFolders: values.excludedFolders,
-      maxAnalysisDepth: values.maxAnalysisDepth,
-      showExternalLibs: values.showExternalLibs
+      maxAnalysisDepth: values.maxAnalysisDepth
     });
   };
 
@@ -52,26 +50,20 @@ const AnalysisPreferences = ({ settings, onSave, saving }) => {
         <Form.Item 
           label={<span className="text-gray-300 font-medium">Maksimum Analiz Derinliği</span>} 
           name="maxAnalysisDepth" 
-          extra={<span className="text-gray-500 text-xs">1: Sadece Projeler, 5: Metot içindeki çağrılara kadar (Performansı etkileyebilir).</span>}
+          extra={
+            <span className="text-gray-500 text-xs">
+              <b>Kademe 1:</b> Kuş Bakışı (Sınıflar) | <b>Kademe 2:</b> Yapısal (Metot İmzaları) | <b>Kademe 3:</b> Derin Dalış (Metot Gövdeleri ve Çağrılar)
+            </span>
+          }
           className="mt-8"
         >
           <Slider 
             min={1} 
-            max={5} 
-            marks={{ 1: '1', 2: '2', 3: '3', 4: '4', 5: '5' }}
+            max={3} 
+            marks={{ 1: '1', 2: '2', 3: '3' }}
             className="text-white"
           />
         </Form.Item>
-
-        <div className="flex items-center justify-between mt-8 p-4 bg-slate-800/30 border border-slate-700/50 rounded-lg">
-          <div>
-            <h4 className="text-white font-medium mb-1">Harici Kütüphaneleri (NuGet) Göster</h4>
-            <p className="text-gray-500 text-xs">Proje dışı bağımlılıkları analiz haritasında ayrı bir renk ile gösterir.</p>
-          </div>
-          <Form.Item name="showExternalLibs" valuePropName="checked" className="mb-0">
-            <Switch className="bg-slate-600 checked:bg-[#14b8a6]" />
-          </Form.Item>
-        </div>
 
         <Form.Item className="mt-8">
           <Button 
@@ -79,7 +71,7 @@ const AnalysisPreferences = ({ settings, onSave, saving }) => {
             htmlType="submit" 
             icon={<SaveOutlined />} 
             size="large" 
-            loading={saving} // Yükleniyor animasyonu eklendi
+            loading={saving}
             className="bg-[#14b8a6] hover:bg-teal-500 border-none"
           >
             {saving ? 'Kaydediliyor...' : 'Motor Ayarlarını Kaydet'}

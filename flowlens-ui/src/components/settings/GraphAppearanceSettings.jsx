@@ -5,12 +5,12 @@ import { SaveOutlined } from '@ant-design/icons';
 const GraphAppearanceSettings = ({ settings, onSave, saving }) => {
   const [form] = Form.useForm();
 
-  useEffect(() => {
+ useEffect(() => {
     if (settings) {
       form.setFieldsValue({
-        nodeDetailLevel: settings.nodeDetailLevel || 'Detailed',
-        highPerformanceMode: settings.highPerformanceMode || false,
-        showMinimap: settings.showMinimap !== undefined ? settings.showMinimap : true
+        nodeDetailLevel: settings.nodeDetailLevel || settings.NodeDetailLevel || 'Detailed',
+        highPerformanceMode: settings.highPerformanceMode || settings.HighPerformanceMode || false,
+        showMinimap: settings.showMinimap !== undefined ? settings.showMinimap : (settings.ShowMinimap !== undefined ? settings.ShowMinimap : true)
       });
     }
   }, [settings, form]);

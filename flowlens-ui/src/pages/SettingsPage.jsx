@@ -16,7 +16,10 @@ const SettingsPage = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false); 
 
+  // STORE BAĞLANTILARI BURAYA
   const setGlobalSettings = useFlowStore(state => state.setSettings);
+  const setBlacklistedFolders = useFlowStore(state => state.setBlacklistedFolders);
+  const setMaxAnalysisDepth = useFlowStore(state => state.setMaxAnalysisDepth);
 
   useEffect(() => {
     userService.getUserMe()
@@ -32,6 +35,11 @@ const SettingsPage = () => {
         setSettings(fetchedSettings);
         setGlobalSettings(fetchedSettings); 
         
+        if (fetchedSettings.analysis) {
+            setBlacklistedFolders(fetchedSettings.analysis.excludedFolders || ["obj", "bin", ".git", "node_modules"]);
+            setMaxAnalysisDepth(fetchedSettings.analysis.maxAnalysisDepth || 3);
+        }
+        
         setLoading(false);
       })
       .catch(err => {
@@ -39,7 +47,7 @@ const SettingsPage = () => {
         message.error('Kullanıcı bilgileri çekilirken bir hata oluştu.');
         setLoading(false);
       });
-  }, [setGlobalSettings]);
+  }, [setGlobalSettings, setBlacklistedFolders, setMaxAnalysisDepth]);
 
   const handleSaveSettings = async (updatedSectionData, sectionName) => {
     setSaving(true);
@@ -53,6 +61,11 @@ const SettingsPage = () => {
       
       setSettings(newSettings); 
       setGlobalSettings(newSettings); 
+      
+      if (sectionName === 'analysis') {
+          setBlacklistedFolders(updatedSectionData.excludedFolders || ["obj", "bin", ".git", "node_modules"]);
+          setMaxAnalysisDepth(updatedSectionData.maxAnalysisDepth || 3);
+      }
       
       message.success('Ayarlar başarıyla güncellendi!');
     } catch (error) {

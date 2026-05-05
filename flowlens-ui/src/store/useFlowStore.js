@@ -5,6 +5,11 @@ export const useFlowStore = create((set, get) => ({
   settings: null,
   setSettings: (newSettings) => set({ settings: newSettings }),
 
+  blacklistedFolders: ["obj", "bin", ".git", "node_modules"], 
+  setBlacklistedFolders: (folders) => set({ blacklistedFolders: folders }),
+  
+  maxAnalysisDepth: 3, 
+  setMaxAnalysisDepth: (depth) => set({ maxAnalysisDepth: depth }),
 
   rawNodes: [],
   rawEdges: [],

@@ -4,6 +4,7 @@ import { Spin, message } from 'antd';
 import * as signalR from '@microsoft/signalr';
 import { githubService } from '../services/githubService';
 import { analysisService } from '../services/analysisService';
+import { userService } from '../services/userService'; // SERVİSİ EKLEDİK
 
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import RepoCard from '../components/dashboard/RepoCard';
@@ -14,34 +15,45 @@ const DashboardPage = () => {
   const [isLoadingRepos, setIsLoadingRepos] = useState(true);
   const navigate = useNavigate();
 
+  // KULLANICI PROFİLİ STATE'İ (Kotayı tutmak için)
+  const [profileData, setProfileData] = useState(null);
+
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedRepo, setSelectedRepo] = useState(null); 
-  
+  const [selectedRepo, setSelectedRepo] = useState(null);
+
   const [analysisStatus, setAnalysisStatus] = useState('idle');
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState([]);
   const [analysisData, setAnalysisData] = useState(null);
 
   useEffect(() => {
-    fetchRepos();
+    fetchInitialData();
   }, []);
 
-  const fetchRepos = async () => {
+  // Hem repoları hem de kullanıcı profilini aynı anda çekiyoruz
+  const fetchInitialData = async () => {
     try {
       setIsLoadingRepos(true);
-      const data = await githubService.getCSharpRepos();
-      const finalData = Array.isArray(data) ? data : (data.repos || []);
-      setRepos(finalData);
+      
+      const [repoData, userData] = await Promise.all([
+        githubService.getCSharpRepos(),
+        userService.getUserMe()
+      ]);
+
+      const finalRepoData = Array.isArray(repoData) ? repoData : (repoData.repos || []);
+      setRepos(finalRepoData);
+      setProfileData(userData);
+
     } catch (error) {
       console.error(error);
-      message.error("Sistem hatası: Repolar yüklenemedi.");
+      message.error("Sistem hatası: Veriler yüklenemedi.");
     } finally {
       setIsLoadingRepos(false);
     }
   };
 
   const handleAnalyzeClick = (repo) => {
-    setSelectedRepo(repo); 
+    setSelectedRepo(repo);
     setLogs([]);
     setProgress(0);
     setAnalysisData(null);
@@ -63,21 +75,35 @@ const DashboardPage = () => {
 
     try {
       await connection.start();
-      
+
       connection.on("ReceiveAnalysisLog", (newLog) => {
         setLogs(prev => [...prev, newLog]);
         setProgress(prev => Math.min(prev + 5, 99));
       });
 
       const report = await analysisService.startAnalysis(selectedRepo);
-      
+
       setAnalysisData(report);
       setProgress(100);
       setLogs(prev => [...prev, "[BAŞARI] Analiz süreci tamamlandı. Rapor hazır."]);
 
+      // 🟢 SİHİRLİ DOKUNUŞ: Analiz başarılıysa frontend'deki sayacı anında 1 artır!
+      setProfileData(prev => {
+        if (!prev) return prev;
+        const currentCount = prev.dailyAnalysisCount ?? prev.DailyAnalysisCount ?? 0;
+        return {
+          ...prev,
+          dailyAnalysisCount: currentCount + 1,
+          DailyAnalysisCount: currentCount + 1 // C# harf uyumluluğunu bozmamak için ikisini de güncelliyoruz
+        };
+      });
+
     } catch (err) {
       console.error(err);
-      message.error("Bağlantı hatası veya analiz hatası oluştu.");
+      // Backend'den limit doldu hatası gelirse ekranda göster
+      const errorMessage = err.response?.data?.message || err.message || "Bağlantı hatası veya analiz hatası oluştu.";
+      message.error(errorMessage);
+      setLogs(prev => [...prev, `[HATA] ${errorMessage}`]);
       setAnalysisStatus('idle');
     } finally {
       if (connection.state === signalR.HubConnectionState.Connected) {
@@ -90,42 +116,45 @@ const DashboardPage = () => {
     setModalVisible(false);
     const enrichedData = {
       ...analysisData,
-      repoName: selectedRepo?.name || "Bilinmeyen Repo", 
+      repoName: selectedRepo?.name || "Bilinmeyen Repo",
     };
     navigate('/analysis/results', { state: { analysisResult: enrichedData } });
   };
 
+  // C# harf formatı (Büyük/Küçük) uyumluluğu için kotayı güvenli alıyoruz
+  const currentDailyCount = profileData?.dailyAnalysisCount ?? profileData?.DailyAnalysisCount ?? 0;
+
   return (
     <div className="flex flex-col items-center py-10 min-h-screen w-full bg-[#020617] text-slate-300">
       <div className="w-full max-w-7xl px-8">
-        
-        <DashboardHeader 
-          totalRepos={repos.length} 
-          loading={isLoadingRepos} 
+
+        <DashboardHeader
+          totalRepos={repos.length}
+          loading={isLoadingRepos}
         />
 
         {isLoadingRepos ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">
             <Spin size="large" />
             <span className="text-slate-500 font-mono animate-pulse uppercase tracking-widest text-xs">
-              GitHub Repoları taranıyor...
+              GitHub Repoları ve Profil taranıyor...
             </span>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
             {repos.map((repo) => (
-              <RepoCard 
-                key={repo.id} 
-                repo={repo} 
-                onAnalyze={() => handleAnalyzeClick(repo)} 
-                isAnalyzing={analysisStatus === 'analyzing' && selectedRepo?.id === repo.id} 
+              <RepoCard
+                key={repo.id}
+                repo={repo}
+                onAnalyze={() => handleAnalyzeClick(repo)}
+                isAnalyzing={analysisStatus === 'analyzing' && selectedRepo?.id === repo.id}
               />
             ))}
           </div>
         )}
       </div>
 
-      <AnalysisModal 
+      <AnalysisModal
         visible={modalVisible}
         status={analysisStatus}
         progress={progress}
@@ -133,6 +162,8 @@ const DashboardPage = () => {
         onCancel={() => setModalVisible(false)}
         onConfirm={startLiveAnalysis}
         onShowResults={handleShowResults}
+        dailyCount={currentDailyCount}
+        maxLimit={5}
       />
     </div>
   );

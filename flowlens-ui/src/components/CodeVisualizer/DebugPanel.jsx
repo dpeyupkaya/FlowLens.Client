@@ -102,7 +102,6 @@ const DebugPanel = () => {
              <b>{Math.min(activeStep + 1, tracePath.length)} / {tracePath.length}</b>
           </div>
 
-         
           <button
             onClick={handleDownloadImage}
             disabled={isDownloading}

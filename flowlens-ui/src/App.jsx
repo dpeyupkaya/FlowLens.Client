@@ -8,6 +8,7 @@ import MainLayout from './layouts/MainLayout';
 import DashboardPage from './pages/DashboardPage';
 import AnalysisResultPage from './pages/AnalysisResultPage';
 import SettingsPage from './pages/SettingsPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -30,7 +31,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
-          
+          <Route path="/terms" element={<TermsOfServicePage />} />
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
 

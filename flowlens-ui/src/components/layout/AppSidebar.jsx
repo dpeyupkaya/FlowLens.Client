@@ -58,7 +58,20 @@ const AppSidebar = ({ collapsed, onLogout }) => {
         items={menuItems}
         onClick={({ key }) => {
           if (key === 'logout') {
+            localStorage.clear();
+            sessionStorage.clear();
+
+            document.cookie.split(";").forEach((c) => {
+              document.cookie = c
+                .replace(/^ +/, "")
+                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
+            });
+
+            console.clear();
+
             if (onLogout) onLogout();
+            
+            navigate('/');
           } else {
             navigate(key);
           }

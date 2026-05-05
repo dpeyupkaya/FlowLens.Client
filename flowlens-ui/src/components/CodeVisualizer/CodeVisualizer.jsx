@@ -36,10 +36,12 @@ const VisualizerContent = ({ graphData }) => {
   const activeStep = useFlowStore(state => state.activeStep);
   
   const settings = useFlowStore(state => state.settings);
-  const graphicsSettings = settings?.graphics || {
-    highPerformanceMode: false,
-    showMinimap: true,
-    nodeDetailLevel: 'Detailed'
+  
+  const rawGraphics = settings?.graphics || settings?.Graphics || {};
+  const graphicsSettings = {
+    highPerformanceMode: rawGraphics.highPerformanceMode ?? rawGraphics.HighPerformanceMode ?? false,
+    showMinimap: rawGraphics.showMinimap ?? rawGraphics.ShowMinimap ?? true,
+    nodeDetailLevel: rawGraphics.nodeDetailLevel || rawGraphics.NodeDetailLevel || 'Detailed'
   };
 
   useEffect(() => {
