@@ -36,14 +36,32 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
     };
 
     fetchIdentity();
+
+    const handleQuotaUpdate = (event) => {
+      if (event.detail !== undefined) {
+        setActiveUser(prev => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            dailyAnalysisCount: event.detail,
+            DailyAnalysisCount: event.detail
+          };
+        });
+      } else {
+        fetchIdentity(); 
+      }
+    };
+
+    window.addEventListener('quotaUpdated', handleQuotaUpdate);
+    return () => window.removeEventListener('quotaUpdated', handleQuotaUpdate);
   }, []);
 
   useEffect(() => {
     const calculateTimeLeft = () => {
       const now = new Date();
-      const nextMidnightUTC = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+      const nextMidnightLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
       
-      const diffMs = nextMidnightUTC - now;
+      const diffMs = nextMidnightLocal - now;
       const hours = Math.floor(diffMs / (1000 * 60 * 60));
       const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
       
@@ -73,17 +91,17 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
         />
         <div className="hidden sm:flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
-          <span className="text-slate-500 font-mono text-[10px] tracking-widest uppercase">
+          <span className="text-slate-500 font-mono text-[10px] tracking-widest uppercase mt-[2px]">
             FlowLens 
           </span>
         </div>
       </div>
       
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 h-full">
         
         {!loading && (
           <Tooltip title={isQuotaExceeded ? "Limitiniz doldu. Geri sayım bitince yenilenecek." : "Günlük analiz hakkınız"}>
-            <div className={`hidden md:flex items-center gap-2 px-3 py-1.5 rounded-full border transition-all
+            <div className={`hidden md:flex items-center justify-center gap-1.5 px-3 h-8 rounded-full border transition-all whitespace-nowrap
               ${isQuotaExceeded 
                 ? 'bg-red-500/10 border-red-500/30 text-red-400' 
                 : 'bg-teal-500/10 border-teal-500/30 text-teal-400'
@@ -91,13 +109,13 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
             >
               {isQuotaExceeded ? (
                 <>
-                  <HourglassOutlined className="animate-pulse" />
-                  <span className="font-mono text-[11px] font-bold tracking-wider">YENİLENME: {timeUntilReset}</span>
+                  <HourglassOutlined className="animate-pulse text-[12px]" />
+                  <span className="font-mono text-[10px] font-bold tracking-wider mt-[1px]">YENİLENME: {timeUntilReset}</span>
                 </>
               ) : (
                 <>
-                  <ThunderboltOutlined />
-                  <span className="font-mono text-[11px] font-bold tracking-wider">{remainingQuota} / {MAX_LIMIT} HAK</span>
+                  <ThunderboltOutlined className="text-[12px]" />
+                  <span className="font-mono text-[10px] font-bold tracking-wider mt-[1px]">{remainingQuota} / {MAX_LIMIT} HAK</span>
                 </>
               )}
             </div>
@@ -109,14 +127,14 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
             {loading ? (
               <div className="w-20 h-3 bg-slate-700/50 animate-pulse rounded mb-1.5 ml-auto"></div>
             ) : (
-              <>
+              <div className="flex flex-col justify-center h-full">
                 <Text className="text-slate-200 font-bold block leading-none mb-1 text-[13px]">
                   {displayName}
                 </Text>
                 <Text className="text-slate-500 font-mono text-[9px] uppercase tracking-widest md:hidden block">
                   {remainingQuota} Hak Kaldı
                 </Text>
-              </>
+              </div>
             )}
           </div>
           <Avatar 

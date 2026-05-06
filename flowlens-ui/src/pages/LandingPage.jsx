@@ -66,22 +66,7 @@ const LandingPage = () => {
               FlowLens
             </Title>
           </div>
-
-          <Space size="large">
-            <Button type="text" style={{ color: '#94a3b8' }}>
-              Nasıl Çalışır?
-            </Button>
-            <Button
-              type="primary"
-              onClick={() => navigate('/login')}
-              style={{ fontWeight: 600 }}
-            >
-              Giriş Yap
-            </Button>
-          </Space>
         </Header>
-
-        {/* --- HERO SECTION --- */}
         <Content style={{ padding: '0 50px' }}>
           <div style={{ textAlign: 'center', padding: '120px 0 80px' }}>
             <Space direction="vertical" align="center" size="large">

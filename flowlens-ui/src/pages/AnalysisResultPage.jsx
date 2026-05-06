@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Typography, Button, Row, Col } from 'antd';
+import { Button, Row, Col } from 'antd';
 import {
   LeftOutlined,
   GithubOutlined,
@@ -10,15 +10,15 @@ import {
   BranchesOutlined
 } from '@ant-design/icons';
 import CodeVisualizer from '../components/CodeVisualizer/CodeVisualizer';
-
-const { Text } = Typography;
+import RepoStatsViewer from '../components/CodeVisualizer/RepoStatsViewer'; 
 
 const AnalysisResultPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { analysisResult } = location.state || {};
 
-  const repoStats = useMemo(() => {
+  // Roslyn'den gelen kod içi metrikler (İsim karışıklığı olmasın diye roslynStats yaptık)
+  const roslynStats = useMemo(() => {
     if (!analysisResult) return null;
     const graphData = analysisResult?.graph || analysisResult?.Graph;
     const nodes = graphData?.nodes || graphData?.Nodes || [];
@@ -41,15 +41,23 @@ const AnalysisResultPage = () => {
     );
   }
 
+  const githubStats = analysisResult.repoStats || analysisResult.RepoStats;
+
   return (
     <div className="flex flex-col items-center py-6 min-h-screen w-full bg-[#020617] text-slate-300">
       <div className="w-full max-w-[1920px] px-4 lg:px-8">
 
-        <div className="mb-4 flex justify-between items-center">
-          <Button icon={<LeftOutlined />} onClick={() => navigate('/dashboard')} className="bg-slate-900 border-slate-800 text-slate-400 hover:text-white transition-colors shadow-lg">
+        <div className="mb-6 flex justify-between items-center">
+          <Button 
+            icon={<LeftOutlined />} 
+            onClick={() => navigate('/dashboard')} 
+            className="bg-slate-900 border-slate-800 text-slate-400 hover:text-white transition-colors shadow-lg"
+          >
             GERİ DÖN
           </Button>
         </div>
+
+        <RepoStatsViewer stats={githubStats} />
 
         <div className="bg-[#0f172a]/50 border border-slate-800 rounded-2xl p-4 lg:p-6 backdrop-blur-xl shadow-2xl">
           <Row gutter={[24, 24]}>
@@ -61,8 +69,8 @@ const AnalysisResultPage = () => {
                   <div className="w-12 h-12 bg-indigo-500/10 rounded-full flex items-center justify-center mb-4 border border-indigo-500/20">
                     <GithubOutlined className="text-2xl text-indigo-400" />
                   </div>
-                  <h2 className="text-white text-lg font-bold truncate w-full mb-1" title={repoStats.name}>
-                    {repoStats.name}
+                  <h2 className="text-white text-lg font-bold truncate w-full mb-1" title={roslynStats.name}>
+                    {roslynStats.name}
                   </h2>
                   <span className="text-[10px] text-slate-500 font-mono uppercase tracking-widest">
                     Analiz Edilen Proje
@@ -70,13 +78,12 @@ const AnalysisResultPage = () => {
                 </div>
 
                 <div className="bg-slate-900/40 p-5 rounded-xl border border-slate-800 shadow-sm flex flex-col gap-4 flex-grow">
-
                   <div className="flex items-center justify-between border-b border-slate-800/50 pb-3">
                     <div className="flex items-center gap-3 text-slate-400">
                       <FolderOpenOutlined className="text-teal-500 text-lg" />
                       <span className="text-[11px] font-mono uppercase tracking-wider">Dosyalar</span>
                     </div>
-                    <span className="text-white font-bold text-lg">{repoStats.files}</span>
+                    <span className="text-white font-bold text-lg">{roslynStats.files}</span>
                   </div>
 
                   <div className="flex items-center justify-between border-b border-slate-800/50 pb-3">
@@ -84,7 +91,7 @@ const AnalysisResultPage = () => {
                       <CodeOutlined className="text-blue-500 text-lg" />
                       <span className="text-[11px] font-mono uppercase tracking-wider">Satırlar</span>
                     </div>
-                    <span className="text-white font-bold text-lg">{repoStats.lines}</span>
+                    <span className="text-white font-bold text-lg">{roslynStats.lines}</span>
                   </div>
 
                   <div className="flex items-center justify-between border-b border-slate-800/50 pb-3">
@@ -92,7 +99,7 @@ const AnalysisResultPage = () => {
                       <NodeIndexOutlined className="text-purple-500 text-lg" />
                       <span className="text-[11px] font-mono uppercase tracking-wider">Sınıflar (Node)</span>
                     </div>
-                    <span className="text-white font-bold text-lg">{repoStats.nodeCount}</span>
+                    <span className="text-white font-bold text-lg">{roslynStats.nodeCount}</span>
                   </div>
 
                   <div className="flex items-center justify-between">
@@ -100,9 +107,8 @@ const AnalysisResultPage = () => {
                       <BranchesOutlined className="text-emerald-500 text-lg" />
                       <span className="text-[11px] font-mono uppercase tracking-wider">Bağlar (Edge)</span>
                     </div>
-                    <span className="text-white font-bold text-lg">{repoStats.edgeCount}</span>
+                    <span className="text-white font-bold text-lg">{roslynStats.edgeCount}</span>
                   </div>
-
                 </div>
               </div>
             </Col>

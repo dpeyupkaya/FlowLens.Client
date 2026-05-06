@@ -4,7 +4,7 @@ import { Spin, message } from 'antd';
 import * as signalR from '@microsoft/signalr';
 import { githubService } from '../services/githubService';
 import { analysisService } from '../services/analysisService';
-import { userService } from '../services/userService'; // SERVİSİ EKLEDİK
+import { userService } from '../services/userService';
 
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import RepoCard from '../components/dashboard/RepoCard';
@@ -15,7 +15,6 @@ const DashboardPage = () => {
   const [isLoadingRepos, setIsLoadingRepos] = useState(true);
   const navigate = useNavigate();
 
-  // KULLANICI PROFİLİ STATE'İ (Kotayı tutmak için)
   const [profileData, setProfileData] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -30,11 +29,10 @@ const DashboardPage = () => {
     fetchInitialData();
   }, []);
 
-  // Hem repoları hem de kullanıcı profilini aynı anda çekiyoruz
   const fetchInitialData = async () => {
     try {
       setIsLoadingRepos(true);
-      
+
       const [repoData, userData] = await Promise.all([
         githubService.getCSharpRepos(),
         userService.getUserMe()
@@ -59,6 +57,17 @@ const DashboardPage = () => {
     setAnalysisData(null);
     setAnalysisStatus('idle');
     setModalVisible(true);
+  };
+
+  const handleAnalyzeCustomRepo = (owner, repoName) => {
+    const customRepo = {
+      id: `custom-${owner}-${repoName}`,
+      name: repoName,
+      owner: { login: owner },
+      fullName: `${owner}/${repoName}`,
+      isCustom: true
+    };
+    handleAnalyzeClick(customRepo);
   };
 
   const startLiveAnalysis = async () => {
@@ -87,20 +96,22 @@ const DashboardPage = () => {
       setProgress(100);
       setLogs(prev => [...prev, "[BAŞARI] Analiz süreci tamamlandı. Rapor hazır."]);
 
-      // 🟢 SİHİRLİ DOKUNUŞ: Analiz başarılıysa frontend'deki sayacı anında 1 artır!
+      const currentCount = profileData?.dailyAnalysisCount ?? profileData?.DailyAnalysisCount ?? 0;
+      const newCount = currentCount + 1;
+
       setProfileData(prev => {
         if (!prev) return prev;
-        const currentCount = prev.dailyAnalysisCount ?? prev.DailyAnalysisCount ?? 0;
         return {
           ...prev,
-          dailyAnalysisCount: currentCount + 1,
-          DailyAnalysisCount: currentCount + 1 // C# harf uyumluluğunu bozmamak için ikisini de güncelliyoruz
+          dailyAnalysisCount: newCount,
+          DailyAnalysisCount: newCount
         };
       });
 
+      window.dispatchEvent(new CustomEvent('quotaUpdated', { detail: newCount }));
+
     } catch (err) {
       console.error(err);
-      // Backend'den limit doldu hatası gelirse ekranda göster
       const errorMessage = err.response?.data?.message || err.message || "Bağlantı hatası veya analiz hatası oluştu.";
       message.error(errorMessage);
       setLogs(prev => [...prev, `[HATA] ${errorMessage}`]);
@@ -121,7 +132,6 @@ const DashboardPage = () => {
     navigate('/analysis/results', { state: { analysisResult: enrichedData } });
   };
 
-  // C# harf formatı (Büyük/Küçük) uyumluluğu için kotayı güvenli alıyoruz
   const currentDailyCount = profileData?.dailyAnalysisCount ?? profileData?.DailyAnalysisCount ?? 0;
 
   return (
@@ -131,6 +141,7 @@ const DashboardPage = () => {
         <DashboardHeader
           totalRepos={repos.length}
           loading={isLoadingRepos}
+          onAnalyzeCustomRepo={handleAnalyzeCustomRepo}
         />
 
         {isLoadingRepos ? (

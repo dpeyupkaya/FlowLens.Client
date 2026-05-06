@@ -1,14 +1,23 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { ConfigProvider, theme } from 'antd';
-import LandingPage from './pages/LandingPage';
-import CallbackPage from './pages/CallbackPage';
-import LoginPage from './pages/LoginPage';
-import MainLayout from './layouts/MainLayout';
-import DashboardPage from './pages/DashboardPage';
-import AnalysisResultPage from './pages/AnalysisResultPage';
-import SettingsPage from './pages/SettingsPage';
-import TermsOfServicePage from './pages/TermsOfServicePage';
+import { ConfigProvider, theme, Spin } from 'antd';
+import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
+
+const LandingPage = lazy(() => import('./pages/LandingPage'));
+const CallbackPage = lazy(() => import('./pages/CallbackPage'));
+const LoginPage = lazy(() => import('./pages/LoginPage'));
+const MainLayout = lazy(() => import('./layouts/MainLayout'));
+const DashboardPage = lazy(() => import('./pages/DashboardPage'));
+const AnalysisResultPage = lazy(() => import('./pages/AnalysisResultPage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
+
+// Yüklenme sırasında gösterilecek tam ekran Loading bileşeni
+const FullScreenLoader = () => (
+  <div className="flex justify-center items-center h-screen bg-[#141414]">
+    <Spin size="large" />
+  </div>
+);
 
 function App() {
   const [user, setUser] = useState(() => {
@@ -21,26 +30,45 @@ function App() {
     }
   });
 
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkIsMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkIsMobile();
+
+    window.addEventListener('resize', checkIsMobile);
+    return () => window.removeEventListener('resize', checkIsMobile);
+  }, []);
+
+  if (isMobile) {
+    return <MobileBlocker />;
+  }
+
   return (
     <ConfigProvider
       theme={{
         algorithm: theme.darkAlgorithm,
-        token: { colorPrimary: '#14b8a6' }, 
+        token: { colorPrimary: '#14b8a6' },
       }}
     >
       <Router>
-        <Routes>
-          <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
-          <Route path="/terms" element={<TermsOfServicePage />} />
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+        <Suspense fallback={<FullScreenLoader />}>
+          <Routes>
+            <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
+            <Route path="/terms" element={<TermsOfServicePage />} />
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
 
-          <Route element={user ? <MainLayout user={user} setUser={setUser} /> : <Navigate to="/login" replace />}>
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/analysis/results" element={<AnalysisResultPage />} />
-            <Route path="/settings" element={<SettingsPage /> } />
-          </Route>
-        </Routes>
+            <Route element={user ? <MainLayout user={user} setUser={setUser} /> : <Navigate to="/login" replace />}>
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/analysis/results" element={<AnalysisResultPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+            </Route>
+          </Routes>
+        </Suspense>
       </Router>
     </ConfigProvider>
   );

@@ -12,8 +12,20 @@ const apiClient = axios.create({
 export const analysisService = {
   startAnalysis: async (repoData) => {
     
-    const targetUrl = typeof repoData === 'object' ? (repoData.html_url || repoData.url) : repoData;
+    let targetUrl = '';
+    
+    if (typeof repoData === 'string') {
+      targetUrl = repoData;
+    } else if (repoData.html_url) {
+      targetUrl = repoData.html_url;
+    } else if (repoData.fullName) {
+      targetUrl = `https://github.com/${repoData.fullName}`;
+    } else if (repoData.owner && repoData.name) {
+      // Yedek plan
+      targetUrl = `https://github.com/${repoData.owner.login}/${repoData.name}`;
+    }
 
+    const offsetMinutes = new Date().getTimezoneOffset();
     const { blacklistedFolders, maxAnalysisDepth } = useFlowStore.getState();
 
     try {
@@ -21,12 +33,13 @@ export const analysisService = {
         RepoUrl: targetUrl, 
         AccessToken: "",
         IgnoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules"],
-        MaxDepth: maxAnalysisDepth || 3
+        MaxDepth: maxAnalysisDepth || 3,
+        TimezoneOffsetMinutes: offsetMinutes
       });
       return response.data;
     } catch (error) {
       if (error.response && error.response.status === 400) {
-         console.error(" C# VALIDASYON HATASI:", error.response.data);
+         console.error("C# VALIDASYON HATASI:", error.response.data);
       }
       throw error.response ? error.response.data : error;
     }
