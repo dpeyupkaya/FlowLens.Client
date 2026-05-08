@@ -1,87 +1,109 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Typography, Statistic, Skeleton, Input, Button, message } from 'antd';
 import { FolderOpenOutlined, CodeOutlined, LinkOutlined, RocketOutlined } from '@ant-design/icons';
 
-const { Title, Text } = Typography;
+const { Title } = Typography;
 
 const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRepo }) => {
   const [repoUrl, setRepoUrl] = useState('');
 
-  const handleAnalyzeSubmit = () => {
-    if (!repoUrl.trim()) return;
+  const handleAnalyzeSubmit = useCallback(() => {
+    const trimmedUrl = repoUrl.trim();
+    if (!trimmedUrl) {
+      message.warning("Lütfen bir GitHub repo linki veya adı girin.");
+      return;
+    }
 
-    const regex = /^(?:https?:\/\/github\.com\/)?([^\/]+)\/([^\/]+)\/?$/i;
-    const match = repoUrl.match(regex);
+    const regex = /^(?:https?:\/\/(?:www\.)?github\.com\/)?([a-zA-Z0-9-]+)\/([a-zA-Z0-9_.-]+?)(?:\.git)?\/?$/i;
+    const match = trimmedUrl.match(regex);
 
     if (match) {
       const owner = match[1];
-      const repoName = match[2].replace('.git', '');
+      const repoName = match[2];
       
       if (onAnalyzeCustomRepo) {
         onAnalyzeCustomRepo(owner, repoName);
       }
-      setRepoUrl('');
+      setRepoUrl(''); 
     } else {
-      message.error("Lütfen geçerli bir GitHub repo linki girin.");
+      message.error("Geçersiz format. Örnek: 'facebook/react' veya GitHub URL'si girin.");
     }
-  };
+  }, [repoUrl, onAnalyzeCustomRepo]);
 
   return (
-    <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-12 border-b border-slate-800/60 pb-8 animate-fade-in">
-      <div className="flex items-center gap-5 w-full md:w-auto justify-between md:justify-start">
-        <div className="flex items-center gap-5">
-          <div className="relative group p-4 rounded-2xl bg-[#0f172a] border border-slate-800/80 backdrop-blur-sm overflow-hidden shadow-[0_4px_30px_rgba(0,0,0,0.3)]">
-            <div className="absolute -inset-1 bg-gradient-to-r from-teal-500/20 to-cyan-500/20 rounded-2xl blur-md opacity-70 group-hover:opacity-100 transition duration-500 pointer-events-none"></div>
-            <FolderOpenOutlined className="relative z-10 text-4xl text-teal-400 drop-shadow-[0_0_8px_rgba(20,184,166,0.6)]" />
-          </div>
-
-          <div className="flex flex-col gap-0.5">
-            <Title level={2} style={{ color: '#fff', margin: '2px 0 0 0', fontWeight: '800', letterSpacing: '-0.5px' }}>
-              Aktif Depolar
-            </Title>
-          </div>
+    <div className="flex flex-col xl:flex-row items-center justify-between gap-6 mb-10 pb-8 border-b border-white/5 transition-all duration-300">
+      
+      <div className="flex items-center gap-5 w-full xl:w-auto">
+        <div className="relative flex items-center justify-center w-14 h-14 rounded-2xl bg-slate-800/40 border border-white/10 backdrop-blur-md shadow-lg">
+          <FolderOpenOutlined className="text-2xl text-teal-400" />
+        </div>
+        <div className="flex flex-col">
+          <Title level={2} style={{ color: '#f8fafc', margin: 0, fontWeight: '700', letterSpacing: '-0.02em' }}>
+            Aktif Depolar
+          </Title>
+          <span className="text-slate-400 text-sm font-medium mt-0.5">
+            Bağlı olan projelerinizi yönetin
+          </span>
         </div>
       </div>
 
-      <div className="flex flex-col md:flex-row items-center gap-6 w-full md:w-auto">
-        <div className="flex w-full md:w-auto gap-3">
-          <Input
-            placeholder="GitHub linki (örn: facebook/react)"
-            value={repoUrl}
-            onChange={(e) => setRepoUrl(e.target.value)}
-            onPressEnter={handleAnalyzeSubmit}
-            prefix={<LinkOutlined className="text-slate-500" />}
-            className="w-full md:w-72 bg-[#0f172a] border-slate-700 hover:border-teal-500 focus:border-teal-500 text-white placeholder:text-slate-600 custom-dark-input"
-            size="large"
-          />
+      <div className="flex flex-col md:flex-row items-center gap-5 w-full xl:w-auto">
+        
+        {/* Premium Arama Barı */}
+        <div className="flex w-full md:w-auto gap-3 items-center">
+          <div className="relative group w-full md:w-[320px]">
+            {/* Arka plan parlama efekti (sadece focus olduğunda görünür) */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-500/30 to-cyan-500/30 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
+            
+            <Input
+              disabled={loading}
+              placeholder="facebook/react veya URL"
+              value={repoUrl}
+              onChange={(e) => setRepoUrl(e.target.value)}
+              onPressEnter={handleAnalyzeSubmit}
+              prefix={<LinkOutlined className="text-slate-500 mr-1" />}
+              className="relative w-full bg-slate-900/80 border-slate-700/60 hover:border-teal-500/50 focus:border-teal-400 text-slate-200 placeholder:text-slate-500 rounded-xl px-4 py-2.5 backdrop-blur-sm transition-all shadow-inner"
+              size="large"
+            />
+          </div>
+
           <Button
             type="primary"
             size="large"
+            disabled={loading || !repoUrl.trim()}
+            loading={loading}
             icon={<RocketOutlined />}
             onClick={handleAnalyzeSubmit}
-            className="bg-teal-600 hover:bg-teal-500 border-none shadow-[0_0_15px_rgba(20,184,166,0.4)]"
+            className={`
+              h-[46px] px-6 rounded-xl border-0 font-medium tracking-wide transition-all duration-300
+              ${repoUrl.trim() 
+                ? 'bg-gradient-to-r from-teal-600 to-emerald-500 hover:from-teal-500 hover:to-emerald-400 shadow-[0_4px_15px_rgba(20,184,166,0.25)] hover:shadow-[0_6px_20px_rgba(20,184,166,0.4)] active:scale-95 text-white' 
+                : 'bg-slate-800 text-slate-500'}
+            `}
           >
             Analiz Et
           </Button>
         </div>
 
-        <div className="bg-[#0f172a] border border-slate-800/80 rounded-2xl p-5 px-7 min-w-56 shadow-[0_4px_20px_rgba(0,0,0,0.2)]">
+        <div className="flex items-center justify-center bg-slate-800/30 border border-white/5 rounded-2xl p-4 min-w-[200px] h-[72px] backdrop-blur-md">
           {loading || totalRepos === null ? (
-            <Skeleton active paragraph={{ rows: 1, width: '100%' }} title={{ width: '40%' }} className="custom-skeleton-dark" />
+            <Skeleton active paragraph={{ rows: 0 }} title={{ width: 120 }} className="m-0" />
           ) : (
             <Statistic
               title={
-                <div className="flex items-center gap-2 text-slate-500 font-medium text-sm mb-1">
-                  <CodeOutlined className="text-teal-600" />
-                  <span className="uppercase font-sans tracking-wider text-xs">Bağlı Projeler</span>
+                <div className="flex items-center gap-2 text-slate-400 font-medium text-xs tracking-wider uppercase mb-1">
+                  <CodeOutlined className="text-teal-500" />
+                  <span>Bağlı Projeler</span>
                 </div>
               }
               value={totalRepos}
-              valueStyle={{ color: '#fff', fontWeight: '800', fontSize: '36px', letterSpacing: '-1px' }}
-              suffix={<span className="text-slate-600 text-lg font-normal ml-2">Repo</span>}
+              valueStyle={{ color: '#f8fafc', fontWeight: '700', fontSize: '28px', lineHeight: '1' }}
+              suffix={<span className="text-slate-500 text-sm font-medium ml-1">Repo</span>}
+              className="m-0"
             />
           )}
         </div>
+
       </div>
     </div>
   );

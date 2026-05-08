@@ -18,8 +18,8 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
     const methods = rawMethods.map(m => {
       const parameters = (m.Parameters || m.parameters || []).map(pString => {
         const parts = pString.split(' ');
-        const pName = parts.pop(); // Son kelime genelde parametrenin adıdır
-        const pType = parts.join(' '); // Geriye kalanlar veri tipidir
+        const pName = parts.pop(); 
+        const pType = parts.join(' '); 
         
         return { name: pName, type: pType, raw: pString };
       });
@@ -28,7 +28,6 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
         name: m.Name || m.name,
         returnType: m.ReturnType || m.returnType,
         accessModifier: m.AccessModifier || m.accessModifier,
-        // İleride MetricsWalker'dan metot bazlı karmaşıklık eklersek diye burayı açık bırakıyoruz
         complexity: m.Complexity || m.complexity, 
         parameters: parameters
       };
