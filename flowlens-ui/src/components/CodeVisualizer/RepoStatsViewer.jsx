@@ -1,13 +1,4 @@
 import React from 'react';
-import { Card, Statistic, Row, Col } from 'antd';
-import { 
-  StarOutlined, 
-  ForkOutlined, 
-  BugOutlined, 
-  CodeOutlined, 
-  CalendarOutlined, 
-  BranchesOutlined 
-} from '@ant-design/icons';
 
 const RepoStatsViewer = ({ stats }) => {
   if (!stats) return null;
@@ -15,80 +6,52 @@ const RepoStatsViewer = ({ stats }) => {
   const stars = stats.stars ?? stats.Stars ?? 0;
   const forks = stats.forks ?? stats.Forks ?? 0;
   const openIssues = stats.openIssues ?? stats.OpenIssues ?? 0;
-  const language = stats.primaryLanguage ?? stats.PrimaryLanguage ?? "Bilinmiyor";
+  const language = stats.primaryLanguage ?? stats.PrimaryLanguage ?? "Tanımsız";
   const defaultBranch = stats.defaultBranch ?? stats.DefaultBranch ?? "main";
   const lastPushedAt = stats.lastPushedAt ?? stats.LastPushedAt;
 
   const formatDate = (dateString) => {
-    if (!dateString) return "Bilinmiyor";
+    if (!dateString) return "--";
+    // Kurumsal görünüm için "21 Ağustos" yerine "21 Ağu 2025" gibi daha kısa ve net bir format
     return new Date(dateString).toLocaleDateString('tr-TR', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric'
     });
   };
 
+  // Tekrar eden metrik blokları için minimalist bir iç bileşen
+  const StatItem = ({ label, value }) => (
+    <div className="flex flex-col gap-1.5 p-4 lg:p-0 lg:px-8 lg:first:pl-2 border-b border-slate-800/40 lg:border-b-0 lg:border-r lg:last:border-r-0">
+      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-[0.2em]">
+        {label}
+      </span>
+      <span className="font-mono text-xl font-bold text-slate-100 tracking-tight">
+        {value}
+      </span>
+    </div>
+  );
+
   return (
-    <div className="mb-8 p-6 bg-[#0f172a] rounded-2xl border border-slate-800/80 shadow-lg animate-fade-in">
-      <h3 className="text-xl font-bold text-white mb-6 border-b border-slate-700/50 pb-2">
-        Proje Röntgeni
-      </h3>
+    <div className="mb-6 bg-[#0B1120] p-6 lg:p-7 rounded-2xl border border-slate-800/60 shadow-xl relative overflow-hidden animate-fade-in">
       
-      <Row gutter={[16, 16]}>
-        <Col xs={12} sm={8} md={4}>
-          <Statistic 
-            title={<span className="text-slate-400 text-xs uppercase tracking-wider">Yıldız</span>} 
-            value={stars} 
-            prefix={<StarOutlined className="text-yellow-400" />} 
-            valueStyle={{ color: '#fff', fontWeight: 'bold' }} 
-          />
-        </Col>
-        
-        <Col xs={12} sm={8} md={4}>
-          <Statistic 
-            title={<span className="text-slate-400 text-xs uppercase tracking-wider">Fork</span>} 
-            value={forks} 
-            prefix={<ForkOutlined className="text-blue-400" />} 
-            valueStyle={{ color: '#fff', fontWeight: 'bold' }} 
-          />
-        </Col>
-        
-        <Col xs={12} sm={8} md={4}>
-          <Statistic 
-            title={<span className="text-slate-400 text-xs uppercase tracking-wider">Açık Issue</span>} 
-            value={openIssues} 
-            prefix={<BugOutlined className="text-red-400" />} 
-            valueStyle={{ color: '#fff', fontWeight: 'bold' }} 
-          />
-        </Col>
+      <div className="absolute top-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-slate-600/30 to-transparent"></div>
 
-        <Col xs={12} sm={8} md={4}>
-          <Statistic 
-            title={<span className="text-slate-400 text-xs uppercase tracking-wider">Ana Dil</span>} 
-            value={language} 
-            prefix={<CodeOutlined className="text-teal-400" />} 
-            valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '1.2rem' }} 
-          />
-        </Col>
+      <div className="mb-5 border-b border-slate-800/50 pb-3">
+        <h3 className="text-xs font-mono text-teal-500/80 uppercase tracking-[0.3em] font-semibold">
+          REPO METRİKLERİ
+        </h3>
+      </div>
+      
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-row lg:items-center">
+        <StatItem label="YILDIZ" value={stars.toLocaleString('tr-TR')} />
+        <StatItem label="FORK" value={forks.toLocaleString('tr-TR')} />
+        <StatItem label="AÇIK ISSUE" value={openIssues.toLocaleString('tr-TR')} />
+        <StatItem label="ANA DİL" value={language} />
+        <StatItem label="ANA DAL" value={defaultBranch} />
+        <StatItem label="SON GÜNCELLEME" value={formatDate(lastPushedAt)} />
+      </div>
 
-        <Col xs={12} sm={8} md={4}>
-          <Statistic 
-            title={<span className="text-slate-400 text-xs uppercase tracking-wider">Ana Dal</span>} 
-            value={defaultBranch} 
-            prefix={<BranchesOutlined className="text-purple-400" />} 
-            valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '1.2rem' }} 
-          />
-        </Col>
-
-        <Col xs={12} sm={8} md={4}>
-          <Statistic 
-            title={<span className="text-slate-400 text-xs uppercase tracking-wider">Son Güncelleme</span>} 
-            value={formatDate(lastPushedAt)} 
-            prefix={<CalendarOutlined className="text-orange-400" />} 
-            valueStyle={{ color: '#fff', fontWeight: 'bold', fontSize: '1rem' }} 
-          />
-        </Col>
-      </Row>
     </div>
   );
 };

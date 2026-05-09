@@ -3,8 +3,8 @@ import { Layout, Menu } from 'antd';
 import { 
   DashboardOutlined, 
   SettingOutlined, 
-  LogoutOutlined,
-  CodeOutlined 
+  LogoutOutlined
+   
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -48,7 +48,6 @@ const AppSidebar = ({ collapsed, onLogout }) => {
         padding: '0 24px',
         gap: '12px'
       }}>
-        <CodeOutlined style={{ color: '#14b8a6', fontSize: '24px' }} />
         {!collapsed && <span style={{ color: '#fff', fontWeight: 'bold', fontSize: '18px' }}>FlowLens</span>}
       </div>
       <Menu

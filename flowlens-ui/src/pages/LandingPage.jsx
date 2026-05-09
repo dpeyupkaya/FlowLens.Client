@@ -11,7 +11,7 @@ import {
   ConfigProvider,
   theme,
 } from 'antd';
-import { GithubOutlined, CodeOutlined } from '@ant-design/icons';
+import { GithubOutlined } from '@ant-design/icons';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -49,19 +49,7 @@ const LandingPage = () => {
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div
-              style={{
-                width: '32px',
-                height: '32px',
-                background: '#14b8a6',
-                borderRadius: '6px',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <CodeOutlined style={{ color: '#020617', fontSize: '18px' }} />
-            </div>
+           
             <Title level={4} style={{ margin: 0, color: '#fff', letterSpacing: '-0.5px' }}>
               FlowLens
             </Title>

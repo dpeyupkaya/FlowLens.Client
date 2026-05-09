@@ -36,7 +36,6 @@ const TermsOfServicePage = () => {
     >
       <Layout className="min-h-screen">
         
-        {/* --- NAVBAR --- */}
         <Header style={{ 
           position: 'sticky', 
           top: 0, 
@@ -52,10 +51,10 @@ const TermsOfServicePage = () => {
           <Button 
             type="text" 
             icon={<ArrowLeftOutlined />} 
-            onClick={() => navigate('/')}
+            onClick={() => navigate('/login')}
             style={{ color: '#94a3b8', marginRight: '20px' }}
           >
-            Ana Sayfaya Dön
+           Girişe Dön
           </Button>
         
         </Header>

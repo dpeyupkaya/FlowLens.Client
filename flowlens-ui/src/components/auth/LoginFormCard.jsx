@@ -1,17 +1,11 @@
 import React, { useState } from 'react';
-import { Card, Button, Typography, Space, Modal, Divider } from 'antd';
-import { 
-  GithubOutlined, 
-  LockOutlined, 
-  CodeOutlined, 
-  SafetyOutlined,
-  SafetyCertificateOutlined
-} from '@ant-design/icons';
-
-const { Title, Text, Paragraph } = Typography;
+import { useNavigate } from 'react-router-dom';
+import { GithubOutlined, LockOutlined } from '@ant-design/icons';
+import InteractiveFace from '../Fun/InteractiveFace'; // Yeni dosya yolu
 
 const LoginFormCard = () => {
-  const [isTermsVisible, setIsTermsVisible] = useState(false);
+  const navigate = useNavigate();
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
   const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
 
   const handleGitHubLogin = () => {
@@ -19,172 +13,62 @@ const LoginFormCard = () => {
   };
 
   return (
-    <>
-      <Card 
-        bordered={false} 
-        className="w-full max-w-md mx-4" 
-        style={{ 
-          background: 'rgba(15, 23, 42, 0.8)', 
-          backdropFilter: 'blur(16px)', 
-          boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.8)',
-          border: '1px solid rgba(20, 184, 166, 0.2)',
-          textAlign: 'center',
-          padding: '32px 24px',
-          borderRadius: '24px' 
-        }}
-      >
-        <Space direction="vertical" size="large" style={{ marginBottom: '48px', width: '100%' }}>
-          <div style={{ 
-            width: '64px', 
-            height: '64px', 
-            background: '#14b8a6', 
-            borderRadius: '16px', 
-            display: 'inline-flex', 
-            alignItems: 'center', 
-            justifyContent: 'center',
-            boxShadow: '0 0 30px rgba(20, 184, 166, 0.5)',
-            margin: '0 auto'
-          }}>
-            <CodeOutlined style={{ color: '#020617', fontSize: '32px' }} />
-          </div>
-          
-          <div>
-            <Title level={2} style={{ margin: 0, color: '#fff', fontWeight: '800', letterSpacing: '-0.5px' }}>
-              FlowLens
-            </Title>
-            <Paragraph style={{ color: '#94a3b8', fontSize: '16px', marginTop: '8px' }}>
-              Yazılım mimarinizi ışık hızında keşfedin.
-            </Paragraph>
-          </div>
-        </Space>
+    <div className="relative w-full max-w-md mx-4 p-[1.5px] rounded-[2.5rem] overflow-hidden group">
+      
+      <div className="absolute inset-[-1000%] animate-[spin_8s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,#14b8a6_0%,transparent_20%,transparent_80%,#14b8a6_100%)] opacity-30 group-hover:opacity-60 transition-opacity duration-700"></div>
 
-        <div style={{ marginBottom: '40px' }}>
-          <Button 
-            type="primary" 
-            size="large" 
-            block 
-            icon={<GithubOutlined style={{ fontSize: '20px' }} />} 
-            onClick={handleGitHubLogin}
-            style={{ 
-              height: '56px', 
-              background: '#fff', 
-              color: '#020617', 
-              border: 'none',
-              fontWeight: 'bold',
-              fontSize: '17px',
-              borderRadius: '12px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '12px',
-              boxShadow: '0 4px 20px rgba(255, 255, 255, 0.15)'
-            }}
-            className="hover:scale-[1.03] active:scale-[0.98] transition-all duration-200"
-          >
-            GitHub ile Giriş Yap
-          </Button>
-          <Text style={{ color: '#475569', fontSize: '13px', display: 'block', marginTop: '16px' }}>
-            Şifre gerektirmez, güvenli ve hızlı.
-          </Text>
+      <div className="relative h-full w-full bg-[#0B1120]/95 backdrop-blur-3xl rounded-[2.5rem] p-10 sm:p-12 flex flex-col items-center text-center shadow-2xl">
+        
+        <div className="mb-10">
+          <h2 className="text-3xl font-sans font-extrabold text-slate-100 tracking-tight mb-2">
+            FlowLens
+          </h2>
+          <p className="text-slate-400 font-sans text-sm leading-relaxed">
+            Yazılım mimarinizi ışık hızında keşfedin.
+          </p>
         </div>
 
-        <div style={{ 
-          padding: '20px', 
-          background: 'rgba(2, 6, 23, 0.4)', 
-          borderRadius: '16px', 
-          border: '1px solid rgba(30, 41, 59, 0.5)' 
-        }}>
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left' }}>
-              <div style={{ padding: '8px', background: 'rgba(20, 184, 166, 0.1)', borderRadius: '8px' }}>
-                <LockOutlined style={{ color: '#14b8a6', fontSize: '16px' }} />
-              </div>
-              <div>
-                <Text style={{ color: '#e2e8f0', fontSize: '13px', fontWeight: '600', display: 'block' }}>Gizlilik Odaklı</Text>
-                <Text style={{ color: '#64748b', fontSize: '12px' }}>Kaynak kodlarınız asla sunucularımıza kaydedilmez.</Text>
-              </div>
-            </div>
+        <div className="w-full mb-10">
+          <div className="flex items-center gap-6">
+            <button 
+              onMouseEnter={() => setIsButtonHovered(true)}
+              onMouseLeave={() => setIsButtonHovered(false)}
+              onClick={handleGitHubLogin}
+              className="flex-grow flex items-center justify-center gap-3 bg-slate-50 text-slate-900 font-sans font-bold text-base py-4 rounded-2xl hover:bg-white transition-all duration-300 hover:scale-[1.01] active:scale-[0.99] shadow-xl"
+            >
+              <GithubOutlined className="text-xl" />
+              GitHub ile Giriş Yap
+            </button>
             
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', textAlign: 'left' }}>
-              <div style={{ padding: '8px', background: 'rgba(20, 184, 166, 0.1)', borderRadius: '8px' }}>
-                <SafetyOutlined style={{ color: '#14b8a6', fontSize: '16px' }} />
-              </div>
-              <div>
-                <Text style={{ color: '#e2e8f0', fontSize: '13px', fontWeight: '600', display: 'block' }}>Güvenli Analiz</Text>
-                <Text style={{ color: '#64748b', fontSize: '12px' }}>Tüm geçici veriler analiz tamamlandığında imha edilir.</Text>
-              </div>
+            <div className="shrink-0 w-10 flex justify-center">
+              <InteractiveFace isButtonHovered={isButtonHovered} />
             </div>
-          </Space>
-        </div>
-
-        <Text style={{ display: 'block', marginTop: '32px', color: '#475569', fontSize: '11px' }}>
-          Devam ederek <span 
-            onClick={() => setIsTermsVisible(true)}
-            style={{ color: '#94a3b8', textDecoration: 'underline', cursor: 'pointer' }}
-            className="hover:text-teal-400 transition-colors"
-          >
-            Kullanım Şartlarını
-          </span> kabul etmiş olursun.
-        </Text>
-      </Card>
-
-      {/* --- KULLANIM ŞARTLARI MODAL --- */}
-      <Modal
-        title={
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <SafetyCertificateOutlined style={{ color: '#14b8a6', fontSize: '24px' }} />
-            <span style={{ color: '#fff', fontSize: '18px' }}>Kullanım Şartları ve Gizlilik</span>
           </div>
-        }
-        open={isTermsVisible}
-        onCancel={() => setIsTermsVisible(false)}
-        footer={[
-          <Button key="submit" type="primary" onClick={() => setIsTermsVisible(false)} style={{ background: '#14b8a6', border: 'none' }}>
-            Anladım, Kapat
-          </Button>
-        ]}
-        width={700}
-        centered
-        styles={{
-          body: { maxHeight: '60vh', overflowY: 'auto', paddingRight: '10px', color: '#94a3b8' },
-          content: { backgroundColor: '#0f172a', border: '1px solid #1e293b' },
-          header: { backgroundColor: '#0f172a', borderBottom: '1px solid #1e293b', paddingBottom: '16px' }
-        }}
-      >
-        <div style={{ marginTop: '20px' }}>
-          <Title level={5} style={{ color: '#e2e8f0' }}>1. Hizmetin Amacı ve Doğası</Title>
-          <Paragraph style={{ color: '#94a3b8' }}>
-            FlowLens, yazılım geliştiricilerin GitHub depolarındaki kaynak kod mimarisini görselleştirmelerine yardımcı olan <strong style={{ color: '#14b8a6'}}>açık kaynaklı</strong> bir analiz motorudur. Hizmetimiz "olduğu gibi" prensibiyle sunulmaktadır.
-          </Paragraph>
 
-          <Divider style={{ borderColor: '#1e293b' }} />
-
-          <Title level={5} style={{ color: '#e2e8f0' }}>2. Sıfır Veri Kalıntısı ve Gizlilik</Title>
-          <Paragraph style={{ color: '#94a3b8' }}>
-            Sistemimiz aşağıdaki katı kurallarla çalışır:
-            <ul style={{ marginTop: '8px', paddingLeft: '20px' }}>
-              <li><strong>Kod Depolanmaz:</strong> Analiz edilen hiçbir dosya sunucularımızda kalıcı olarak saklanmaz.</li>
-              <li><strong>Anlık İşlem:</strong> Mimari harita oluşturulduğu anda orijinal kod silinir.</li>
-              <li><strong>Sadece Metadatalar:</strong> Sadece sınıf isimleri, metot adları ve aralarındaki bağlantıların haritası arayüze iletilir.</li>
-            </ul>
-          </Paragraph>
-
-          <Divider style={{ borderColor: '#1e293b' }} />
-
-          <Title level={5} style={{ color: '#e2e8f0' }}>3. GitHub Entegrasyonu ve Erişim</Title>
-          <Paragraph style={{ color: '#94a3b8' }}>
-            GitHub girişiniz yalnızca talep ettiğiniz projeyi indirmek ve analiz etmek için kullanılır. İzinlerinizi dilediğiniz zaman GitHub hesap ayarlarınızdan iptal edebilirsiniz.
-          </Paragraph>
-
-          <Divider style={{ borderColor: '#1e293b' }} />
-
-          <Title level={5} style={{ color: '#e2e8f0' }}>4. Sorumluluk Reddi</Title>
-          <Paragraph style={{ color: '#94a3b8' }}>
-            Bu platformun kullanımı sonucunda doğabilecek veri kayıpları veya analiz hatalarından FlowLens geliştiricileri sorumlu tutulamaz.
-          </Paragraph>
+     
         </div>
-      </Modal>
-    </>
+
+        <div className="flex items-center gap-3 py-3.5 px-6 bg-slate-900/60 rounded-2xl border border-slate-800/40 mb-10">
+          <LockOutlined className="text-teal-600/50 text-xs" />
+          <span className="text-slate-400 font-sans text-[11px] font-medium tracking-wide">
+            Gizlilik ve veri güvenliği odaklı analiz
+          </span>
+        </div>
+
+        <div>
+          <p className="text-slate-600 font-sans text-[11px]">
+            Devam ederek{' '}
+            <button 
+              onClick={() => navigate('/terms')}
+              className="text-slate-400 underline hover:text-teal-400 transition-colors cursor-pointer"
+            >
+              Kullanım Şartlarını
+            </button>
+            {' '}onaylamış olursunuz.
+          </p>
+        </div>
+      </div>
+    </div>
   );
 };
 

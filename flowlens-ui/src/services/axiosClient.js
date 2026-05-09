@@ -24,14 +24,19 @@ axiosClient.interceptors.response.use(
           message.warning(errorMessage);
           break;
         case 401:
+          // Sadece toast basmakla kalmıyoruz, adamı anında 401 (Unauthorized) sayfasına şutluyoruz.
           message.error("Oturum süresi dolmuş veya yetkisiz erişim. Lütfen tekrar giriş yapın.");
-         
+          window.location.href = '/401';
           break;
         case 403:
           message.error(errorMessage); 
           break;
         case 404:
           message.error(errorMessage || "İstenilen kaynak bulunamadı.");
+          break;
+        case 429: 
+          message.warning("Aşırı istek gönderildi! Sistem kararlılığı için işlemleriniz durduruldu.");
+          window.location.href = '/rate-limit';
           break;
         case 500:
           message.error(`Sunucu Hatası: ${errorMessage}`);
