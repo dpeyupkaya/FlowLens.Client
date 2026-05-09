@@ -1,43 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Spin } from 'antd';
 import Hyperspeed from '../components/backgrounds/Hyperspeed'; 
 import { authService } from '../services/authService';
-
-const hyperSpeedOptions = {
-  distortion: 'turbulentDistortion',
-  length: 400,
-  roadWidth: 10,
-  islandWidth: 2,
-  lanesPerRoad: 3,
-  fov: 90,
-  fovSpeedUp: 150,
-  speedUp: 2,
-  carLightsFade: 0.4,
-  totalSideLightSticks: 20,
-  lightPairsPerRoadWay: 40,
-  shoulderLinesWidthPercentage: 0.05,
-  brokenLinesWidthPercentage: 0.1,
-  brokenLinesLengthPercentage: 0.5,
-  lightStickWidth: [0.12, 0.5],
-  lightStickHeight: [1.3, 1.7],
-  movingAwaySpeed: [60, 80],
-  movingTowardSpeed: [150, 250],
-  colors: {
-    roadColor: 0x080808,
-    islandColor: 0x0a0a0a,
-    background: 0x020617,
-    shoulderLinesColor: 0x131318,
-    brokenLinesColor: 0x131318,
-    leftCarsColor: 0x14b8a6,
-    rightCarsColor: 0x0f766e,
-    stickLightsColor: 0x14b8a6,
-  }
-};
 
 const CallbackPage = ({ setUser }) => {
   const navigate = useNavigate();
   const isCalled = useRef(false);
+  const [isRedirecting, setIsRedirecting] = useState(false); 
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
@@ -49,44 +18,60 @@ const CallbackPage = ({ setUser }) => {
       authService.githubLogin(code)
         .then(data => {
           const userData = data.user || data;
-          localStorage.setItem('user', JSON.stringify(userData));
-          setUser(userData);
-          navigate('/dashboard');
+          setUser(userData); 
+          
+          setIsRedirecting(true); 
+          
+          navigate('/dashboard', { replace: true });
         })
         .catch(err => {
-          console.error("GitHub Login Hatası:", err);
-          navigate('/login'); 
+          console.error("Giriş Hatası:", err);
+          navigate('/login', { replace: true }); 
         });
     }
   }, [navigate, setUser]);
 
+  if (isRedirecting) return null;
+
   return (
     <div className="relative w-full min-h-screen overflow-hidden bg-[#020617]">
-      
-      <div className="fixed inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
-        <div className="w-full h-full">
-          <Hyperspeed effectOptions={hyperSpeedOptions} />
+      <div className="fixed inset-0 z-0 opacity-90">
+        <Hyperspeed />
+      </div>
+      <div className="fixed inset-0 z-10 bg-black/20 backdrop-blur-[2px]"></div>
+
+      <div className="relative z-20 flex flex-col items-center justify-center min-h-screen">
+        <div className="p-12 rounded-[2.5rem] bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.4)] flex flex-col items-center max-w-sm w-full animate-in fade-in zoom-in duration-500">
+          
+          <div className="relative w-20 h-20 mb-10">
+            <div className="absolute inset-0 bg-teal-500 rounded-xl rotate-45 animate-[spin_3s_linear_infinite] opacity-20"></div>
+            <div className="absolute inset-2 bg-teal-400 rounded-lg rotate-45 animate-[spin_1.5s_linear_infinite] shadow-[0_0_20px_rgba(20,184,166,0.5)]"></div>
+          </div>
+
+          <div className="text-center">
+            <h2 className="text-3xl font-black text-white tracking-tighter mb-6 italic">
+              FlowLens
+            </h2>
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-48 h-1 bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-teal-500 to-emerald-400 animate-[loading_1.5s_infinite] w-full origin-left"></div>
+              </div>
+              <span className="font-mono text-[10px] text-teal-400 tracking-[0.3em] font-bold uppercase">
+                Oturum Açılıyor...
+              </span>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div className="fixed inset-0 z-10 bg-black/50 backdrop-blur-[2px] pointer-events-none"></div>
-
-      <div className="relative z-20 flex items-center justify-center w-full min-h-screen px-4">
-        <div style={{
-          background: 'rgba(15, 23, 42, 0.7)',
-          padding: '40px 60px',
-          borderRadius: '24px',
-          border: '1px solid rgba(20, 184, 166, 0.2)',
-          boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-          textAlign: 'center'
-        }}>
-          <Spin 
-            size="large" 
-            tip={<span style={{ color: '#14b8a6', marginTop: '20px', display: 'block', fontWeight: '500' }}>GitHub ile bağlantı kuruluyor...</span>} 
-          />
-        </div>
-      </div>
-
+      <style>{`
+        @keyframes loading {
+          0% { transform: scaleX(0); transform-origin: left; }
+          45% { transform: scaleX(1); transform-origin: left; }
+          50% { transform: scaleX(1); transform-origin: right; }
+          100% { transform: scaleX(0); transform-origin: right; }
+        }
+      `}</style>
     </div>
   );
 };

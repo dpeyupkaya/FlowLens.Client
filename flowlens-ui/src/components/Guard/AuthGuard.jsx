@@ -11,18 +11,12 @@ const AuthGuard = ({ children, setUser }) => {
       try {
         const userData = await userService.getUserMe();
         
-        // 2. Eğer Azure'dan 200 OK dönerse, cookie sağlamdır!
         setIsAuthorized(true);
         setUser(userData); 
         
-        localStorage.setItem('user', JSON.stringify(userData));
-        
       } catch (error) {
-        console.warn("Güvenlik Protokolü İhlali (401): Cookie geçersiz veya eksik.", error);
-        
         setIsAuthorized(false);
         setUser(null);
-        localStorage.removeItem('user'); 
       } finally {
         setIsVerifying(false);
       }
@@ -38,7 +32,7 @@ const AuthGuard = ({ children, setUser }) => {
         <div className="flex items-center gap-3 relative z-10">
           <div className="w-2 h-2 rounded-full bg-teal-500 animate-pulse shadow-[0_0_10px_rgba(20,184,166,0.6)]"></div>
           <span className="font-mono text-[11px] text-teal-500 tracking-[0.25em] uppercase">
-            GÜVENLİK_PROTOKOLÜ_DOĞRULANIYOR...
+            GÜVENLİK PROTOKOLÜ DOĞRULANIYOR
           </span>
         </div>
       </div>

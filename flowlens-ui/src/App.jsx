@@ -28,15 +28,7 @@ const FullScreenLoader = () => (
 );
 
 function App() {
-  const [user, setUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem('user');
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-      console.error("Local storage okuma hatası:", error);
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
 
   const router = useMemo(() => createBrowserRouter(
     createRoutesFromElements(
@@ -44,6 +36,7 @@ function App() {
         <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/" element={<LandingPage />} />
+        
         <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
 
         <Route 
@@ -57,6 +50,7 @@ function App() {
           <Route path="/analysis/results" element={<AnalysisResultPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
+        
         <Route path="/rate-limit" element={<RateLimitPage />} />
         <Route path="/401" element={<UnauthorizedPage />} />
       </Route>
@@ -68,7 +62,10 @@ function App() {
       <ConfigProvider
         theme={{
           algorithm: theme.darkAlgorithm,
-          token: { colorPrimary: '#14b8a6' },
+          token: { 
+            colorPrimary: '#14b8a6',
+            fontFamily: 'Inter, sans-serif'
+          },
         }}
       >
         <Suspense fallback={<FullScreenLoader />}>
