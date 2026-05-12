@@ -4,12 +4,14 @@ import {
   RouterProvider, 
   Route, 
   Navigate, 
-  createRoutesFromElements 
+  createRoutesFromElements,
+  Outlet 
 } from 'react-router-dom';
 import { ConfigProvider, theme, Spin } from 'antd';
 import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
 import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
+import AnalyticsTracker from './components/AnalyticsTracker'; 
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -28,12 +30,20 @@ const FullScreenLoader = () => (
   </div>
 );
 
+const RootLayout = () => (
+  <>
+    <AnalyticsTracker />
+    <Outlet /> 
+  </>
+);
+
 function App() {
   const [user, setUser] = useState(null);
 
   const router = useMemo(() => createBrowserRouter(
     createRoutesFromElements(
-      <Route>
+      <Route element={<RootLayout />}>
+        
         <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
         <Route path="/terms" element={<TermsOfServicePage />} />
         <Route path="/" element={<LandingPage />} />
@@ -60,7 +70,6 @@ function App() {
 
   return (
     <MobileBlocker>
-      {/* Çerez kalkanı: Onay verilmeden altındaki React Router ve AuthGuard asla çalışmaz */}
       <CookieGuard>
         <ConfigProvider
           theme={{
