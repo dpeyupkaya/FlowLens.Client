@@ -9,6 +9,7 @@ import {
 import { ConfigProvider, theme, Spin } from 'antd';
 import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
 import AuthGuard from './components/Guard/AuthGuard';
+import CookieGuard from './components/Guard/CookieGuard';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -59,19 +60,22 @@ function App() {
 
   return (
     <MobileBlocker>
-      <ConfigProvider
-        theme={{
-          algorithm: theme.darkAlgorithm,
-          token: { 
-            colorPrimary: '#14b8a6',
-            fontFamily: 'Inter, sans-serif'
-          },
-        }}
-      >
-        <Suspense fallback={<FullScreenLoader />}>
-          <RouterProvider router={router} />
-        </Suspense>
-      </ConfigProvider>
+      {/* Çerez kalkanı: Onay verilmeden altındaki React Router ve AuthGuard asla çalışmaz */}
+      <CookieGuard>
+        <ConfigProvider
+          theme={{
+            algorithm: theme.darkAlgorithm,
+            token: { 
+              colorPrimary: '#14b8a6',
+              fontFamily: 'Inter, sans-serif'
+            },
+          }}
+        >
+          <Suspense fallback={<FullScreenLoader />}>
+            <RouterProvider router={router} />
+          </Suspense>
+        </ConfigProvider>
+      </CookieGuard>
     </MobileBlocker>
   );
 }

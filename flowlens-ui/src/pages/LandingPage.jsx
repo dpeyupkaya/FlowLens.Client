@@ -11,7 +11,7 @@ import {
   ConfigProvider,
   theme,
 } from 'antd';
-import { GithubOutlined, LockOutlined, ThunderboltOutlined, CodeOutlined } from '@ant-design/icons';
+import { GithubOutlined, LockOutlined, ThunderboltOutlined, LinkedinOutlined, CodeOutlined } from '@ant-design/icons';
 
 const { Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -265,7 +265,7 @@ const LandingPage = () => {
           </Row>
         </Content>
 
-        <Footer
+      <Footer
           style={{
             textAlign: 'center',
             background: 'transparent',
@@ -275,13 +275,34 @@ const LandingPage = () => {
             zIndex: 1,
           }}
         >
-          <Space direction="vertical" size={4}>
-            <Text style={{ color: '#64748b', fontSize: 14 }}>
-              FlowLens — Gizlilik Odaklı Kod Analiz Aracı ©{new Date().getFullYear()}
-            </Text>
-            <Text style={{ color: '#475569', fontSize: 12 }}>
-              Kodunuz size ait kalır. Her zaman.
-            </Text>
+          <Space direction="vertical" size={16}>
+            <Space direction="vertical" size={4}>
+              <Text style={{ color: '#64748b', fontSize: 14 }}>
+                FlowLens — Gizlilik Odaklı Kod Analiz Aracı ©{new Date().getFullYear()}
+              </Text>
+              <Text style={{ color: '#475569', fontSize: 12 }}>
+                Kodunuz size ait kalır. Her zaman.
+              </Text>
+            </Space>
+
+            <Space size={24} style={{ marginTop: '8px' }}>
+              <a 
+                href="https://github.com/dpeyupkaya" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#64748b] hover:text-white transition-colors duration-300"
+              >
+                <GithubOutlined style={{ fontSize: '22px' }} />
+              </a>
+              <a 
+                href="https://www.linkedin.com/in/dp-eyup-kaya/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-[#64748b] hover:text-[#0a66c2] transition-colors duration-300"
+              >
+                <LinkedinOutlined style={{ fontSize: '22px' }} />
+              </a>
+            </Space>
           </Space>
         </Footer>
       </Layout>
