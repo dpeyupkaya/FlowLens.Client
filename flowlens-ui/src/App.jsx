@@ -11,7 +11,7 @@ import { ConfigProvider, theme, Spin } from 'antd';
 import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
 import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
-import AnalyticsTracker from './components/AnalyticsTracker'; 
+import AnalyticsTracker from './utils/AnalyticsTracker'; 
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
