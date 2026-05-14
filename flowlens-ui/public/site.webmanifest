@@ -1,6 +1,6 @@
 {
-  "name": "MyWebSite",
-  "short_name": "MySite",
+  "name": "FlowLens",
+  "short_name": "FlowLens",
   "icons": [
     {
       "src": "/web-app-manifest-192x192.png",

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Layout, Menu } from 'antd';
-import { 
-  DashboardOutlined, 
-  SettingOutlined, 
+import {
+  DashboardOutlined,
+  SettingOutlined,
   LogoutOutlined
-   
+
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 
@@ -17,21 +17,21 @@ const AppSidebar = ({ collapsed, onLogout }) => {
   const menuItems = [
     { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
     { key: '/settings', icon: <SettingOutlined />, label: 'Ayarlar' },
-    { 
-      key: 'logout', 
-      icon: <LogoutOutlined />, 
-      label: 'Çıkış Yap', 
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: 'Çıkış Yap',
       danger: true
     },
   ];
 
   return (
-    <Sider 
-      trigger={null} 
-      collapsible 
+    <Sider
+      trigger={null}
+      collapsible
       collapsed={collapsed}
-      style={{ 
-        background: '#0f172a', 
+      style={{
+        background: '#0f172a',
         borderRight: '1px solid #1e293b',
         height: '100vh',
         position: 'fixed',
@@ -40,10 +40,10 @@ const AppSidebar = ({ collapsed, onLogout }) => {
         bottom: 0
       }}
     >
-      <div style={{ 
-        height: '64px', 
-        display: 'flex', 
-        alignItems: 'center', 
+      <div style={{
+        height: '64px',
+        display: 'flex',
+        alignItems: 'center',
         justifyContent: collapsed ? 'center' : 'flex-start',
         padding: '0 24px',
         gap: '12px'
@@ -57,19 +57,12 @@ const AppSidebar = ({ collapsed, onLogout }) => {
         items={menuItems}
         onClick={({ key }) => {
           if (key === 'logout') {
-            localStorage.clear();
-            sessionStorage.clear();
+            document.cookie = "_fl_ctx_9x=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
-            document.cookie.split(";").forEach((c) => {
-              document.cookie = c
-                .replace(/^ +/, "")
-                .replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
-            });
 
-            console.clear();
 
             if (onLogout) onLogout();
-            
+
             navigate('/');
           } else {
             navigate(key);
