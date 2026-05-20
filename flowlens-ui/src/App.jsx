@@ -23,6 +23,7 @@ const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 const RateLimitPage = lazy(() => import('./pages/RateLimitPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const FullScreenLoader = () => (
   <div className="flex justify-center items-center h-screen bg-[#141414]">
@@ -62,6 +63,7 @@ function App() {
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
         
+        <Route path="/*" element={<NotFoundPage />} />
         <Route path="/rate-limit" element={<RateLimitPage />} />
         <Route path="/401" element={<UnauthorizedPage />} />
       </Route>

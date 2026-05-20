@@ -49,15 +49,13 @@ const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRe
 
       <div className="flex flex-col md:flex-row items-center gap-5 w-full xl:w-auto">
         
-        {/* Premium Arama Barı */}
         <div className="flex w-full md:w-auto gap-3 items-center">
           <div className="relative group w-full md:w-[320px]">
-            {/* Arka plan parlama efekti (sadece focus olduğunda görünür) */}
             <div className="absolute -inset-0.5 bg-gradient-to-r from-teal-500/30 to-cyan-500/30 rounded-xl blur opacity-0 group-focus-within:opacity-100 transition duration-500"></div>
             
             <Input
               disabled={loading}
-              placeholder="facebook/react veya URL"
+              placeholder="Github URL"
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
               onPressEnter={handleAnalyzeSubmit}

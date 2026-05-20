@@ -13,7 +13,6 @@ export const analysisService = {
     } else if (repoData.fullName) {
       targetUrl = `https://github.com/${repoData.fullName}`;
     } else if (repoData.owner && repoData.name) {
-      // Yedek plan
       targetUrl = `https://github.com/${repoData.owner.login}/${repoData.name}`;
     }
 

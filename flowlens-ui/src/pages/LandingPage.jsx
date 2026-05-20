@@ -1,20 +1,30 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Layout,
-  Button,
-  Typography,
-  Space,
-  Row,
-  Col,
-  Card,
-  ConfigProvider,
-  theme,
+    Layout,  Button,  Typography, Space, Row,Col,ConfigProvider, theme, Tag,
 } from 'antd';
-import { GithubOutlined, LockOutlined, ThunderboltOutlined, LinkedinOutlined, CodeOutlined } from '@ant-design/icons';
+import {
+  GithubOutlined,
+  ArrowRightOutlined,
+  EyeOutlined,
+} from '@ant-design/icons';
+import HeroFlowGraph from '../components/CodeVisualizer/HeroFlowGraph'; // Yeni dosyayı import ediyoruz
 
 const { Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
+
+const glassCard = {
+  background: 'linear-gradient(180deg, rgba(15,23,42,0.86), rgba(2,6,23,0.72))',
+  border: '1px solid rgba(148,163,184,0.16)',
+  boxShadow: '0 24px 80px rgba(0,0,0,0.36)',
+  backdropFilter: 'blur(18px)',
+};
+
+const stats = [
+  ['Multilanguage', 'Yol haritasında'],
+  ['Roslyn Engine', 'Derin analiz motoru'],
+  ['Open Source', 'Şeffaf geliştirme'],
+];
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -25,285 +35,213 @@ const LandingPage = () => {
         algorithm: theme.darkAlgorithm,
         token: {
           colorPrimary: '#14b8a6',
-          borderRadius: 12,
+          borderRadius: 14,
           colorBgContainer: '#0f172a',
           colorBgLayout: '#020617',
-          fontFamily: 'Inter, system-ui, -apple-system, sans-serif',
+          fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif',
           fontSize: 16,
           colorText: '#e2e8f0',
           colorTextSecondary: '#94a3b8',
-          paddingLG: 32,
         },
       }}
     >
       <Layout
         style={{
-          minHeight: '100vh',
-          background: 'radial-gradient(ellipse at top, #0f172a 0%, #020617 60%)',
-          position: 'relative',
+          minHeight: '100vh', background:
+            'radial-gradient(circle at 20% 0%, rgba(20,184,166,0.18), transparent 32%), radial-gradient(circle at 80% 10%, rgba(99,102,241,0.16), transparent 34%), #020617',
           overflow: 'hidden',
+          position: 'relative',
         }}
       >
         <div
           style={{
             position: 'absolute',
-            top: -200,
-            left: -100,
-            width: 500,
-            height: 500,
-            background: 'rgba(20,184,166,0.12)',
-            borderRadius: '50%',
-            filter: 'blur(80px)',
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            bottom: -150,
-            right: -100,
-            width: 400,
-            height: 400,
-            background: 'rgba(99,102,241,0.1)',
-            borderRadius: '50%',
-            filter: 'blur(80px)',
+            inset: 0,
+            backgroundImage:
+              'linear-gradient(rgba(148,163,184,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,0.045) 1px, transparent 1px)',
+            backgroundSize: '56px 56px',
+            maskImage: 'linear-gradient(to bottom, black, transparent 82%)',
             pointerEvents: 'none',
           }}
         />
 
-        <Content style={{ padding: '0 24px', position: 'relative', zIndex: 1 }}>
-          <div style={{ textAlign: 'center', padding: '140px 0 80px' }}>
-            <Space direction="vertical" align="center" size="large">
-              <Title
-                level={1}
-                style={{
-                  fontSize: '64px',
-                  margin: 0,
-                  fontWeight: 800,
-                  color: '#f8fafc',
-                  lineHeight: 1.1,
-                  letterSpacing: '-1.5px',
-                }}
-              >
-                Kodunu Analiz Et, <br />
-                <span style={{ color: '#14b8a6', textShadow: '0 0 30px rgba(20,184,166,0.3)' }}>
-                  Gizliliğini Koru.
-                </span>
-              </Title>
+        <Content style={{ position: 'relative', zIndex: 1 }}>
+          <section style={{ maxWidth: 1240, margin: '0 auto', padding: '32px 24px 80px' }}>
 
-              <Paragraph
-                style={{
-                  color: '#cbd5e1',
-                  fontSize: '20px',
-                  maxWidth: '680px',
-                  margin: '0 auto 48px',
-                  lineHeight: 1.6,
-                }}
-              >
-                C# ile başlıyor, yakında diğer dillerle devam ediyoruz. Kodunuzu anında tarıyor,
-                güvenlik açıklarını tespit ediyor ve analiz bittiğinde hiçbir iz bırakmıyoruz.
-              </Paragraph>
-
-              <Space size="large">
-                <Button
-                  type="primary"
-                  size="large"
-                  icon={<GithubOutlined style={{ fontSize: 20 }} />}
-                  style={{
-                    height: 58,
-                    padding: '0 40px',
-                    fontSize: 17,
-                    fontWeight: 600,
-                    borderRadius: 14,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    boxShadow: '0 8px 30px rgba(20,184,166,0.35)',
-                    transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                  }}
-                  onClick={() => navigate('/login')}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                    e.currentTarget.style.boxShadow = '0 12px 35px rgba(20,184,166,0.45)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.boxShadow = '0 8px 30px rgba(20,184,166,0.35)';
-                  }}
+            {/* Header / Navbar */}
+            <nav style={{ height: 72, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Space size={12}>
+                <div
+                 
                 >
-                  GitHub ile Başla
-                </Button>
+                
+                </div>
+                <Text style={{ color: '#f8fafc', fontWeight: 800, fontSize: 20 }}>FlowLens</Text>
+              </Space>
+
+              <Space size={12}>
                 <Button
-                  size="large"
                   ghost
-                  style={{
-                    height: 58,
-                    padding: '0 40px',
-                    fontSize: 17,
-                    fontWeight: 600,
-                    borderRadius: 14,
-                    borderColor: 'rgba(255,255,255,0.25)',
-                    color: '#e2e8f0',
-                    transition: 'transform 0.2s ease, border-color 0.2s ease',
-                  }}
                   href="https://github.com/dpeyupkaya/FlowLens"
                   target="_blank"
                   rel="noopener noreferrer"
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.transform = 'scale(1.02)';
-                    e.currentTarget.style.borderColor = '#14b8a6';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.transform = 'scale(1)';
-                    e.currentTarget.style.borderColor = 'rgba(255,255,255,0.25)';
-                  }}
+                  icon={<GithubOutlined />}
+                  style={{ borderColor: 'rgba(148,163,184,0.28)', color: '#cbd5e1' }}
                 >
-                  Açık Kaynak
+                  GitHub
+                </Button>
+                <Button type="primary" onClick={() => navigate('/login')}>
+                  Başla
                 </Button>
               </Space>
-            </Space>
-          </div>
+            </nav>
 
-          <Row
-            gutter={[32, 32]}
-            justify="center"
-            style={{ maxWidth: 960, margin: '0 auto', paddingBottom: 100 }}
-          >
-            <Col xs={24} sm={8}>
-              <Card
-                bordered={false}
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 20,
-                  textAlign: 'center',
-                  padding: '32px 20px 20px',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <LockOutlined style={{ fontSize: 32, color: '#14b8a6', marginBottom: 16 }} />
-                <Title level={4} style={{ color: '#f1f5f9', marginBottom: 8 }}>
-                  Tam Gizlilik
-                </Title>
-                <Text style={{ color: '#94a3b8', fontSize: 14 }}>
-                  Kaynak kodlarınız asla sunucularımıza kaydedilmez; analiz bittiğinde tüm veriler
-                  silinir.
-                </Text>
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card
-                bordered={false}
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 20,
-                  textAlign: 'center',
-                  padding: '32px 20px 20px',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <ThunderboltOutlined style={{ fontSize: 32, color: '#14b8a6', marginBottom: 16 }} />
-                <Title level={4} style={{ color: '#f1f5f9', marginBottom: 8 }}>
-                  Anlık Analiz
-                </Title>
-                <Text style={{ color: '#94a3b8', fontSize: 14 }}>
-                  Kod mimarinizi saniyeler içinde görselleştirir, güvenlik risklerini anında
-                  vurgular.
-                </Text>
-              </Card>
-            </Col>
-            <Col xs={24} sm={8}>
-              <Card
-                bordered={false}
-                style={{
-                  background: 'rgba(255,255,255,0.04)',
-                  backdropFilter: 'blur(12px)',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                  borderRadius: 20,
-                  textAlign: 'center',
-                  padding: '32px 20px 20px',
-                  transition: 'transform 0.2s ease, box-shadow 0.2s ease',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = 'translateY(-4px)';
-                  e.currentTarget.style.boxShadow = '0 20px 40px rgba(0,0,0,0.3)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = 'translateY(0)';
-                  e.currentTarget.style.boxShadow = 'none';
-                }}
-              >
-                <CodeOutlined style={{ fontSize: 32, color: '#14b8a6', marginBottom: 16 }} />
-                <Title level={4} style={{ color: '#f1f5f9', marginBottom: 8 }}>
-                  Açık Kaynak
-                </Title>
-                <Text style={{ color: '#94a3b8', fontSize: 14 }}>
-                  Tamamen şeffaf geliştirme süreci. Katkıda bulunun veya kendi örneğinizi
-                  çalıştırın.
-                </Text>
-              </Card>
-            </Col>
-          </Row>
+            <Row gutter={[40, 40]} align="middle" style={{ paddingTop: 64 }}>
+              <Col xs={24} lg={11}>
+                <Space direction="vertical" size={24} style={{ width: '100%' }}>
+                 
+
+                  <Title
+                    level={1}
+                    style={{
+                      margin: 0,
+                      color: '#f8fafc',
+                      fontSize: 'clamp(44px, 6vw, 72px)',
+                      lineHeight: 0.98,
+                      letterSpacing: '-2.6px',
+                      fontWeight: 900,
+                    }}
+                  >
+                    Proje akışını görsel olarak keşfet.
+                  </Title>
+
+                  <Paragraph style={{ color: '#cbd5e1', fontSize: 19, lineHeight: 1.65, maxWidth: 660, margin: 0 }}>
+                    FlowLens, codebase'ini analiz edip interaktif, okunabilir bir haritaya dönüştürür. Ne nerede, neye bağlı anında gör. Kodumuz tamamen açık kaynaklıdır.
+                  </Paragraph>
+
+                  <Space size={14} wrap>
+                    <Button
+                      type="primary"
+                      size="large"
+                      icon={<GithubOutlined />}
+                      onClick={() => navigate('/login')}
+                      style={{
+                        height: 58,
+                        padding: '0 28px',
+                        fontWeight: 800,
+                        borderRadius: 16,
+                        boxShadow: '0 16px 46px rgba(20,184,166,0.35)',
+                      }}
+                    >
+                      Analiz et
+                    </Button>
+                    <Button
+                      size="large"
+                      ghost
+                      href="https://github.com/dpeyupkaya/FlowLens"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{
+                        height: 58,
+                        padding: '0 28px',
+                        fontWeight: 800,
+                        borderRadius: 16,
+                        borderColor: 'rgba(226,232,240,0.24)',
+                        color: '#e2e8f0',
+                      }}
+                    >
+                      GitHub incele <ArrowRightOutlined />
+                    </Button>
+                  </Space>
+
+                  {/* Alt Özellik Kutuları */}
+                  <Row gutter={[12, 12]} style={{ paddingTop: 16, maxWidth: 680 }}>
+                    {stats.map(([value, label]) => (
+                      <Col xs={12} sm={8} key={value}>
+                        <div style={{ ...glassCard, borderRadius: 16, padding: '16px 14px' }}>
+                          <Text style={{ display: 'block', color: '#14b8a6', fontWeight: 900, fontSize: 15 }}>
+                            {value}
+                          </Text>
+                          <Text style={{ color: '#94a3b8', fontSize: 12 }}>{label}</Text>
+                        </div>
+                      </Col>
+                    ))}
+                  </Row>
+                </Space>
+              </Col>
+
+              {/* Sağ Taraf: İşte Buraya Yeni Akış Çizimimizi Gömüyoruz */}
+              <Col xs={24} lg={13}>
+                <div
+                  style={{
+                    ...glassCard,
+                    borderRadius: 28,
+                    padding: 12,
+                    position: 'relative',
+                    transform: 'perspective(1100px) rotateY(-5deg) rotateX(2deg)',
+                  }}
+                >
+                  <div
+                    style={{
+                      position: 'absolute',
+                      inset: -1,
+                      borderRadius: 28,
+                      background: 'linear-gradient(135deg, rgba(20,184,166,0.34), transparent 35%, rgba(99,102,241,0.24))',
+                      zIndex: -1,
+                    }}
+                  />
+                  <div
+                    style={{
+                      borderRadius: 20,
+                      overflow: 'hidden',
+                      background: '#020617',
+                      border: '1px solid rgba(148,163,184,0.14)',
+                    }}
+                  >
+                    {/* Tarayıcı Süslemesi Üst Bar */}
+                    <div
+                      style={{
+                        height: 40,
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 8,
+                        padding: '0 16px',
+                        borderBottom: '1px solid rgba(148,163,184,0.12)',
+                        background: 'rgba(15,23,42,0.76)',
+                      }}
+                    >
+                      <span style={{ width: 10, height: 10, borderRadius: 99, background: '#ef4444' }} />
+                      <span style={{ width: 10, height: 10, borderRadius: 99, background: '#f59e0b' }} />
+                      <span style={{ width: 10, height: 10, borderRadius: 99, background: '#22c55e' }} />
+                      <Text style={{ color: '#64748b', fontSize: 12, marginLeft: 8, fontFamily: 'monospace' }}>
+                        FlowLens Runtime Map Engine
+                      </Text>
+                    </div>
+
+                    {/* YENİ GENERATE ETTİĞİMİZ ÇOKLU FLOW GRAFİĞİ BURADA ÇALIŞIYOR */}
+                    <HeroFlowGraph />
+
+                  </div>
+                </div>
+              </Col>
+            </Row>
+          </section>
         </Content>
 
-      <Footer
+        {/* Footer */}
+        <Footer
           style={{
             textAlign: 'center',
-            background: 'transparent',
-            borderTop: '1px solid rgba(255,255,255,0.06)',
-            padding: '32px 0',
+            background: 'rgba(2,6,23,0.7)',
+            borderTop: '1px solid rgba(148,163,184,0.1)',
+            padding: '24px',
             position: 'relative',
             zIndex: 1,
           }}
         >
-          <Space direction="vertical" size={16}>
-            <Space direction="vertical" size={4}>
-              <Text style={{ color: '#64748b', fontSize: 14 }}>
-                FlowLens — Gizlilik Odaklı Kod Analiz Aracı ©{new Date().getFullYear()}
-              </Text>
-              <Text style={{ color: '#475569', fontSize: 12 }}>
-                Kodunuz size ait kalır. Her zaman.
-              </Text>
-            </Space>
-
-            <Space size={24} style={{ marginTop: '8px' }}>
-              <a 
-                href="https://github.com/dpeyupkaya" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#64748b] hover:text-white transition-colors duration-300"
-              >
-                <GithubOutlined style={{ fontSize: '22px' }} />
-              </a>
-              <a 
-                href="https://www.linkedin.com/in/dp-eyup-kaya/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-[#64748b] hover:text-[#0a66c2] transition-colors duration-300"
-              >
-                <LinkedinOutlined style={{ fontSize: '22px' }} />
-              </a>
-            </Space>
-          </Space>
+          <Text style={{ color: '#64748b', fontSize: 13 }}>
+            FlowLens — Gizlilik odaklı code architecture visualization ©{new Date().getFullYear()}
+          </Text>
         </Footer>
       </Layout>
     </ConfigProvider>

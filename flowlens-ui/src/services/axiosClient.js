@@ -17,36 +17,35 @@ axiosClient.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response;
       
-      const errorMessage = data?.error || data?.message || 'İşlem sırasında beklenmeyen bir hata oluştu.';
+      // Backend'in fırlattığı asıl mesajı yakalıyoruz
+      const errorMessage = data?.Message 
+                        || data?.message 
+                        || data?.Error 
+                        || data?.error 
+                        || 'İşlem sırasında beklenmeyen bir hata oluştu.';
 
+     
       switch (status) {
         case 400:
+        case 429:
           message.warning(errorMessage);
+          if (status === 429) window.location.href = '/rate-limit';
           break;
+          
         case 401:
-          // Sadece toast basmakla kalmıyoruz, adamı anında 401 (Unauthorized) sayfasına şutluyoruz.
-          message.error("Oturum süresi dolmuş veya yetkisiz erişim. Lütfen tekrar giriş yapın.");
-          window.location.href = '/401';
+          message.error(errorMessage);
+          window.location.href = '/401'; 
           break;
+          
         case 403:
-          message.error(errorMessage); 
-          break;
         case 404:
-          message.error(errorMessage || "İstenilen kaynak bulunamadı.");
-          break;
-        case 429: 
-          message.warning("Aşırı istek gönderildi! Sistem kararlılığı için işlemleriniz durduruldu.");
-          window.location.href = '/rate-limit';
-          break;
         case 500:
-          message.error(`Sunucu Hatası: ${errorMessage}`);
-          break;
         default:
           message.error(errorMessage);
           break;
       }
     } else if (error.request) {
-      message.error("Sunucuya ulaşılamıyor. İnternet bağlantınızı veya API'yi kontrol edin.");
+      message.error("Sunucuya ulaşılamıyor. İnternet bağlantınızı kontrol edin.");
     } else {
       message.error(`İstek Hatası: ${error.message}`);
     }

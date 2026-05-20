@@ -73,6 +73,7 @@ const DashboardPage = () => {
   const startLiveAnalysis = async () => {
     setAnalysisStatus('analyzing');
     setLogs(["[SİSTEM] Güvenli hat kuruluyor...", "[SİSTEM] Analiz motoru başlatıldı."]);
+    setProgress(0); 
 
     const baseUrl = import.meta.env.VITE_API_URL;
     const hubUrl = `${baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl}/analysisHub`;
@@ -90,8 +91,10 @@ const DashboardPage = () => {
         setProgress(prev => Math.min(prev + 5, 99));
       });
 
+     
       const report = await analysisService.startAnalysis(selectedRepo);
 
+    
       setAnalysisData(report);
       setProgress(100);
       setLogs(prev => [...prev, "[BAŞARI] Analiz süreci tamamlandı. Rapor hazır."]);
@@ -111,12 +114,20 @@ const DashboardPage = () => {
       window.dispatchEvent(new CustomEvent('quotaUpdated', { detail: newCount }));
 
     } catch (err) {
-      console.error(err);
-      const errorMessage = err.response?.data?.message || err.message || "Bağlantı hatası veya analiz hatası oluştu.";
-      message.error(errorMessage);
+      console.error("Analiz Süreci Hatası:", err);
+      
+     
+      const errorMessage = err.response?.data?.Message 
+                        || err.response?.data?.message 
+                        || err.response?.data?.error 
+                        || err.message 
+                        || "Analiz sırasında beklenmeyen bir hata oluştu.";
+      
       setLogs(prev => [...prev, `[HATA] ${errorMessage}`]);
-      setAnalysisStatus('idle');
+      setAnalysisStatus('idle'); 
+      
     } finally {
+      
       if (connection.state === signalR.HubConnectionState.Connected) {
         await connection.stop();
       }
