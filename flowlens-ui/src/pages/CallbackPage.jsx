@@ -1,21 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom'; // 🚀 useSearchParams EKLENDİ
 import Hyperspeed from '../components/backgrounds/Hyperspeed'; 
 import { authService } from '../services/authService';
 
 const CallbackPage = ({ setUser }) => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); // 🚀 REACT ROUTER ÜZERİNDEN URL OKUMA EKLENDİ
+  
   const isCalled = useRef(false);
   const [isRedirecting, setIsRedirecting] = useState(false); 
 
   useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get('code');
+    // 🚀 window.location.search YERİNE BÖYLE OKUYORUZ
+    const code = searchParams.get('code');
+    const state = searchParams.get('state'); 
 
-    if (code && !isCalled.current) {
+    if (code && state && !isCalled.current) {
       isCalled.current = true;
       
-      authService.githubLogin(code)
+      authService.githubLogin(code, state)
         .then(data => {
           const userData = data.user || data;
           setUser(userData); 
@@ -29,7 +32,7 @@ const CallbackPage = ({ setUser }) => {
           navigate('/login', { replace: true }); 
         });
     }
-  }, [navigate, setUser]);
+  }, [navigate, searchParams, setUser]); // 🚀 DEPENDENCY ARRAY GÜNCELLENDİ
 
   if (isRedirecting) return null;
 

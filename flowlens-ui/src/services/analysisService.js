@@ -2,7 +2,7 @@ import { axiosClient } from './axiosClient';
 import { useFlowStore } from '../store/useFlowStore'; 
 
 export const analysisService = {
-  startAnalysis: async (repoData) => {
+  startAnalysis: async (repoData, analysisId) => {
     
     let targetUrl = '';
     
@@ -24,6 +24,7 @@ export const analysisService = {
       AccessToken: "",
       IgnoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules"],
       MaxDepth: maxAnalysisDepth || 3,
+      AnalysisId: analysisId, 
       TimezoneOffsetMinutes: offsetMinutes
     });
     

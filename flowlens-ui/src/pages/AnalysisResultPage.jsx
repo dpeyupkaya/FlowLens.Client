@@ -12,8 +12,6 @@ const AnalysisResultPage = () => {
   const navigate = useNavigate();
   const { analysisResult } = location.state || {};
 
-  // 1. SİHİRLİ DOKUNUŞ: Navigasyonu Kesen Blocker
-  // Eğer mevcut sayfa (pathname) gidilecek sayfadan farklıysa yönlendirmeyi blokla!
   const blocker = useBlocker(
     ({ currentLocation, nextLocation }) =>
       currentLocation.pathname !== nextLocation.pathname

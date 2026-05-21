@@ -9,6 +9,9 @@ export const axiosClient = axios.create({
   }
 });
 
+axiosClient.defaults.xsrfCookieName = 'Xflwns-snwf';
+axiosClient.defaults.xsrfHeaderName = 'X-Xflwns-snwf';
+
 axiosClient.interceptors.response.use(
   (response) => {
     return response;
@@ -17,14 +20,12 @@ axiosClient.interceptors.response.use(
     if (error.response) {
       const { status, data } = error.response;
       
-      // Backend'in fırlattığı asıl mesajı yakalıyoruz
       const errorMessage = data?.Message 
                         || data?.message 
                         || data?.Error 
                         || data?.error 
                         || 'İşlem sırasında beklenmeyen bir hata oluştu.';
 
-     
       switch (status) {
         case 400:
         case 429:

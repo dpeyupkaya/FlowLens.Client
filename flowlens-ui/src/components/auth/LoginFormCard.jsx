@@ -1,16 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GithubOutlined, LockOutlined } from '@ant-design/icons';
-import InteractiveFace from '../Fun/InteractiveFace'; // Yeni dosya yolu
+import InteractiveFace from '../Fun/InteractiveFace'; 
+import { authService } from '../../services/authService'; 
 
 const LoginFormCard = () => {
   const navigate = useNavigate();
   const [isButtonHovered, setIsButtonHovered] = useState(false);
-  const CLIENT_ID = import.meta.env.VITE_GITHUB_CLIENT_ID;
+  
 
-  const handleGitHubLogin = () => {
-    window.location.href = `https://github.com/login/oauth/authorize?client_id=${CLIENT_ID}&scope=user:email,repo`;
+  const handleGitHubLogin = async () => { 
+    try {
+      const data = await authService.getGitHubLoginUrl();
+      
+      if (data && data.url) {
+        window.location.href = data.url;
+      }
+    } catch (error) {
+      console.error("Güvenli giriş bağlantısı alınamadı:", error);
+    }
   };
+
 
   return (
     <div className="relative w-full max-w-md mx-4 p-[1.5px] rounded-[2.5rem] overflow-hidden group">

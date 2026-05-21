@@ -86,15 +86,18 @@ const DashboardPage = () => {
     try {
       await connection.start();
 
+      const currentAnalysisId = crypto.randomUUID();
+
+      await connection.invoke("SubscribeToAnalysis", currentAnalysisId);
+     
+
       connection.on("ReceiveAnalysisLog", (newLog) => {
         setLogs(prev => [...prev, newLog]);
         setProgress(prev => Math.min(prev + 5, 99));
       });
 
-     
-      const report = await analysisService.startAnalysis(selectedRepo);
+      const report = await analysisService.startAnalysis(selectedRepo, currentAnalysisId);
 
-    
       setAnalysisData(report);
       setProgress(100);
       setLogs(prev => [...prev, "[BAŞARI] Analiz süreci tamamlandı. Rapor hazır."]);
@@ -114,7 +117,7 @@ const DashboardPage = () => {
       window.dispatchEvent(new CustomEvent('quotaUpdated', { detail: newCount }));
 
     } catch (err) {
-      console.error("Analiz Süreci Hatası:", err);
+            console.error("Analiz Süreci Hatası:", err);
       
      
       const errorMessage = err.response?.data?.Message 
