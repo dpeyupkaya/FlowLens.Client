@@ -1,12 +1,12 @@
 import React from 'react';
-import { Layout, Menu } from 'antd';
+import { Layout, Menu, message } from 'antd'; 
 import {
   DashboardOutlined,
   SettingOutlined,
   LogoutOutlined
-
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { userService } from '../../services/userService';
 
 const { Sider } = Layout;
 
@@ -55,15 +55,18 @@ const AppSidebar = ({ collapsed, onLogout }) => {
         mode="inline"
         selectedKeys={[location.pathname]}
         items={menuItems}
-        onClick={({ key }) => {
+        onClick={async ({ key }) => {
           if (key === 'logout') {
-            document.cookie = "_fl_ctx_9x=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            try {
+              await userService.logout();
+              
+              if (onLogout) onLogout();
 
-
-
-            if (onLogout) onLogout();
-
-            navigate('/');
+              message.success('Başarıyla çıkış yapıldı.');
+              navigate('/');
+            } catch (error) {
+              message.error('Çıkış yapılırken bir sorun oluştu.');
+            }
           } else {
             navigate(key);
           }

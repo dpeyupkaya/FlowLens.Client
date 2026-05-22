@@ -21,7 +21,6 @@ export const analysisService = {
 
     const response = await axiosClient.post('/api/Analysis/start', { 
       RepoUrl: targetUrl, 
-      AccessToken: "",
       IgnoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules"],
       MaxDepth: maxAnalysisDepth || 3,
       AnalysisId: analysisId, 

@@ -9,8 +9,27 @@ export const axiosClient = axios.create({
   }
 });
 
-axiosClient.defaults.xsrfCookieName = 'Xflwns-snwf';
-axiosClient.defaults.xsrfHeaderName = 'X-Xflwns-snwf';
+axiosClient.interceptors.request.use(
+  (config) => {
+    const getCookie = (name) => {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    };
+
+    const csrfToken = getCookie('Xflwns-snwf');
+
+    if (csrfToken) {
+      config.headers['X-Xflwns-snwf'] = decodeURIComponent(csrfToken);
+    }
+
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 axiosClient.interceptors.response.use(
   (response) => {
