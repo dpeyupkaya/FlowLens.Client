@@ -14,6 +14,7 @@ import {
   CodeOutlined,
   SafetyCertificateOutlined
 } from '@ant-design/icons';
+import SEO from '../components/SEO';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -34,7 +35,8 @@ const TermsOfServicePage = () => {
         },
       }}
     >
-      <Layout className="min-h-screen">
+      <SEO title="Terms of Service - FlowLens" />
+      <Layout className="min-h-screen bg-[#020617] text-slate-200">
         
         <Header style={{ 
           position: 'sticky', 

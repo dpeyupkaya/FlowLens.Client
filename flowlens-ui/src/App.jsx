@@ -12,6 +12,7 @@ import MobileBlocker from './components/MobileBlocker/MobileBlocker';
 import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
 import AnalyticsTracker from './utils/AnalyticsTracker'; 
+import { LanguageProvider, LocalizedContent } from './i18n/LanguageProvider';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -37,6 +38,8 @@ const RootLayout = () => (
     <Outlet /> 
   </>
 );
+
+import { HelmetProvider } from 'react-helmet-async';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -71,23 +74,29 @@ function App() {
   ), [user]);
 
   return (
-    <MobileBlocker>
-      <CookieGuard>
-        <ConfigProvider
-          theme={{
-            algorithm: theme.darkAlgorithm,
-            token: { 
-              colorPrimary: '#14b8a6',
-              fontFamily: 'Inter, sans-serif'
-            },
-          }}
-        >
-          <Suspense fallback={<FullScreenLoader />}>
-            <RouterProvider router={router} />
-          </Suspense>
-        </ConfigProvider>
-      </CookieGuard>
-    </MobileBlocker>
+    <HelmetProvider>
+      <LanguageProvider>
+        <LocalizedContent>
+          <MobileBlocker>
+            <CookieGuard>
+            <ConfigProvider
+              theme={{
+                algorithm: theme.darkAlgorithm,
+                token: { 
+                  colorPrimary: '#14b8a6',
+                  fontFamily: 'Inter, sans-serif'
+                },
+              }}
+            >
+              <Suspense fallback={<FullScreenLoader />}>
+                <RouterProvider router={router} />
+              </Suspense>
+            </ConfigProvider>
+            </CookieGuard>
+          </MobileBlocker>
+        </LocalizedContent>
+      </LanguageProvider>
+    </HelmetProvider>
   );
 }
 
