@@ -1,10 +1,9 @@
-import React, { useState, Suspense, lazy, useMemo } from 'react';
+import React, { useState, Suspense, lazy } from 'react';
 import { 
-  createBrowserRouter, 
-  RouterProvider, 
+  BrowserRouter,
+  Routes,
   Route, 
   Navigate, 
-  createRoutesFromElements,
   Outlet 
 } from 'react-router-dom';
 import { ConfigProvider, theme, Spin } from 'antd';
@@ -13,6 +12,7 @@ import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
 import AnalyticsTracker from './utils/AnalyticsTracker'; 
 import { LanguageProvider, LocalizedContent } from './i18n/LanguageProvider';
+import { HelmetProvider } from 'react-helmet-async';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -39,39 +39,8 @@ const RootLayout = () => (
   </>
 );
 
-import { HelmetProvider } from 'react-helmet-async';
-
 function App() {
   const [user, setUser] = useState(null);
-
-  const router = useMemo(() => createBrowserRouter(
-    createRoutesFromElements(
-      <Route element={<RootLayout />}>
-        
-        <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
-        <Route path="/terms" element={<TermsOfServicePage />} />
-        <Route path="/" element={<LandingPage />} />
-        
-        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
-
-        <Route 
-          element={
-            <AuthGuard setUser={setUser}>
-              <MainLayout user={user} setUser={setUser} />
-            </AuthGuard>
-          }
-        >
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/analysis/results" element={<AnalysisResultPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Route>
-        
-        <Route path="/*" element={<NotFoundPage />} />
-        <Route path="/rate-limit" element={<RateLimitPage />} />
-        <Route path="/401" element={<UnauthorizedPage />} />
-      </Route>
-    )
-  ), [user]);
 
   return (
     <HelmetProvider>
@@ -89,7 +58,33 @@ function App() {
               }}
             >
               <Suspense fallback={<FullScreenLoader />}>
-                <RouterProvider router={router} />
+                <BrowserRouter>
+                  <Routes>
+                    <Route element={<RootLayout />}>
+                      <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
+                      <Route path="/terms" element={<TermsOfServicePage />} />
+                      <Route path="/" element={<LandingPage />} />
+                      
+                      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+
+                      <Route 
+                        element={
+                          <AuthGuard setUser={setUser}>
+                            <MainLayout user={user} setUser={setUser} />
+                          </AuthGuard>
+                        }
+                      >
+                        <Route path="/dashboard" element={<DashboardPage />} />
+                        <Route path="/analysis/results" element={<AnalysisResultPage />} />
+                        <Route path="/settings" element={<SettingsPage />} />
+                      </Route>
+                      
+                      <Route path="/*" element={<NotFoundPage />} />
+                      <Route path="/rate-limit" element={<RateLimitPage />} />
+                      <Route path="/401" element={<UnauthorizedPage />} />
+                    </Route>
+                  </Routes>
+                </BrowserRouter>
               </Suspense>
             </ConfigProvider>
             </CookieGuard>
