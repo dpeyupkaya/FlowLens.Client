@@ -1,16 +1,16 @@
-import React, { useState, Suspense, lazy } from 'react';
-import {
+import React, { useState, useEffect, Suspense, lazy } from 'react';
+import { 
   BrowserRouter,
   Routes,
-  Route,
-  Navigate,
-  Outlet
+  Route, 
+  Navigate, 
+  Outlet 
 } from 'react-router-dom';
 import { ConfigProvider, theme, Spin } from 'antd';
-import MobileBlocker from './components/MobileBlocker/MobileBlocker';
+import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
 import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
-import AnalyticsTracker from './utils/AnalyticsTracker';
+import AnalyticsTracker from './utils/AnalyticsTracker'; 
 import { LanguageProvider, LocalizedContent } from './i18n/LanguageProvider';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -35,39 +35,55 @@ const FullScreenLoader = () => (
 const RootLayout = () => (
   <>
     <AnalyticsTracker />
-    <Outlet />
+    <Outlet /> 
   </>
 );
 
 function App() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    try {
+      const savedUser = localStorage.getItem('user');
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      console.error("Kullanıcı bilgisi okunurken hata oluştu:", error);
+      return null;
+    }
+  });
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem('user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('user');
+    }
+  }, [user]);
 
   return (
     <HelmetProvider>
       <LanguageProvider>
         <LocalizedContent>
-          <MobileBlocker>
-            <CookieGuard>
-              <ConfigProvider
-                theme={{
-                  algorithm: theme.darkAlgorithm,
-                  token: {
-                    colorPrimary: '#14b8a6',
-                    fontFamily: 'Inter, sans-serif'
-                  },
-                }}
-              >
-                <BrowserRouter>
+          <ConfigProvider
+            theme={{
+              algorithm: theme.darkAlgorithm,
+              token: { 
+                colorPrimary: '#14b8a6',
+                fontFamily: 'Inter, sans-serif'
+              },
+            }}
+          >
+            <BrowserRouter>
+              <MobileBlocker>
+                <CookieGuard>
                   <Suspense fallback={<FullScreenLoader />}>
                     <Routes>
                       <Route element={<RootLayout />}>
                         <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
                         <Route path="/terms" element={<TermsOfServicePage />} />
                         <Route path="/" element={<LandingPage />} />
-
+                        
                         <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
 
-                        <Route
+                        <Route 
                           element={
                             <AuthGuard setUser={setUser}>
                               <MainLayout user={user} setUser={setUser} />
@@ -78,17 +94,18 @@ function App() {
                           <Route path="/analysis/results" element={<AnalysisResultPage />} />
                           <Route path="/settings" element={<SettingsPage />} />
                         </Route>
-
-                        <Route path="/*" element={<NotFoundPage />} />
+                        
                         <Route path="/rate-limit" element={<RateLimitPage />} />
                         <Route path="/401" element={<UnauthorizedPage />} />
+                        
+                        <Route path="/*" element={<NotFoundPage />} />
                       </Route>
                     </Routes>
                   </Suspense>
-                </BrowserRouter>
-              </ConfigProvider>
-            </CookieGuard>
-          </MobileBlocker>
+                </CookieGuard>
+              </MobileBlocker>
+            </BrowserRouter>
+          </ConfigProvider>
         </LocalizedContent>
       </LanguageProvider>
     </HelmetProvider>
