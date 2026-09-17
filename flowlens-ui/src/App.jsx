@@ -1,16 +1,16 @@
 import React, { useState, Suspense, lazy } from 'react';
-import { 
+import {
   BrowserRouter,
   Routes,
-  Route, 
-  Navigate, 
-  Outlet 
+  Route,
+  Navigate,
+  Outlet
 } from 'react-router-dom';
 import { ConfigProvider, theme, Spin } from 'antd';
-import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
+import MobileBlocker from './components/MobileBlocker/MobileBlocker';
 import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
-import AnalyticsTracker from './utils/AnalyticsTracker'; 
+import AnalyticsTracker from './utils/AnalyticsTracker';
 import { LanguageProvider, LocalizedContent } from './i18n/LanguageProvider';
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -35,7 +35,7 @@ const FullScreenLoader = () => (
 const RootLayout = () => (
   <>
     <AnalyticsTracker />
-    <Outlet /> 
+    <Outlet />
   </>
 );
 
@@ -48,45 +48,45 @@ function App() {
         <LocalizedContent>
           <MobileBlocker>
             <CookieGuard>
-            <ConfigProvider
-              theme={{
-                algorithm: theme.darkAlgorithm,
-                token: { 
-                  colorPrimary: '#14b8a6',
-                  fontFamily: 'Inter, sans-serif'
-                },
-              }}
-            >
-              <Suspense fallback={<FullScreenLoader />}>
+              <ConfigProvider
+                theme={{
+                  algorithm: theme.darkAlgorithm,
+                  token: {
+                    colorPrimary: '#14b8a6',
+                    fontFamily: 'Inter, sans-serif'
+                  },
+                }}
+              >
                 <BrowserRouter>
-                  <Routes>
-                    <Route element={<RootLayout />}>
-                      <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
-                      <Route path="/terms" element={<TermsOfServicePage />} />
-                      <Route path="/" element={<LandingPage />} />
-                      
-                      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+                  <Suspense fallback={<FullScreenLoader />}>
+                    <Routes>
+                      <Route element={<RootLayout />}>
+                        <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
+                        <Route path="/terms" element={<TermsOfServicePage />} />
+                        <Route path="/" element={<LandingPage />} />
 
-                      <Route 
-                        element={
-                          <AuthGuard setUser={setUser}>
-                            <MainLayout user={user} setUser={setUser} />
-                          </AuthGuard>
-                        }
-                      >
-                        <Route path="/dashboard" element={<DashboardPage />} />
-                        <Route path="/analysis/results" element={<AnalysisResultPage />} />
-                        <Route path="/settings" element={<SettingsPage />} />
+                        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+
+                        <Route
+                          element={
+                            <AuthGuard setUser={setUser}>
+                              <MainLayout user={user} setUser={setUser} />
+                            </AuthGuard>
+                          }
+                        >
+                          <Route path="/dashboard" element={<DashboardPage />} />
+                          <Route path="/analysis/results" element={<AnalysisResultPage />} />
+                          <Route path="/settings" element={<SettingsPage />} />
+                        </Route>
+
+                        <Route path="/*" element={<NotFoundPage />} />
+                        <Route path="/rate-limit" element={<RateLimitPage />} />
+                        <Route path="/401" element={<UnauthorizedPage />} />
                       </Route>
-                      
-                      <Route path="/*" element={<NotFoundPage />} />
-                      <Route path="/rate-limit" element={<RateLimitPage />} />
-                      <Route path="/401" element={<UnauthorizedPage />} />
-                    </Route>
-                  </Routes>
+                    </Routes>
+                  </Suspense>
                 </BrowserRouter>
-              </Suspense>
-            </ConfigProvider>
+              </ConfigProvider>
             </CookieGuard>
           </MobileBlocker>
         </LocalizedContent>
