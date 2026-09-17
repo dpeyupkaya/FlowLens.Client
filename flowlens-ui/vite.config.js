@@ -47,17 +47,6 @@ export default defineConfig({
     },
   },
   build: {
-    chunkSizeWarningLimit: 600,
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules')) {
-            if (id.includes('react')) return 'react';
-            if (id.includes('antd') || id.includes('@ant-design')) return 'antd';
-            return 'vendor';
-          }
-        }
-      }
-    }
+    chunkSizeWarningLimit: 3000
   }
 })
