@@ -32,9 +32,6 @@ export default defineConfig({
             purpose: 'any maskable'
           }
         ]
-      },
-      workbox: {
-        maximumFileSizeToCacheInBytes: 5000000 // 5 MB
       }
     })
   ],
@@ -45,8 +42,5 @@ export default defineConfig({
       protocol: 'wss',
       host: 'localhost',
     },
-  },
-  build: {
-    chunkSizeWarningLimit: 3000
   }
 })

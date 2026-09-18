@@ -8,6 +8,8 @@ import {
   HourglassOutlined
 } from '@ant-design/icons';
 import { userService } from '../../services/userService';
+import { useTranslation } from '../../i18n/LanguageProvider';
+import LanguageSelector from './LanguageSelector';
 
 const { Header } = Layout;
 const { Text } = Typography;
@@ -16,6 +18,7 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
   const [activeUser, setActiveUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [timeUntilReset, setTimeUntilReset] = useState('');
+  const { t } = useTranslation();
 
   const MAX_LIMIT = 5;
   const dailyCount = activeUser?.dailyAnalysisCount ?? activeUser?.DailyAnalysisCount ?? 0;
@@ -29,7 +32,7 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
         const data = await userService.getUserMe();
         setActiveUser(data);
       } catch (err) {
-        console.error("Kimlik doğrulanamadı:", err);
+        console.error("Identity verification failed:", err);
       } finally {
         setLoading(false);
       }
@@ -65,7 +68,7 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
       const hours = Math.floor(diffMs / (1000 * 60 * 60));
       const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
       
-      setTimeUntilReset(`${hours}s ${minutes}d`);
+      setTimeUntilReset(`${hours}h ${minutes}m`);
     };
 
     calculateTimeLeft(); 
@@ -74,7 +77,7 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
     return () => clearInterval(timer);
   }, []);
 
-  const displayName = activeUser?.username || activeUser?.name || activeUser?.login || 'Misafir Geliştirici';
+  const displayName = activeUser?.username || activeUser?.name || activeUser?.login || t('common.guestDeveloper');
   const displayAvatar = activeUser?.avatarUrl || activeUser?.avatar_url;
 
   return (
@@ -95,12 +98,13 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
             FlowLens 
           </span>
         </div>
+        <LanguageSelector compact />
       </div>
       
       <div className="flex items-center gap-4 h-full">
         
         {!loading && (
-          <Tooltip title={isQuotaExceeded ? "Limitiniz doldu. Geri sayım bitince yenilenecek." : "Günlük analiz hakkınız"}>
+          <Tooltip title={isQuotaExceeded ? t('navbar.quotaFull') : t('navbar.dailyQuota')}>
             <div className={`hidden md:flex items-center justify-center gap-1.5 px-3 h-8 rounded-full border transition-all whitespace-nowrap
               ${isQuotaExceeded 
                 ? 'bg-red-500/10 border-red-500/30 text-red-400' 
@@ -110,12 +114,12 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
               {isQuotaExceeded ? (
                 <>
                   <HourglassOutlined className="animate-pulse text-[12px]" />
-                  <span className="font-mono text-[10px] font-bold tracking-wider mt-[1px]">YENİLENME: {timeUntilReset}</span>
+                  <span className="font-mono text-[10px] font-bold tracking-wider mt-[1px]">{t('navbar.resets')} {timeUntilReset}</span>
                 </>
               ) : (
                 <>
                   <ThunderboltOutlined className="text-[12px]" />
-                  <span className="font-mono text-[10px] font-bold tracking-wider mt-[1px]">{remainingQuota} / {MAX_LIMIT} HAK</span>
+                  <span className="font-mono text-[10px] font-bold tracking-wider mt-[1px]">{remainingQuota} / {MAX_LIMIT} {t('navbar.quota')}</span>
                 </>
               )}
             </div>
@@ -132,7 +136,7 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
                   {displayName}
                 </Text>
                 <Text className="text-slate-500 font-mono text-[9px] uppercase tracking-widest md:hidden block">
-                  {remainingQuota} Hak Kaldı
+                  {remainingQuota} {t('navbar.quotaRemaining')}
                 </Text>
               </div>
             )}

@@ -3,24 +3,28 @@ import { Layout, Menu, message } from 'antd';
 import {
   DashboardOutlined,
   SettingOutlined,
-  LogoutOutlined
+  LogoutOutlined,
+  InfoCircleOutlined
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { userService } from '../../services/userService';
+import { useTranslation } from '../../i18n/LanguageProvider';
 
 const { Sider } = Layout;
 
 const AppSidebar = ({ collapsed, onLogout }) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const menuItems = [
-    { key: '/dashboard', icon: <DashboardOutlined />, label: 'Dashboard' },
-    { key: '/settings', icon: <SettingOutlined />, label: 'Ayarlar' },
+    { key: '/dashboard', icon: <DashboardOutlined />, label: t('sidebar.dashboard') },
+    { key: '/settings', icon: <SettingOutlined />, label: t('sidebar.settings') },
+    { key: '/about', icon: <InfoCircleOutlined />, label: t('sidebar.about') },
     {
       key: 'logout',
       icon: <LogoutOutlined />,
-      label: 'Çıkış Yap',
+      label: t('sidebar.logout'),
       danger: true
     },
   ];
@@ -62,10 +66,10 @@ const AppSidebar = ({ collapsed, onLogout }) => {
               
               if (onLogout) onLogout();
 
-              message.success('Başarıyla çıkış yapıldı.');
+              message.success(t('sidebar.logoutSuccess'));
               navigate('/');
             } catch (error) {
-              message.error('Çıkış yapılırken bir sorun oluştu.');
+              message.error(t('sidebar.logoutError'));
             }
           } else {
             navigate(key);

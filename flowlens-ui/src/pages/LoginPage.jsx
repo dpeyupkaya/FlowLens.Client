@@ -1,38 +1,6 @@
 import React from 'react';
 import { ConfigProvider, theme } from 'antd';
 import LoginFormCard from '../components/auth/LoginFormCard';
-import Hyperspeed from '../components/backgrounds/Hyperspeed'; 
-
-const hyperSpeedOptions = {
-  distortion: 'turbulentDistortion',
-  length: 400,
-  roadWidth: 10,
-  islandWidth: 2,
-  lanesPerRoad: 3,
-  fov: 90,
-  fovSpeedUp: 150,
-  speedUp: 2,
-  carLightsFade: 0.4,
-  totalSideLightSticks: 20,
-  lightPairsPerRoadWay: 40,
-  shoulderLinesWidthPercentage: 0.05,
-  brokenLinesWidthPercentage: 0.1,
-  brokenLinesLengthPercentage: 0.5,
-  lightStickWidth: [0.12, 0.5],
-  lightStickHeight: [1.3, 1.7],
-  movingAwaySpeed: [60, 80],
-  movingTowardSpeed: [150, 250],
-  colors: {
-    roadColor: 0x080808,
-    islandColor: 0x0a0a0a,
-    background: 0x020617, 
-    shoulderLinesColor: 0x131318,
-    brokenLinesColor: 0x131318,
-    leftCarsColor: 0x14b8a6, 
-    rightCarsColor: 0x0f766e,
-    stickLightsColor: 0x14b8a6,
-  }
-};
 
 const LoginPage = () => {
   return (
@@ -45,18 +13,30 @@ const LoginPage = () => {
         },
       }}
     >
-      
-      <div className="relative w-full min-h-screen overflow-hidden bg-[#020617]">
+      <div className="relative w-full min-h-screen overflow-hidden bg-[#020617] flex items-center justify-center">
         
-        <div className="fixed inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
-           <div className="w-full h-full">
-              <Hyperspeed effectOptions={hyperSpeedOptions} />
-           </div>
-        </div>
+        <div className="absolute -top-[20%] -left-[10%] w-[50vw] h-[50vw] rounded-full bg-teal-600/20 mix-blend-screen filter blur-[120px] animate-pulse" style={{ animationDuration: '8s' }}></div>
+        
+        <div className="absolute -bottom-[20%] -right-[10%] w-[60vw] h-[60vw] rounded-full bg-sky-600/20 mix-blend-screen filter blur-[140px] animate-pulse" style={{ animationDuration: '12s' }}></div>
 
-        <div className="fixed inset-0 z-10 bg-black/45 pointer-events-none"></div>
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[40vw] h-[40vw] rounded-full bg-teal-800/20 mix-blend-screen filter blur-[150px]"></div>
 
-        <div className="relative z-20 flex items-center justify-center w-full min-h-screen px-4">
+        <div 
+          className="absolute inset-0 pointer-events-none opacity-40"
+          style={{
+            backgroundImage: `
+              linear-gradient(rgba(20, 184, 166, 0.05) 1px, transparent 1px), 
+              linear-gradient(90deg, rgba(20, 184, 166, 0.05) 1px, transparent 1px)
+            `,
+            backgroundSize: '48px 48px',
+            maskImage: 'radial-gradient(circle at center, black 30%, transparent 90%)',
+            WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 90%)'
+          }}
+        ></div>
+
+        <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,#020617_100%)] opacity-80"></div>
+
+        <div className="relative z-20 w-full flex items-center justify-center px-4">
           <LoginFormCard />
         </div>
 

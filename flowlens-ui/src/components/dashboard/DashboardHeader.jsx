@@ -1,16 +1,18 @@
 import React, { useState, useCallback } from 'react';
 import { Typography, Statistic, Skeleton, Input, Button, message } from 'antd';
 import { FolderOpenOutlined, CodeOutlined, LinkOutlined, RocketOutlined } from '@ant-design/icons';
+import { useTranslation } from '../../i18n/LanguageProvider';
 
 const { Title } = Typography;
 
 const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRepo }) => {
   const [repoUrl, setRepoUrl] = useState('');
+  const { t } = useTranslation();
 
   const handleAnalyzeSubmit = useCallback(() => {
     const trimmedUrl = repoUrl.trim();
     if (!trimmedUrl) {
-      message.warning("Lütfen bir GitHub repo linki veya adı girin.");
+      message.warning(t('dashboard.emptyUrl'));
       return;
     }
 
@@ -26,9 +28,9 @@ const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRe
       }
       setRepoUrl(''); 
     } else {
-      message.error("Geçersiz format. Örnek: 'facebook/react' veya GitHub URL'si girin.");
+      message.error(t('dashboard.invalidFormat'));
     }
-  }, [repoUrl, onAnalyzeCustomRepo]);
+  }, [repoUrl, onAnalyzeCustomRepo, t]);
 
   return (
     <div className="flex flex-col xl:flex-row items-center justify-between gap-6 mb-10 pb-8 border-b border-white/5 transition-all duration-300">
@@ -39,10 +41,10 @@ const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRe
         </div>
         <div className="flex flex-col">
           <Title level={2} style={{ color: '#f8fafc', margin: 0, fontWeight: '700', letterSpacing: '-0.02em' }}>
-            Aktif Depolar
+            {t('dashboard.title')}
           </Title>
           <span className="text-slate-400 text-sm font-medium mt-0.5">
-            Bağlı olan projelerinizi yönetin
+            {t('dashboard.subtitle')}
           </span>
         </div>
       </div>
@@ -55,7 +57,7 @@ const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRe
             
             <Input
               disabled={loading}
-              placeholder="Github URL"
+              placeholder={t('dashboard.githubPlaceholder')}
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
               onPressEnter={handleAnalyzeSubmit}
@@ -79,7 +81,7 @@ const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRe
                 : 'bg-slate-800 text-slate-500'}
             `}
           >
-            Analiz Et
+            {t('dashboard.analyzeBtn')}
           </Button>
         </div>
 
@@ -91,12 +93,12 @@ const DashboardHeader = ({ totalRepos = null, loading = false, onAnalyzeCustomRe
               title={
                 <div className="flex items-center gap-2 text-slate-400 font-medium text-xs tracking-wider uppercase mb-1">
                   <CodeOutlined className="text-teal-500" />
-                  <span>Bağlı Projeler</span>
+                  <span>{t('dashboard.connectedProjects')}</span>
                 </div>
               }
               value={totalRepos}
               valueStyle={{ color: '#f8fafc', fontWeight: '700', fontSize: '28px', lineHeight: '1' }}
-              suffix={<span className="text-slate-500 text-sm font-medium ml-1">Repo</span>}
+              suffix={<span className="text-slate-500 text-sm font-medium ml-1">{t('dashboard.repo')}</span>}
               className="m-0"
             />
           )}

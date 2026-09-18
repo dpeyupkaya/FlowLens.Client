@@ -1,9 +1,10 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, Suspense, lazy, useMemo } from 'react';
 import { 
-  BrowserRouter,
-  Routes,
+  createBrowserRouter, 
+  RouterProvider, 
   Route, 
   Navigate, 
+  createRoutesFromElements,
   Outlet 
 } from 'react-router-dom';
 import { ConfigProvider, theme, Spin } from 'antd';
@@ -11,8 +12,7 @@ import MobileBlocker from './components/MobileBlocker/MobileBlocker';
 import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
 import AnalyticsTracker from './utils/AnalyticsTracker'; 
-import { LanguageProvider, LocalizedContent } from './i18n/LanguageProvider';
-import { HelmetProvider } from 'react-helmet-async';
+import { LanguageProvider } from './i18n/LanguageProvider';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -25,6 +25,7 @@ const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
 const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
 const RateLimitPage = lazy(() => import('./pages/RateLimitPage'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 
 const FullScreenLoader = () => (
   <div className="flex justify-center items-center h-screen bg-[#141414]">
@@ -40,28 +41,42 @@ const RootLayout = () => (
 );
 
 function App() {
-  const [user, setUser] = useState(() => {
-    try {
-      const savedUser = localStorage.getItem('user');
-      return savedUser ? JSON.parse(savedUser) : null;
-    } catch (error) {
-      console.error("Kullanıcı bilgisi okunurken hata oluştu:", error);
-      return null;
-    }
-  });
+  const [user, setUser] = useState(null);
 
-  useEffect(() => {
-    if (user) {
-      localStorage.setItem('user', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('user');
-    }
-  }, [user]);
+  const router = useMemo(() => createBrowserRouter(
+    createRoutesFromElements(
+      <Route element={<RootLayout />}>
+        
+        <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
+        <Route path="/terms" element={<TermsOfServicePage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/" element={<LandingPage />} />
+        
+        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+
+        <Route 
+          element={
+            <AuthGuard setUser={setUser}>
+              <MainLayout user={user} setUser={setUser} />
+            </AuthGuard>
+          }
+        >
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/analysis/results" element={<AnalysisResultPage />} />
+          <Route path="/settings" element={<SettingsPage />} />
+        </Route>
+        
+        <Route path="/*" element={<NotFoundPage />} />
+        <Route path="/rate-limit" element={<RateLimitPage />} />
+        <Route path="/401" element={<UnauthorizedPage />} />
+      </Route>
+    )
+  ), [user]);
 
   return (
-    <HelmetProvider>
-      <LanguageProvider>
-        <LocalizedContent>
+    <MobileBlocker>
+      <CookieGuard>
+        <LanguageProvider>
           <ConfigProvider
             theme={{
               algorithm: theme.darkAlgorithm,
@@ -71,44 +86,13 @@ function App() {
               },
             }}
           >
-            <BrowserRouter>
-              <MobileBlocker>
-                <CookieGuard>
-                  <Suspense fallback={<FullScreenLoader />}>
-                    <Routes>
-                      <Route element={<RootLayout />}>
-                        <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
-                        <Route path="/terms" element={<TermsOfServicePage />} />
-                        <Route path="/" element={<LandingPage />} />
-                        
-                        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
-
-                        <Route 
-                          element={
-                            <AuthGuard setUser={setUser}>
-                              <MainLayout user={user} setUser={setUser} />
-                            </AuthGuard>
-                          }
-                        >
-                          <Route path="/dashboard" element={<DashboardPage />} />
-                          <Route path="/analysis/results" element={<AnalysisResultPage />} />
-                          <Route path="/settings" element={<SettingsPage />} />
-                        </Route>
-                        
-                        <Route path="/rate-limit" element={<RateLimitPage />} />
-                        <Route path="/401" element={<UnauthorizedPage />} />
-                        
-                        <Route path="/*" element={<NotFoundPage />} />
-                      </Route>
-                    </Routes>
-                  </Suspense>
-                </CookieGuard>
-              </MobileBlocker>
-            </BrowserRouter>
+            <Suspense fallback={<FullScreenLoader />}>
+              <RouterProvider router={router} />
+            </Suspense>
           </ConfigProvider>
-        </LocalizedContent>
-      </LanguageProvider>
-    </HelmetProvider>
+        </LanguageProvider>
+      </CookieGuard>
+    </MobileBlocker>
   );
 }
 

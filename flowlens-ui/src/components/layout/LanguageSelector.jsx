@@ -1,22 +1,22 @@
 import { GlobalOutlined } from '@ant-design/icons';
 import { Select, Tooltip } from 'antd';
-import { useLanguage } from '../../i18n/LanguageProvider';
+import { useTranslation } from '../../i18n/LanguageProvider';
 
 const LanguageSelector = ({ compact = false }) => {
-  const { language, setLanguage, labels } = useLanguage();
+  const { t, i18n } = useTranslation();
   return (
     <div data-language-control>
-      <Tooltip title={labels.language}>
+      <Tooltip title={t('language')}>
         <Select
-          aria-label={labels.language}
-          value={language}
-          onChange={setLanguage}
+          aria-label={t('language')}
+          value={i18n.language}
+          onChange={i18n.changeLanguage}
           size="small"
           className={compact ? 'w-[86px]' : 'w-[110px]'}
           suffixIcon={<GlobalOutlined />}
           options={[
-            { value: 'tr', label: 'TR' },
-            { value: 'en', label: 'EN' }
+            { value: 'tr', label: 'TR 🇹🇷' },
+            { value: 'en', label: 'EN 🇬🇧' }
           ]}
         />
       </Tooltip>

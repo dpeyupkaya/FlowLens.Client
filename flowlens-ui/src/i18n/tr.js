@@ -1,123 +1,148 @@
-import en from './en';
-
-export const landingTr = {
-  'landing.nav.brand': 'FlowLens',
-  'landing.nav.badge': 'Açık Kaynak v1.0',
-  'landing.nav.features': 'Özellikler',
-  'landing.nav.howItWorks': 'Nasıl Çalışır',
-  'landing.nav.tech': 'Teknolojiler',
-  'landing.nav.github': 'GitHub',
-  'landing.nav.cta': 'Analiz Et',
-
-  // Hero
-  'landing.hero.badge': '⚡ Roslyn AST Gücüyle • %100 Yerel & Gizlilik Odaklı',
-  'landing.hero.title1': 'C# Kod Mimarinizi',
-  'landing.hero.title2': 'Görsel Bir Haritaya Dönüştürün',
-  'landing.hero.description': "FlowLens, karmaşık C# projelerinizi Roslyn motoruyla analiz ederek anlaşılır, interaktif 2D mimari haritalara dönüştürür. Ne nerede, neye bağlı anında görün. Kodunuz asla makinenizden dışarı çıkmaz.",
-  'landing.hero.ctaPrimary': 'Hemen Analiz Başlat',
-  'landing.hero.ctaSecondary': "GitHub'da İncele",
-  'landing.hero.interactiveHint': 'Düğümleri sürükleyerek mimari akışı deneyimleyin',
-  'landing.hero.terminalTitle': 'FlowLens Runtime Studio — 2D Canlı Mimari Tuvali',
-
-  // Hero Stats
-  'landing.stats.privacy.value': '%100 Yerel',
-  'landing.stats.privacy.label': 'Sıfır Veri Saklama',
-  'landing.stats.engine.value': 'Roslyn AST',
-  'landing.stats.engine.label': 'C# & .NET 9 Derin Analiz',
-  'landing.stats.graph.value': '2D İnteraktif',
-  'landing.stats.graph.label': 'Canlı Bağımlılık Haritası',
-  'landing.stats.license.value': 'MIT Lisanslı',
-  'landing.stats.license.label': 'Açık Kaynak & Şeffaf',
-
-  // Tech Stack Ribbon
-  'landing.tech.title': 'Modern .NET Ekosistemi İçin Tasarlandı',
-  'landing.tech.csharp': 'C# 12 & .NET 9',
-  'landing.tech.roslyn': 'Microsoft Roslyn Platform',
-  'landing.tech.react': 'React 19 & Ant Design',
-  'landing.tech.privacy': 'Bellek İçi (RAM) Analiz',
-
-  // Features
-  'landing.features.eyebrow': 'ÖNE ÇIKAN ÖZELLİKLER',
-  'landing.features.title': 'Karmaşık Kod Yapılarını Sade ve Anlaşılır Kılın',
-  'landing.features.subtitle': 'FlowLens, C# geliştiricileri ve mimarlar için kod inceleme, teknik borç tespiti ve ekip oryantasyonunu zahmetsiz hale getirir.',
-
-  'landing.features.item1.title': 'Gizlilik Odaklı & Sıfır Veri Saklama',
-  'landing.features.item1.desc': 'Kaynak kodlarınız sunucuda veya veritabanında asla kalıcı olarak depolanmaz. Kod yalnızca RAM üzerinde işlenir ve grafik üretildiği anda bellekten silinir.',
-
-  'landing.features.item2.title': 'Roslyn Semantik Analiz Motoru',
-  'landing.features.item2.desc': "Basit metin eşleştirme yerine Microsoft Roslyn derleyici altyapısını kullanarak sınıf, arayüz, kalıtım ve metot çağrılarını %100 doğrulukla ayrıştırır.",
-
-  'landing.features.item3.title': '2D İnteraktif Mimari Tuvali',
-  'landing.features.item3.desc': 'Bağımlılıkları sürükle-bırak düğümlerle inceleyin, seviye filtreleri uygulayın, yakınlaştırın ve Clean Architecture katmanlarınızı berrak şekilde görün.',
-
-  'landing.features.item4.title': 'Döngüsel Bağımlılık & Mimari Riskler',
-  'landing.features.item4.desc': 'Katman kurallarını ihlal eden ters bağımlılıkları, döngüsel çağrıları (circular dependencies) ve spagetti bağlantıları saniyeler içinde açığa çıkarın.',
-
-  'landing.features.item5.title': 'Yüksek Çözünürlüklü Dışa Aktarma',
-  'landing.features.item5.desc': "Hazırladığınız mimari diyagramları PNG, SVG ve JSON formatlarında dışa aktararak dokümantasyonlarınıza, pull request'lerinize veya sunumlarınıza ekleyin.",
-
-  'landing.features.item6.title': 'Doğrudan GitHub Entegrasyonu',
-  'landing.features.item6.desc': 'Açık veya özel GitHub depolarınızı tek tıkla analiz edin. Yeni versiyonlar ve pull requestler öncesinde mimari etkileri güvenle simüle edin.',
-
-  // How It Works
-  'landing.howItWorks.eyebrow': 'İŞ AKIŞI',
-  'landing.howItWorks.title': '3 Sade Adımda Mimarinizi Görselleştirin',
-  'landing.howItWorks.subtitle': 'Karmaşık kurulumlar, konfigürasyon dosyaları veya saatler süren işlemler yok.',
-
-  'landing.howItWorks.step1.step': 'ADIM 01',
-  'landing.howItWorks.step1.title': 'Deponuzu Bağlayın',
-  'landing.howItWorks.step1.desc': 'GitHub hesabınızla tek tıkla güvenli oturum açın ve analiz etmek istediğiniz C# projesini listenizden seçin.',
-
-  'landing.howItWorks.step2.step': 'ADIM 02',
-  'landing.howItWorks.step2.title': 'Roslyn Derin Analizi',
-  'landing.howItWorks.step2.desc': 'Roslyn analiz motorumuz kodunuzun sözdizimsel ağacını bellek üzerinde tarayarak bağımlılık matrisini saniyeler içinde oluşturur.',
-
-  'landing.howItWorks.step3.step': 'ADIM 03',
-  'landing.howItWorks.step3.title': 'İnteraktif Olarak Keşfedin',
-  'landing.howItWorks.step3.desc': 'Üretilen 2D diyagram üzerinde gezinin, sınıfları izole edin, metot çağrılarını filtreleyin ve mimari içgörüler kazanın.',
-
-  // Comparison
-  'landing.comparison.eyebrow': 'NEDEN FLOWLENS?',
-  'landing.comparison.title': 'Geleneksel Kod Okuma vs FlowLens Görselleştirme',
-  'landing.comparison.subtitle': 'Büyük kod tabanlarında kaybolmak yerine mimariyi tek bakışta kavrayın.',
-  'landing.comparison.legacyTitle': 'Geleneksel Yöntem',
-  'landing.comparison.legacy1': 'Yüzlerce dosya ve klasör arasında kaybolma',
-  'landing.comparison.legacy2': 'Eski kalmış, manuel çizilmiş statik diyagramlar',
-  'landing.comparison.legacy3': 'Haftalar süren yeni geliştirici oryantasyon süreci',
-  'landing.comparison.legacy4': 'Görünmeyen döngüsel bağımlılıklar ve spagetti kod',
-  'landing.comparison.flowlensTitle': 'FlowLens Deneyimi',
-  'landing.comparison.flowlens1': 'Tüm codebase için tek ekranda canlı 2D harita',
-  'landing.comparison.flowlens2': 'Doğrudan Roslyn AST ile %100 güncel mimari',
-  'landing.comparison.flowlens3': 'Dakikalar içinde yeni ekip üyelerinin projeyi kavraması',
-  'landing.comparison.flowlens4': 'Tek tıkla döngüsel bağımlılık ve katman ihlali tespiti',
-
-  // CTA
-  'landing.cta.eyebrow': 'AÇIK KAYNAK • YEREL GİZLİLİK • ÜCRETSİZ',
-  'landing.cta.title': 'Kod Mimarinizi Bugün Keşfetmeye Başlayın',
-  'landing.cta.subtitle': 'Karmaşık C# projelerini saniyeler içinde anlaşılır kılın. Kurulum yok, kredi kartı gerekmez, veri sızıntısı riski sıfırdır.',
-  'landing.cta.buttonPrimary': 'Analize Başla — Ücretsiz',
-  'landing.cta.buttonSecondary': "GitHub'da Yıldızla",
-  'landing.cta.note': 'MIT Lisanslı • Sıfır Kod Depolama • Topluluk Odaklı Açık Kaynak Proje',
-
-  // Footer
-  'landing.footer.desc': 'C# projeleri için gizlilik odaklı, Roslyn tabanlı statik kod analizi ve 2D interaktif mimari görselleştirme platformu.',
-  'landing.footer.productTitle': 'Ürün',
-  'landing.footer.linksTerms': 'Kullanım Şartları & Gizlilik',
-  'landing.footer.linksDashboard': 'Kontrol Paneli',
-  'landing.footer.communityTitle': 'Topluluk & Destek',
-  'landing.footer.githubIssues': 'Hata Bildir / Katkıda Bulun',
-  'landing.footer.githubDiscussions': 'GitHub Tartışmaları',
-  'landing.footer.copyright': 'FlowLens. Tüm hakları saklıdır. MIT Lisansı ile açık kaynak olarak sunulmaktadır.'
-};
-
 const tr = {
+  // Meta
   language: 'Dil',
-  turkish: 'Türkçe',
-  english: 'English',
-  strings: {
-    ...Object.fromEntries(Object.keys(en.strings).map((key) => [key, key])),
-    ...landingTr
-  }
+
+  // Common
+  'common.brand': 'FlowLens',
+  'common.getStarted': 'Başla',
+  'common.analyze': 'Analiz Et',
+  'common.cancel': 'İptal',
+  'common.save': 'Kaydet',
+  'common.saving': 'Kaydediliyor...',
+  'common.apply': 'Uygula',
+  'common.applying': 'Uygulanıyor...',
+  'common.back': 'Geri Dön',
+  'common.start': 'Başlat',
+  'common.search': 'Arama...',
+  'common.loading': 'Yükleniyor...',
+  'common.export': 'Dışa Aktar',
+  'common.close': 'Kapat',
+  'common.yes': 'Evet',
+  'common.no': 'Hayır',
+  'common.error': 'Hata',
+  'common.success': 'Başarılı',
+  'common.guestDeveloper': 'Misafir Geliştirici',
+  'common.about': 'Hakkımızda',
+
+  // Landing - Navbar
+  'landing.nav.getStarted': 'Giriş Yap',
+
+  // Landing - Hero
+  'landing.hero.trueFocus': 'Kod Mimarinizi Görselleştirin',
+  'landing.hero.subtitle': 'Spagetti kodu saniyeler içinde çözün. FlowLens, C# mimarinizi sıfır bulut yüklemesiyle yerel olarak haritalandırır.',
+  'landing.hero.ctaPrimary': 'Projeyi Analiz Et',
+  'landing.hero.ctaSecondary': "GitHub'da İncele",
+
+  // Landing - Features
+  'landing.features.title': 'Hak Ettiğiniz Mimari',
+  'landing.features.subtitle': 'Karmaşık kod tabanlarını kontrol altına almak için ihtiyacınız olan her şey. Performans ve güvenlik odaklı.',
+  'landing.features.local.title': '%100 Lokal',
+  'landing.features.local.desc': 'Gizlilik öncelikli. FlowLens kodunuzu asla buluta göndermez. Tüm analiz güvenle kendi makinenizde gerçekleşir.',
+  'landing.features.roslyn.title': 'Roslyn Motoru',
+  'landing.features.roslyn.desc': 'Roslyn destekli derin C# kod analizi. İlişkileri, bağımlılıkları ve karmaşık yapıları anında kavrayın.',
+  'landing.features.maps.title': 'İnteraktif Haritalar',
+  'landing.features.maps.desc': 'Spagetti kodunu anlamlı kılan, güzel tasarlanmış 2D düğüm grafikleriyle mimarinizi görsel olarak keşfedin.',
+
+  // Landing - CTA
+  'landing.cta.title': 'Büyük resmi görmeye hazır mısınız?',
+  'landing.cta.button': 'Analiz Etmeye Başla',
+
+  // Landing - Footer
+  'landing.footer.copyright': 'FlowLens. Tüm hakları saklıdır.',
+  'landing.footer.about': 'Hakkımızda',
+
+  // App Navbar
+  'navbar.quotaFull': 'Limitiniz doldu. Geri sayım bitince yenilenecek.',
+  'navbar.dailyQuota': 'Günlük analiz hakkınız',
+  'navbar.resets': 'YENİLENME:',
+  'navbar.quota': 'HAK',
+  'navbar.quotaRemaining': 'Hak Kaldı',
+
+  // App Sidebar
+  'sidebar.dashboard': 'Kontrol Paneli',
+  'sidebar.settings': 'Ayarlar',
+  'sidebar.about': 'Hakkımızda',
+  'sidebar.logout': 'Çıkış Yap',
+  'sidebar.logoutSuccess': 'Başarıyla çıkış yapıldı.',
+  'sidebar.logoutError': 'Çıkış yapılırken bir sorun oluştu.',
+
+  // Dashboard Header
+  'dashboard.title': 'Aktif Depolar',
+  'dashboard.subtitle': 'Bağlı olan projelerinizi yönetin',
+  'dashboard.githubPlaceholder': 'Github URL',
+  'dashboard.analyzeBtn': 'Analiz Et',
+  'dashboard.connectedProjects': 'Bağlı Projeler',
+  'dashboard.repo': 'Repo',
+  'dashboard.emptyUrl': 'Lütfen bir GitHub repo linki veya adı girin.',
+  'dashboard.invalidFormat': "Geçersiz format. Örnek: 'facebook/react' veya GitHub URL'si girin.",
+
+  // About Page
+  'about.title': 'FlowLens Hakkında',
+  'about.subtitle': 'C# geliştiricileri için gizlilik odaklı kod mimarisi görselleştirme aracı.',
+  'about.devTitle': 'Geliştirici Hakkında',
+  'about.devText1': 'Selam, ben Eyüp Kaya.',
+  'about.devText2': 'Kod yazmayı, modern teknolojileri keşfetmeyi ve yaratıcı fikirleri dijital dünyada hayata geçirmeyi seven bir yazılım tutkunuyum.',
+  'about.devText3': 'FlowLens de hem kendimi geliştirmek hem de ortaya keyifli bir iş çıkarmak için hazırladığım kişisel bir proje. Umarım kullanırken eğlenirsiniz!',
+  'about.techTitle': 'Teknoloji',
+  'about.techText': 'Şu an için analiz motorumuzda sadece C# dil desteği bulunmaktadır. Ancak önümüzdeki zamanlarda diğer popüler diller için de destek eklemeyi planlıyorum.',
+  'about.contactTitle': 'İletişim',
+  'about.contactText': 'Bana aşağıdaki platformlar üzerinden ulaşabilirsiniz:',
+  'about.backToHome': 'Ana Sayfaya Dön',
+
+  // Settings Page
+  'settings.myAccount': 'Hesabım',
+  'settings.analysisPreferences': 'Analiz Tercihleri',
+  'settings.graphAppearance': 'Grafik & Görünüm',
+  'settings.dataManagement': 'Veri Yönetimi',
+  'settings.pageDesc': 'FlowLens analiz motoru ve çalışma alanı tercihlerinizi yönetin.',
+  'settings.accountInfo': 'Hesap Bilgileri',
+  'settings.username': 'Kullanıcı Adı',
+  'settings.email': 'E-posta',
+  'settings.githubProfile': 'GitHub Profili',
+  'settings.analysisSettings': 'Analiz Ayarları',
+  'settings.excludedFolders': 'Hariç Tutulan Klasörler',
+  'settings.maxDepth': 'Maksimum Analiz Derinliği',
+  'settings.showExternal': 'Harici Kütüphaneleri Göster',
+  'settings.graphSettings': 'Grafik Ayarları',
+  'settings.nodeDetail': 'Düğüm Detay Seviyesi',
+  'settings.highPerformance': 'Yüksek Performans Modu',
+  'settings.showMinimap': 'Küçük Haritayı Göster',
+  'settings.dataPrefs': 'Veri Tercihleri',
+  'settings.repoVisibility': 'Depo Görünürlüğü',
+  'settings.all': 'Tümü',
+  'settings.public': 'Genel',
+  'settings.private': 'Özel',
+  'settings.saveEngine': 'Motor Ayarlarını Kaydet',
+  'settings.applyAppearance': 'Görünüm Ayarlarını Uygula',
+  'settings.dangerZone': 'Tehlikeli Bölge',
+  'settings.clearCache': 'Analiz Önbelleğini Temizle',
+  'settings.clearCacheConfirm': 'Analiz önbelleğini temizlemek istediğinize emin misiniz?',
+  'settings.cacheCleared': 'Önbellek temizlendi.',
+  'settings.settingsUpdated': 'Ayarlar başarıyla güncellendi!',
+  'settings.settingsError': 'Ayarlar kaydedilirken bir sorun oluştu.',
+  'settings.userError': 'Kullanıcı bilgileri çekilirken bir hata oluştu.',
+
+  // Analysis
+  'analysis.preparing': 'Analiz hazırlanıyor...',
+  'analysis.analyzing': 'Kod mimariniz analiz ediliyor...',
+  'analysis.completed': 'Analiz tamamlandı!',
+  'analysis.results': 'Analiz sonuçları',
+  'analysis.exitTitle': 'ANALİZİ_SONLANDIR',
+  'analysis.exitConfirm': 'EVET, ÇIKIŞ YAP',
+  'analysis.exitCancel': 'İPTAL',
+  'analysis.exitMsg': 'Mevcut analiz grafiğinden ayrılmak üzeresiniz. Dışa aktarılmamış diyagram görünümleri kaybolacaktır.',
+  'analysis.exitQuestion': 'Gerçekten çıkış yapmak istiyor musunuz?',
+  'analysis.waitingData': 'ANALİZ_VERİSİ_BEKLENİYOR...',
+
+  // Misc
+  'misc.cookieTitle': 'Çerez Kullanımı',
+  'misc.cookieMsg': 'Size daha iyi bir deneyim sunabilmek ve oturumunuzu güvenli bir şekilde yönetebilmek için sitemizde zorunlu çerezler kullanılmaktadır.',
+  'misc.cookieAccept': 'Sistemi kullanmaya devam etmek için lütfen çerez politikasını onaylayın.',
+  'misc.refreshPage': 'Sayfayı Yenile',
+  'misc.pageNotFound': 'Sayfa Bulunamadı',
+  'misc.unauthorized': 'YETKİSİZ_ERİŞİM_TALEBİ',
+  'misc.rateLimitTitle': 'AŞIRI_YÜKLENME_TESPİT_EDİLDİ',
+  'misc.returnHome': 'Ana Sayfaya Dön',
 };
 
 export default tr;

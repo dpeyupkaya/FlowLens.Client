@@ -1,5 +1,3 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
 import { 
   Layout, 
   Typography, 
@@ -14,7 +12,6 @@ import {
   CodeOutlined,
   SafetyCertificateOutlined
 } from '@ant-design/icons';
-import SEO from '../components/SEO';
 
 const { Header, Content, Footer } = Layout;
 const { Title, Text, Paragraph } = Typography;
@@ -35,8 +32,7 @@ const TermsOfServicePage = () => {
         },
       }}
     >
-      <SEO title="Terms of Service - FlowLens" />
-      <Layout className="min-h-screen bg-[#020617] text-slate-200">
+      <Layout className="min-h-screen">
         
         <Header style={{ 
           position: 'sticky', 
