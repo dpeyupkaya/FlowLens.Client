@@ -10,12 +10,14 @@ const RepoCard = ({ repo, onAnalyze, isAnalyzing }) => {
   const [isHovered, setIsHovered] = useState(false);
 
   const isCSharp = repo.language?.toLowerCase() === 'c#';
+  const isPython = repo.language?.toLowerCase() === 'python';
   const isUnknown = !repo.language;
-  const isSupported = isCSharp || isUnknown;
+  const isSupported = isCSharp || isPython || isUnknown;
 
   const getLanguageColor = (lang) => {
     switch (lang?.toLowerCase()) {
       case 'c#': return 'cyan';
+      case 'python': return 'blue';
       default: return 'default';
     }
   };
@@ -87,7 +89,7 @@ const RepoCard = ({ repo, onAnalyze, isAnalyzing }) => {
 
             <div className="flex flex-col gap-1.5">
               <span className={`text-[10px] font-mono uppercase tracking-[0.15em] ${isSupported ? 'text-slate-500' : 'text-slate-700'}`}>
-                {isCSharp ? 'ANALİZE_HAZIR' : isUnknown ? 'KISITLI_ERİŞİM' : 'UYUMSUZ_SÜRÜM'}
+                {isSupported && !isUnknown ? 'ANALİZE_HAZIR' : isUnknown ? 'KISITLI_ERİŞİM' : 'UYUMSUZ_SÜRÜM'}
               </span>
               {isUnknown && (
                 <span className="text-[9px] text-amber-500/60 font-mono flex items-center gap-1.5 tracking-wider">

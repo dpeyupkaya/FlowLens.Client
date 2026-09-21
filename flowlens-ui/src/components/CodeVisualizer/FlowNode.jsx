@@ -1,7 +1,22 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
+import { FileOutlined, SettingOutlined, AppstoreOutlined, BuildOutlined, DatabaseOutlined, ApiOutlined } from '@ant-design/icons';
 import { getLayerColor } from '../../utils/graphHelpers';
 import { useFlowStore } from '../../store/useFlowStore';
+
+const getNodeIcon = (type) => {
+  switch (type) {
+    case 'Python Module': return <FileOutlined />;
+    case 'Function': return <span className="font-serif italic font-bold">f()</span>;
+    case 'Method': return <SettingOutlined />;
+    case 'External Module': return <AppstoreOutlined />;
+    case 'Base Class': return <BuildOutlined />;
+    case 'Class': return <BuildOutlined />;
+    case 'Database Entity': return <DatabaseOutlined />;
+    case 'API Endpoint': return <ApiOutlined />;
+    default: return null;
+  }
+};
 
 const FlowNode = ({ id, data }) => {
   const isCompact = data.detailLevel === 'Compact';
@@ -16,8 +31,8 @@ const FlowNode = ({ id, data }) => {
   const { isRecording, isInTrace, isTraceActive, isDimmed, stepNumber } = data;
 
   // Backend'den gelen Metot ve Property listeleri
-  const methods = data.metadata?.Methods || [];
-  const properties = data.metadata?.Properties || [];
+  const methods = data.metadata?.Methods || data.metadata?.methods || [];
+  const properties = data.metadata?.Properties || data.metadata?.properties || [];
 
   return (
     <>
@@ -43,7 +58,11 @@ const FlowNode = ({ id, data }) => {
 
         <div className={`flex justify-between items-center gap-4 ${isCompact ? 'mb-1' : 'mb-2'}`}>
           <b style={{ color: nodeColor }}>[{layerName}]</b>
-          {!isCompact && <span className="text-slate-500 text-[9px] uppercase tracking-wider">{data.type}</span>}
+          {!isCompact && (
+            <span className="text-slate-500 text-[9px] uppercase tracking-wider flex items-center gap-1">
+              {getNodeIcon(data.type)} {data.type}
+            </span>
+          )}
         </div>
 
         <div className={`text-white font-bold break-all ${isCompact ? 'text-xs' : 'text-sm'}`}>

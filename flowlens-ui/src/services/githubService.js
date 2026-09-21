@@ -1,22 +1,22 @@
 import { axiosClient } from './axiosClient';
 
-let reposPromise = null;
+let reposPromises = {};
 
 export const githubService = {
-  getCSharpRepos: () => {
-    if (!reposPromise) {
-      reposPromise = axiosClient.get('/api/github/csharp-repos')
+  getRepos: (language = 'All') => {
+    if (!reposPromises[language]) {
+      reposPromises[language] = axiosClient.get(`/api/github/repos?language=${language}`)
         .then(response => response.data)
         .catch(error => {
-          reposPromise = null; 
+          reposPromises[language] = null; 
           throw error;
         });
     }
     
-    return reposPromise;
+    return reposPromises[language];
   },
 
   clearReposCache: () => {
-    reposPromise = null;
+    reposPromises = {};
   }
 };

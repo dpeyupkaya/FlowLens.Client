@@ -9,7 +9,13 @@ export const NODE_TYPES = {
   CLASS: 'Class',
   METHOD: 'Method',
   PARAMETER: 'Parameter',
-  EXTERNAL: 'ExternalType'
+  EXTERNAL: 'ExternalType',
+  PYTHON_MODULE: 'Python Module',
+  FUNCTION: 'Function',
+  EXTERNAL_MODULE: 'External Module',
+  BASE_CLASS: 'Base Class',
+  DATABASE_ENTITY: 'Database Entity',
+  API_ENDPOINT: 'API Endpoint'
 };
 
 export const getLayerColor = (layerName) => {
@@ -45,8 +51,8 @@ export const getLayoutedElements = async (nodes, edges, direction = 'DOWN') => {
       'elk.aspectRatio': '1.5',                  
     },
     children: nodes.map(n => {
-      const width = n.type === NODE_TYPES.METHOD ? 180 : 250;
-      const height = n.type === NODE_TYPES.METHOD ? 80 : 120;
+      const width = (n.type === NODE_TYPES.METHOD || n.type === NODE_TYPES.FUNCTION) ? 180 : 250;
+      const height = (n.type === NODE_TYPES.METHOD || n.type === NODE_TYPES.FUNCTION) ? 80 : 120;
       return { id: n.id, width, height };
     }),
     edges: edges.map(e => ({

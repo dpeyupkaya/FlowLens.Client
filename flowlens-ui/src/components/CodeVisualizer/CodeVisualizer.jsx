@@ -20,6 +20,7 @@ const nodeTypes = { customNode: FlowNode };
 const VisualizerContent = ({ graphData }) => {
   const containerRef = useRef();
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [selectedNodeId, setSelectedNodeId] = useState(null);
   const initialFitDone = useRef(false);
 
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -84,10 +85,16 @@ const VisualizerContent = ({ graphData }) => {
         const rel = e.originalRelation || e.relationType || e.relation;
         let strokeColor = '#1e293b';
         let dash = 'none';
+        let label = undefined;
+        let strokeWidthBase = 1;
 
-        if (rel === 'DependsOn' || rel === 'Instantiates') { strokeColor = '#475569'; dash = '4 4'; }
+        if (rel === 'DependsOn') { strokeColor = '#475569'; dash = '4 4'; }
+        if (rel === 'Instantiates') { strokeColor = '#3b82f6'; dash = '4 4'; label = 'instantiates'; }
         if (rel === 'Inherits') { strokeColor = '#ef4444'; }
         if (rel === 'Implements') { strokeColor = '#10b981'; dash = '8 4'; }
+        if (rel === 'Imports') { strokeColor = '#a855f7'; dash = '5 5'; label = 'imports'; }
+        if (rel === 'Calls') { strokeColor = '#f97316'; label = 'calls'; }
+        if (rel === 'HasRelation') { strokeColor = '#d946ef'; dash = '6 3'; label = 'relation'; strokeWidthBase = 2; }
 
         const shouldAnimate = graphicsSettings.highPerformanceMode 
           ? false 
@@ -99,11 +106,14 @@ const VisualizerContent = ({ graphData }) => {
           id: `${e.source}-${e.target}`,
           source: e.source,
           target: e.target,
+          label: label,
+          labelStyle: { fill: strokeColor, fontWeight: 700, fontSize: 10, fontFamily: 'monospace' },
+          labelBgStyle: { fill: '#0f172a', fillOpacity: 0.8 },
           animated: shouldAnimate,
           style: {
             strokeDasharray: dash,
             stroke: isTraceActive ? '#10b981' : strokeColor,
-            strokeWidth: isTraceActive ? 4 : 1,
+            strokeWidth: isTraceActive ? 4 : strokeWidthBase,
             opacity: (isTraceMode && !isTraceEdge) ? 0.1 : 1,
             transition: transitionStyle
           },
@@ -142,18 +152,29 @@ const VisualizerContent = ({ graphData }) => {
       return;
     }
 
+    setSelectedNodeId(node.id);
+
     const type = node.data.type;
-    if (type === NODE_TYPES.CLASS || type === NODE_TYPES.EXTERNAL) toggleExpandedClass(node.id);
-    else if (type === NODE_TYPES.METHOD) toggleExpandedMethod(node.id);
+    const expandableTypes = [NODE_TYPES.CLASS, NODE_TYPES.EXTERNAL, NODE_TYPES.PYTHON_MODULE, NODE_TYPES.BASE_CLASS, NODE_TYPES.DATABASE_ENTITY, NODE_TYPES.API_ENDPOINT];
+    
+    if (expandableTypes.includes(type)) {
+      toggleExpandedClass(node.id);
+    } else if (type === NODE_TYPES.METHOD || type === NODE_TYPES.FUNCTION) {
+      toggleExpandedMethod(node.id);
+    }
 
     setCenter(node.position.x + 125, node.position.y + 60, { zoom: 1.2, duration: 800 });
   }, [isRecording, handleNodeSelectForDebug, toggleExpandedClass, toggleExpandedMethod, setCenter]);
+
+  const onPaneClick = useCallback(() => {
+    setSelectedNodeId(null);
+  }, []);
 
   return (
     <div ref={containerRef} className={`w-full bg-[#020617] rounded-xl overflow-hidden border border-slate-800 relative transition-all ${isFullscreen ? 'fixed inset-0 z-[9999] h-screen w-screen' : 'h-[700px]'}`}>
       
       <ExportMenu isFullscreen={isFullscreen} toggleFullscreen={toggleFullscreen} />
-      <ContextInspector activeNodeId={tracePath[activeStep]} rawNodes={rawNodes} />
+      <ContextInspector activeNodeId={tracePath[activeStep] || selectedNodeId} rawNodes={rawNodes} />
 
       <ReactFlow
         nodes={nodes}
@@ -162,6 +183,7 @@ const VisualizerContent = ({ graphData }) => {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onNodeClick={onNodeClick}
+        onPaneClick={onPaneClick}
         nodeTypes={nodeTypes}
         minZoom={0.05}
         maxZoom={3}

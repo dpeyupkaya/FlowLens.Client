@@ -2,7 +2,7 @@ import { axiosClient } from './axiosClient';
 import { useFlowStore } from '../store/useFlowStore'; 
 
 export const analysisService = {
-  startAnalysis: async (repoData, analysisId) => {
+  startAnalysis: async (repoData, analysisId, targetLanguage) => {
     
     let targetUrl = '';
     
@@ -19,13 +19,19 @@ export const analysisService = {
     const offsetMinutes = new Date().getTimezoneOffset();
     const { blacklistedFolders, maxAnalysisDepth } = useFlowStore.getState();
 
-    const response = await axiosClient.post('/api/Analysis/start', { 
+    const payload = { 
       RepoUrl: targetUrl, 
       IgnoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules"],
       MaxDepth: maxAnalysisDepth || 3,
       AnalysisId: analysisId, 
       TimezoneOffsetMinutes: offsetMinutes
-    });
+    };
+
+    if (targetLanguage) {
+      payload.targetLanguage = targetLanguage;
+    }
+
+    const response = await axiosClient.post('/api/Analysis/start', payload);
     
     return response.data;
   }

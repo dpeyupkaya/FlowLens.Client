@@ -10,10 +10,13 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
     if (!activeNode) return null;
 
     const type = activeNode.type || activeNode.Type;
-    if (type !== 'Class' && type !== 'Interface' && type !== 'Record') return null;
+    if (!['Class', 'Interface', 'Record', 'Python Module', 'Base Class', 'Database Entity', 'API Endpoint'].includes(type)) return null;
 
     const metadata = activeNode.metadata || activeNode.Metadata || {};
     const rawMethods = metadata.Methods || metadata.methods || [];
+    const rawProperties = metadata.Properties || metadata.properties || [];
+    const frameworks = metadata.Frameworks || metadata.frameworks || [];
+    const route = metadata.Route || metadata.route || null;
 
     const methods = rawMethods.map(m => {
       const parameters = (m.Parameters || m.parameters || []).map(pString => {
@@ -33,16 +36,24 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
       };
     });
 
+    const properties = rawProperties.map(p => ({
+      name: p.Name || p.name,
+      type: p.Type || p.type
+    }));
+
     return { 
       name: activeNode.name || activeNode.Name, 
       layer: metadata.Layer || metadata.layer || 'Unknown', 
-      methods 
+      methods,
+      properties,
+      frameworks,
+      route
     };
   }, [activeNodeId, rawNodes]);
 
-  if (!contextData || contextData.methods.length === 0) return null;
+  if (!contextData || (contextData.methods.length === 0 && contextData.properties.length === 0 && contextData.frameworks.length === 0 && !contextData.route)) return null;
 
-  const { name, layer, methods } = contextData;
+  const { name, layer, methods, properties, frameworks, route } = contextData;
   const nodeColor = getLayerColor(layer);
 
   return (
@@ -56,6 +67,51 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
       </div>
 
       <div className="p-3 flex flex-col gap-3">
+        
+        {frameworks && frameworks.length > 0 && (
+          <div className="mb-1">
+            <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-2 pl-1">Kullanılan Teknolojiler</div>
+            <div className="flex flex-wrap gap-2">
+              {frameworks.map((fw, idx) => (
+                <span key={idx} className="bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 px-2 py-1 rounded-md text-[10px] font-bold tracking-wider">
+                  {fw}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {route && (
+          <div className="mb-1">
+            <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-2 pl-1">URL Yolu / Endpoint</div>
+            <div className="bg-slate-900/50 rounded-lg border border-slate-800 p-2.5 shadow-inner">
+              <span className="text-[12px] font-mono text-emerald-400 break-all">{route}</span>
+            </div>
+          </div>
+        )}
+
+        {properties && properties.length > 0 && (
+          <div className="mb-1">
+            <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-2 pl-1">Değişkenler</div>
+            <div className="flex flex-col gap-2">
+              {properties.map((prop, idx) => (
+                <div key={`p-${idx}`} className="bg-slate-900/50 rounded-lg border border-slate-800 p-2.5 shadow-inner flex items-center justify-between">
+                  <span className="text-[11px] font-mono text-slate-300 break-all">{prop.name}</span>
+                  {prop.type && (
+                    <span className="text-[9px] text-teal-400 bg-teal-400/10 px-1.5 py-0.5 rounded truncate max-w-[100px]" title={prop.type}>
+                      {prop.type}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {methods && methods.length > 0 && (
+          <div>
+            <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-2 pl-1 mt-1">Fonksiyonlar</div>
+            <div className="flex flex-col gap-3">
         {methods.map((method, idx) => {
           const isWarning = method.complexity > 10; 
           
@@ -101,6 +157,9 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
             </div>
           );
         })}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

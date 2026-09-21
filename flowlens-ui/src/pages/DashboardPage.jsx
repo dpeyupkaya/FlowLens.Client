@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Spin, message } from 'antd';
+import { Spin, message, Select } from 'antd';
 import * as signalR from '@microsoft/signalr';
 import { githubService } from '../services/githubService';
 import { analysisService } from '../services/analysisService';
@@ -24,17 +24,19 @@ const DashboardPage = () => {
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState([]);
   const [analysisData, setAnalysisData] = useState(null);
+  
+  const [selectedLanguage, setSelectedLanguage] = useState('All');
 
   useEffect(() => {
     fetchInitialData();
-  }, []);
+  }, [selectedLanguage]);
 
   const fetchInitialData = async () => {
     try {
       setIsLoadingRepos(true);
 
       const [repoData, userData] = await Promise.all([
-        githubService.getCSharpRepos(),
+        githubService.getRepos(selectedLanguage),
         userService.getUserMe()
       ]);
 
@@ -96,7 +98,16 @@ const DashboardPage = () => {
         setProgress(prev => Math.min(prev + 5, 99));
       });
 
-      const report = await analysisService.startAnalysis(selectedRepo, currentAnalysisId);
+      let targetLang = selectedRepo?.language;
+      if (targetLang?.toLowerCase() === "c#") {
+        targetLang = "CSharp";
+      } else if (targetLang?.toLowerCase() === "python") {
+        targetLang = "Python";
+      } else {
+        targetLang = null;
+      }
+
+      const report = await analysisService.startAnalysis(selectedRepo, currentAnalysisId, targetLang);
 
       setAnalysisData(report);
       setProgress(100);
@@ -117,9 +128,8 @@ const DashboardPage = () => {
       window.dispatchEvent(new CustomEvent('quotaUpdated', { detail: newCount }));
 
     } catch (err) {
-            console.error("Analiz Süreci Hatası:", err);
+      console.error("Analiz Süreci Hatası:", err);
       
-     
       const errorMessage = err.response?.data?.Message 
                         || err.response?.data?.message 
                         || err.response?.data?.error 
@@ -127,8 +137,9 @@ const DashboardPage = () => {
                         || "Analiz sırasında beklenmeyen bir hata oluştu.";
       
       setLogs(prev => [...prev, `[HATA] ${errorMessage}`]);
-      setAnalysisStatus('idle'); 
-      
+      message.error(errorMessage, 6);
+      setAnalysisStatus('idle');
+      setModalVisible(false);
     } finally {
       
       if (connection.state === signalR.HubConnectionState.Connected) {
@@ -157,6 +168,22 @@ const DashboardPage = () => {
           loading={isLoadingRepos}
           onAnalyzeCustomRepo={handleAnalyzeCustomRepo}
         />
+
+        <div className="flex justify-end items-center mb-6">
+          <div className="flex items-center gap-3">
+            <span className="text-slate-400 font-medium">Dil Filtresi:</span>
+            <Select
+              value={selectedLanguage}
+              onChange={setSelectedLanguage}
+              className="w-40"
+              options={[
+                { value: 'All', label: 'Tüm Diller' },
+                { value: 'CSharp', label: 'C#' },
+                { value: 'Python', label: 'Python' }
+              ]}
+            />
+          </div>
+        </div>
 
         {isLoadingRepos ? (
           <div className="flex flex-col items-center justify-center py-32 gap-4">

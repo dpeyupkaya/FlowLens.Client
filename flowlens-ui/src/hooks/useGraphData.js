@@ -35,12 +35,12 @@ export const useGraphData = () => {
       .filter(n => {
         const type = n.type || n.Type;
         const id = n.id || n.Id;
-        
-        if ((type === NODE_TYPES.CLASS || type === NODE_TYPES.EXTERNAL) && !nodesWithConnections.has(id)) {
+        const isMainNode = [NODE_TYPES.CLASS, NODE_TYPES.EXTERNAL, NODE_TYPES.PYTHON_MODULE, NODE_TYPES.BASE_CLASS, NODE_TYPES.EXTERNAL_MODULE, NODE_TYPES.DATABASE_ENTITY, NODE_TYPES.API_ENDPOINT].includes(type);
+        if (isMainNode && !nodesWithConnections.has(id)) {
             return false; 
         }
 
-        return type === NODE_TYPES.CLASS || type === NODE_TYPES.EXTERNAL || visibleMethodIds.has(id) || visibleParamIds.has(id);
+        return isMainNode || visibleMethodIds.has(id) || visibleParamIds.has(id);
       })
       .map(n => {
         const type = n.type || n.Type;
@@ -48,7 +48,7 @@ export const useGraphData = () => {
         const layer = metadata.Layer || 'Unknown';
         
         let color = getLayerColor(layer);
-        if (type === NODE_TYPES.METHOD) {
+        if (type === NODE_TYPES.METHOD || type === NODE_TYPES.FUNCTION) {
           color = metadata.HealthStatus === 'Warning' ? '#ef4444' : '#e2e8f0';
         } else if (type === NODE_TYPES.PARAMETER) {
           color = '#94a3b8';
@@ -82,7 +82,7 @@ export const useGraphData = () => {
       }));
 
     const uniqueLayers = [...new Set(filteredNodes
-      .filter(n => n.type === NODE_TYPES.CLASS || n.type === NODE_TYPES.EXTERNAL)
+      .filter(n => [NODE_TYPES.CLASS, NODE_TYPES.EXTERNAL, NODE_TYPES.PYTHON_MODULE, NODE_TYPES.BASE_CLASS, NODE_TYPES.EXTERNAL_MODULE, NODE_TYPES.DATABASE_ENTITY, NODE_TYPES.API_ENDPOINT].includes(n.type))
       .map(n => n.layer)
     )];
 
