@@ -130,8 +130,15 @@ const DashboardPage = () => {
     } catch (err) {
       console.error("Analiz Süreci Hatası:", err);
       
-      const errorMessage = err.response?.data?.Message 
+      let validationErrors = "";
+      if (err.response?.data?.errors) {
+        validationErrors = Object.values(err.response.data.errors).flat().join(" | ");
+      }
+
+      const errorMessage = validationErrors
+                        || err.response?.data?.Message 
                         || err.response?.data?.message 
+                        || err.response?.data?.title
                         || err.response?.data?.error 
                         || err.message 
                         || "Analiz sırasında beklenmeyen bir hata oluştu.";

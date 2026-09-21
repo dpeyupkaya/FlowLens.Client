@@ -1,4 +1,4 @@
-import React, { useState, Suspense, lazy, useMemo } from 'react';
+import React, { useState, useEffect, Suspense, lazy, useMemo } from 'react';
 import { 
   createBrowserRouter, 
   RouterProvider, 
@@ -13,6 +13,7 @@ import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
 import AnalyticsTracker from './utils/AnalyticsTracker'; 
 import { LanguageProvider } from './i18n/LanguageProvider';
+import { fetchCsrfToken } from './services/axiosClient';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -42,6 +43,10 @@ const RootLayout = () => (
 
 function App() {
   const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    fetchCsrfToken();
+  }, []);
 
   const router = useMemo(() => createBrowserRouter(
     createRoutesFromElements(

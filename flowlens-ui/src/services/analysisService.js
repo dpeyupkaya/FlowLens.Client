@@ -24,12 +24,9 @@ export const analysisService = {
       IgnoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules"],
       MaxDepth: maxAnalysisDepth || 3,
       AnalysisId: analysisId, 
-      TimezoneOffsetMinutes: offsetMinutes
+      TimezoneOffsetMinutes: offsetMinutes,
+      targetLanguage: targetLanguage || null
     };
-
-    if (targetLanguage) {
-      payload.targetLanguage = targetLanguage;
-    }
 
     const response = await axiosClient.post('/api/Analysis/start', payload);
     

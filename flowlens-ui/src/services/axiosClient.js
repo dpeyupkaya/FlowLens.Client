@@ -9,19 +9,26 @@ export const axiosClient = axios.create({
   }
 });
 
+let currentCsrfToken = null;
+
+export const fetchCsrfToken = async () => {
+  try {
+    // Avoid circular dependency or infinite interceptor loop by using axios directly for this, 
+    // or just use axiosClient since it's a GET request and doesn't need the header anyway.
+    const res = await axiosClient.get('/api/auth/csrf');
+    if (res.data && res.data.csrfToken) {
+      currentCsrfToken = res.data.csrfToken;
+    }
+  } catch (error) {
+    console.error("CSRF Token alınamadı:", error);
+  }
+};
+
 axiosClient.interceptors.request.use(
   (config) => {
-    const getCookie = (name) => {
-      const value = `; ${document.cookie}`;
-      const parts = value.split(`; ${name}=`);
-      if (parts.length === 2) return parts.pop().split(';').shift();
-      return null;
-    };
-
-    const csrfToken = getCookie('Xflwns-snwf');
-
-    if (csrfToken) {
-      config.headers['X-Xflwns-snwf'] = decodeURIComponent(csrfToken);
+    // Sadece POST, PUT, DELETE gibi veri değiştiren isteklerde ekle
+    if (currentCsrfToken && ['post', 'put', 'delete', 'patch'].includes(config.method?.toLowerCase())) {
+      config.headers['X-Xflwns-snwf'] = currentCsrfToken;
     }
 
     return config;
