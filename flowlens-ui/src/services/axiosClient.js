@@ -4,8 +4,6 @@ import { message } from 'antd';
 export const axiosClient = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
   withCredentials: true,
-  xsrfCookieName: 'Xflwns-snwf',
-  xsrfHeaderName: 'X-Xflwns-snwf',
   headers: {
     'Content-Type': 'application/json'
   }
