@@ -2,7 +2,7 @@ import { axiosClient } from './axiosClient';
 import { useFlowStore } from '../store/useFlowStore'; 
 
 export const analysisService = {
-  startAnalysis: async (repoData, analysisId, targetLanguage) => {
+  startAnalysis: async (repoData, analysisId, targetLanguages) => {
     
     let targetUrl = '';
     
@@ -20,12 +20,12 @@ export const analysisService = {
     const { blacklistedFolders, maxAnalysisDepth } = useFlowStore.getState();
 
     const payload = { 
-      RepoUrl: targetUrl, 
-      IgnoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules"],
-      MaxDepth: maxAnalysisDepth || 3,
-      AnalysisId: analysisId, 
-      TimezoneOffsetMinutes: offsetMinutes,
-      targetLanguage: targetLanguage || null
+      repoUrl: targetUrl, 
+      ignoredFolders: blacklistedFolders || ["obj", "bin", ".git", "node_modules", "dist", "build", ".next", "out", "coverage"],
+      maxDepth: maxAnalysisDepth || 3,
+      analysisId: analysisId, 
+      timezoneOffsetMinutes: offsetMinutes,
+      targetLanguages: targetLanguages || []
     };
 
     const response = await axiosClient.post('/api/Analysis/start', payload);

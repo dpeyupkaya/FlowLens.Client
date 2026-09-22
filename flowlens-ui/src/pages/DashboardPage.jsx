@@ -72,7 +72,7 @@ const DashboardPage = () => {
     handleAnalyzeClick(customRepo);
   };
 
-  const startLiveAnalysis = async () => {
+  const startLiveAnalysis = async (selectedLanguages) => {
     setAnalysisStatus('analyzing');
     setLogs(["[SİSTEM] Güvenli hat kuruluyor...", "[SİSTEM] Analiz motoru başlatıldı."]);
     setProgress(0); 
@@ -98,18 +98,7 @@ const DashboardPage = () => {
         setProgress(prev => Math.min(prev + 5, 99));
       });
 
-      let targetLang = selectedRepo?.language;
-      if (targetLang?.toLowerCase() === "c#") {
-        targetLang = "CSharp";
-      } else if (targetLang?.toLowerCase() === "python") {
-        targetLang = "Python";
-      } else if (targetLang?.toLowerCase() === "go") {
-        targetLang = "Go";
-      } else {
-        targetLang = null;
-      }
-
-      const report = await analysisService.startAnalysis(selectedRepo, currentAnalysisId, targetLang);
+      const report = await analysisService.startAnalysis(selectedRepo, currentAnalysisId, selectedLanguages);
 
       setAnalysisData(report);
       setProgress(100);
@@ -189,7 +178,9 @@ const DashboardPage = () => {
                 { value: 'All', label: 'Tüm Diller' },
                 { value: 'C#', label: 'C#' },
                 { value: 'Python', label: 'Python' },
-                { value: 'Go', label: 'Go' }
+                { value: 'Go', label: 'Go' },
+                { value: 'JavaScript', label: 'JavaScript' },
+                { value: 'TypeScript', label: 'TypeScript' }
               ]}
             />
           </div>
@@ -221,6 +212,7 @@ const DashboardPage = () => {
         status={analysisStatus}
         progress={progress}
         logs={logs}
+        repo={selectedRepo}
         onCancel={() => setModalVisible(false)}
         onConfirm={startLiveAnalysis}
         onShowResults={handleShowResults}

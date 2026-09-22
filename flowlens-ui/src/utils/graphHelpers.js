@@ -18,7 +18,14 @@ export const NODE_TYPES = {
   API_ENDPOINT: 'API Endpoint',
   STRUCT: 'Struct',
   INTERFACE: 'Interface',
-  FILE: 'File'
+  FILE: 'File',
+  MODULE: 'Module',
+  EXTERNAL_PACKAGE: 'External Package',
+  UI_COMPONENT: 'UI Component',
+  CONTROLLER: 'Controller',
+  REACT_HOOK: 'React Hook',
+  UI_VIEW: 'UI View',
+  STYLESHEET: 'Stylesheet'
 };
 
 export const getLayerColor = (layerName) => {
@@ -61,12 +68,13 @@ export const getLayoutedElements = async (nodes, edges, direction = 'DOWN') => {
     layoutOptions: {
       'elk.algorithm': 'layered',
       'elk.direction': direction,
-      'elk.spacing.nodeNode': '40', 
-      'elk.layered.spacing.nodeNodeBetweenLayers': '80', 
+      'elk.spacing.nodeNode': '50', 
+      'elk.layered.spacing.nodeNodeBetweenLayers': '90', 
       
       'elk.separateConnectedComponents': 'true', 
-      'elk.spacing.componentComponent': '60',    
-      'elk.aspectRatio': '1.5',                  
+      'elk.spacing.componentComponent': '100',    
+      'elk.aspectRatio': '1.5',
+      'elk.padding': '[top=50,left=50,bottom=50,right=50]'
     },
     children: nodes.map(n => {
       const width = (n.type === NODE_TYPES.METHOD || n.type === NODE_TYPES.FUNCTION) ? 180 : 250;

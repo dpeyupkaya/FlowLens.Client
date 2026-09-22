@@ -105,7 +105,7 @@ const LandingPage = () => {
 
           <motion.div variants={fadeUp} className="flex items-center gap-3 text-2xl md:text-3xl font-bold text-slate-300 mb-4">
             <RotatingText
-              texts={['C# Architecture', 'Python Architecture', 'Go Architecture', 'Smart AST Engine', 'Privacy First', 'Zero Cloud', 'Open Source']}
+              texts={['C# Architecture', 'Python Architecture', 'Go Architecture', 'JavaScript Architecture', 'TypeScript Architecture', 'Smart AST Engine', 'Privacy First', 'Zero Cloud', 'Open Source']}
               mainClassName="px-3 md:px-4 bg-teal-500/15 text-teal-400 overflow-hidden py-1 md:py-1.5 justify-center rounded-lg border border-teal-500/30"
               staggerFrom="last"
               initial={{ y: "100%" }}

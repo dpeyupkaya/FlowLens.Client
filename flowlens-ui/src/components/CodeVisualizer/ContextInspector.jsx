@@ -10,7 +10,7 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
     if (!activeNode) return null;
 
     const type = activeNode.type || activeNode.Type;
-    if (!['Class', 'Interface', 'Record', 'Python Module', 'Base Class', 'Database Entity', 'API Endpoint', 'Struct', 'File'].includes(type)) return null;
+    if (!['Class', 'Interface', 'Record', 'Python Module', 'Base Class', 'Database Entity', 'API Endpoint', 'Struct', 'File', 'Module', 'External Package', 'UI Component', 'Controller'].includes(type)) return null;
 
     const metadata = activeNode.metadata || activeNode.Metadata || {};
     const rawMethods = metadata.Methods || metadata.methods || [];

@@ -1,17 +1,36 @@
-import React, { useEffect, useRef } from 'react';
-import { Modal, Typography, Button, Progress } from 'antd';
-import { LoadingOutlined, RocketOutlined, LockOutlined, RightOutlined } from '@ant-design/icons';
+import React, { useEffect, useRef, useState } from 'react';
+import { Modal, Typography, Button } from 'antd';
+import { LoadingOutlined, RocketOutlined, LockOutlined, RightOutlined, CheckCircleFilled } from '@ant-design/icons';
+import { githubService } from '../../services/githubService';
 
 const { Text, Title } = Typography;
 
+const langColors = { 
+  'TypeScript': '#3178c6', 
+  'JavaScript': '#f1e05a', 
+  'C#': '#178600', 
+  'Python': '#3572A5', 
+  'Go': '#00ADD8', 
+  'CSS': '#563d7c', 
+  'HTML': '#e34c26',
+  'Vue': '#41b883',
+  'Shell': '#89e051'
+};
+const getLangColor = (l) => langColors[l] || '#8b949e';
+
 const AnalysisModal = ({ 
   visible, status, progress, logs, 
+  repo,
   onCancel, onConfirm, onShowResults, 
   dailyCount = 0, maxLimit = 5 
 }) => {
   const isAnalyzing = status === 'analyzing';
   const isFinished = progress === 100;
   const scrollRef = useRef(null);
+
+  const [languagesData, setLanguagesData] = useState(null);
+  const [selectedLangs, setSelectedLangs] = useState([]);
+  const [loadingLangs, setLoadingLangs] = useState(false);
 
   const remainingQuota = Math.max(0, maxLimit - dailyCount);
   const isQuotaExceeded = remainingQuota <= 0;
@@ -22,6 +41,46 @@ const AnalysisModal = ({
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [logs]);
+
+  useEffect(() => {
+    if (visible && repo && status === 'idle') {
+      setLoadingLangs(true);
+      let targetUrl = '';
+      if (typeof repo === 'string') { targetUrl = repo; }
+      else if (repo.html_url) { targetUrl = repo.html_url; }
+      else if (repo.fullName) { targetUrl = `https://github.com/${repo.fullName}`; }
+      else if (repo.owner && repo.name) { targetUrl = `https://github.com/${repo.owner.login}/${repo.name}`; }
+
+      githubService.getRepoLanguages(targetUrl).then(data => {
+        setLanguagesData(data);
+        const supported = ['CSharp', 'JavaScript', 'TypeScript', 'Python', 'Go', 'C#', 'HTML', 'CSS'];
+        const preselected = Object.keys(data).filter(l => supported.includes(l) || supported.includes(l.replace('#', 'Sharp')));
+        setSelectedLangs(preselected);
+      }).catch(err => {
+        console.error("Failed to fetch languages", err);
+      }).finally(() => {
+        setLoadingLangs(false);
+      });
+    } else if (!visible) {
+      setLanguagesData(null);
+      setSelectedLangs([]);
+    }
+  }, [visible, repo, status]);
+
+  const toggleLang = (lang) => {
+    if (selectedLangs.includes(lang)) {
+      setSelectedLangs(selectedLangs.filter(l => l !== lang));
+    } else {
+      setSelectedLangs([...selectedLangs, lang]);
+    }
+  };
+
+  const handleConfirm = () => {
+    const formattedLangs = selectedLangs.map(l => l.replace('C#', 'CSharp'));
+    onConfirm(formattedLangs);
+  };
+
+  const totalBytes = languagesData ? Object.values(languagesData).reduce((a,b)=>a+b, 0) : 0;
 
   return (
     <Modal
@@ -45,52 +104,115 @@ const AnalysisModal = ({
 
       {!isAnalyzing ? (
         <div className="flex flex-col">
-          <div className="flex items-center gap-4 mb-6">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center flex-shrink-0
-              ${isQuotaExceeded ? 'bg-red-500/10 text-red-400' : 'bg-teal-500/10 text-teal-400'}`}
+          {/* Header */}
+          <div className="flex items-start gap-4 mb-6">
+            <div className={`mt-1 flex-shrink-0
+              ${isQuotaExceeded ? 'text-red-400' : 'text-teal-400'}`}
             >
-              {isQuotaExceeded ? <LockOutlined className="text-xl" /> : <RocketOutlined className="text-xl" />}
+              {isQuotaExceeded ? <LockOutlined className="text-2xl opacity-80" /> : <RocketOutlined className="text-2xl opacity-80" />}
             </div>
             <div>
-              <Title level={4} className="!text-slate-100 !mb-1 !mt-0 !font-semibold">
+              <Title level={4} className="!text-slate-100 !mb-1 !mt-0 !font-medium tracking-tight">
                 {isQuotaExceeded ? 'Limit Doldu' : 'Analizi Başlat'}
               </Title>
-              <Text className="text-slate-400 text-sm block">
-                {isQuotaExceeded ? 'Günlük analiz limitine ulaştınız.' : 'Bu deponun mimari analizini başlatmak üzeresiniz.'}
+              <Text className="text-slate-400 text-sm leading-relaxed block">
+                {isQuotaExceeded 
+                  ? 'Günlük analiz limitinize ulaştınız. Yarın tekrar deneyebilirsiniz.' 
+                  : 'Bu deponun mimari haritasını çıkarmak için analiz motorunu başlatın.'}
               </Text>
             </div>
           </div>
 
-          <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800/80 mb-8">
-            <div className="flex justify-between items-end mb-2">
-              <Text className="text-slate-400 text-xs font-medium">Günlük Kota</Text>
-              <Text className={`font-mono text-sm font-semibold ${isQuotaExceeded ? 'text-red-400' : 'text-slate-200'}`}>
-                {remainingQuota} / {maxLimit}
-              </Text>
+          {/* Body */}
+          {loadingLangs ? (
+            <div className="flex justify-center items-center h-24 my-2">
+              <LoadingOutlined className="text-teal-500/50 text-3xl" />
             </div>
-            <Progress 
-              percent={usagePercentage} 
-              showInfo={false} 
-              strokeColor={isQuotaExceeded ? '#ef4444' : '#14b8a6'} 
-              trailColor="#1e293b" 
-              size="small" 
-            />
-          </div>
+          ) : languagesData && Object.keys(languagesData).length > 0 ? (
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-3">
+                <Text className="text-slate-500 text-[11px] uppercase tracking-wider font-semibold">Tespit Edilen Diller</Text>
+              </div>
+              
+              {/* Ultra thin progress bar */}
+              <div className="w-full h-1 rounded-full overflow-hidden flex mb-5 bg-slate-800/50 shadow-inner">
+                {Object.entries(languagesData).map(([lang, bytes]) => (
+                  <div 
+                    key={lang} 
+                    style={{ width: `${(bytes/totalBytes)*100}%`, backgroundColor: getLangColor(lang) }} 
+                    title={`${lang} (${((bytes/totalBytes)*100).toFixed(1)}%)`} 
+                    className="h-full transition-all duration-500"
+                  />
+                ))}
+              </div>
+              
+              {/* Minimal Pill Checkboxes */}
+              <div className="flex flex-wrap gap-2.5">
+                {Object.keys(languagesData).map(lang => {
+                  const isSupported = ['CSharp', 'JavaScript', 'TypeScript', 'Python', 'Go', 'C#', 'HTML', 'CSS'].includes(lang);
+                  const isSelected = selectedLangs.includes(lang);
+                  return (
+                    <button 
+                      key={lang}
+                      onClick={() => isSupported && toggleLang(lang)}
+                      disabled={!isSupported}
+                      className={`px-3 py-1.5 rounded-full text-xs font-medium flex items-center gap-2 transition-all duration-300 border focus:outline-none
+                        ${isSelected 
+                          ? 'bg-slate-800 border-teal-400 text-white shadow-[0_0_10px_rgba(45,212,191,0.2)]' 
+                          : 'bg-transparent border-slate-700/30 text-slate-500 hover:border-slate-500 hover:text-slate-300'
+                        }
+                        ${!isSupported ? 'opacity-30 cursor-not-allowed grayscale' : 'cursor-pointer'}`}
+                    >
+                      {isSelected ? (
+                        <CheckCircleFilled className="text-teal-400 text-[10px]" />
+                      ) : (
+                        <span className="w-2 h-2 rounded-full shadow-sm" style={{ backgroundColor: getLangColor(lang) }}></span>
+                      )}
+                      {lang}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          ) : null}
 
-          <div className="flex justify-end gap-3">
-            <Button onClick={onCancel} className="h-10 px-6 bg-transparent border-slate-700 text-slate-300 hover:text-white hover:border-slate-500 rounded-lg">
-              İptal
-            </Button>
-            <Button 
-              onClick={onConfirm} 
-              type="primary" 
-              disabled={isQuotaExceeded}
-              className={`h-10 px-6 border-none rounded-lg font-medium transition-colors
-                ${isQuotaExceeded ? 'bg-slate-800 text-slate-500' : 'bg-teal-600 hover:bg-teal-500 text-white'}
-              `}
-            >
-              Analizi Başlat
-            </Button>
+          {/* Footer Inline Quota & Buttons */}
+          <div className="flex items-center justify-between pt-4 border-t border-slate-800/60 mt-auto">
+            <div className="flex flex-col gap-1.5 w-1/3">
+              <span className="text-slate-500 text-[9px] uppercase tracking-wider font-semibold">
+                Günlük Kota
+              </span>
+              <div className="w-full bg-slate-800/60 rounded-full h-1 overflow-hidden">
+                <div 
+                  className={`h-full transition-all duration-500 ${isQuotaExceeded ? 'bg-red-500/80' : 'bg-teal-500/80'}`} 
+                  style={{ width: `${usagePercentage}%` }}
+                ></div>
+              </div>
+              <span className={`text-[10px] font-mono ${isQuotaExceeded ? 'text-red-400/80' : 'text-slate-400'}`}>
+                {remainingQuota} hak kaldı
+              </span>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <Button 
+                onClick={onCancel} 
+                className="h-9 px-5 bg-transparent border-none text-slate-400 hover:text-slate-200 shadow-none"
+              >
+                İptal
+              </Button>
+              <Button 
+                onClick={handleConfirm} 
+                type="primary" 
+                disabled={isQuotaExceeded || (languagesData && selectedLangs.length === 0 && !loadingLangs)}
+                className={`h-9 px-6 border-none rounded-lg font-medium transition-all duration-300
+                  ${isQuotaExceeded || (languagesData && selectedLangs.length === 0 && !loadingLangs) 
+                    ? 'bg-slate-800/50 text-slate-500 shadow-none' 
+                    : 'bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white shadow-[0_0_15px_rgba(20,184,166,0.2)]'}
+                `}
+              >
+                Analizi Başlat
+              </Button>
+            </div>
           </div>
         </div>
       ) : (

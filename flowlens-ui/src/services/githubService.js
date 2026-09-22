@@ -17,6 +17,12 @@ export const githubService = {
     return reposPromises[language];
   },
 
+  getRepoLanguages: async (repoUrl) => {
+    const encodedUrl = encodeURIComponent(repoUrl);
+    const response = await axiosClient.get(`/api/github/repo-languages?repoUrl=${encodedUrl}`);
+    return response.data;
+  },
+
   clearReposCache: () => {
     reposPromises = {};
   }

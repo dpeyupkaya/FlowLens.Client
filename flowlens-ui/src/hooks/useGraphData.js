@@ -35,10 +35,7 @@ export const useGraphData = () => {
       .filter(n => {
         const type = n.type || n.Type;
         const id = n.id || n.Id;
-        const isMainNode = [NODE_TYPES.CLASS, NODE_TYPES.EXTERNAL, NODE_TYPES.PYTHON_MODULE, NODE_TYPES.BASE_CLASS, NODE_TYPES.EXTERNAL_MODULE, NODE_TYPES.DATABASE_ENTITY, NODE_TYPES.API_ENDPOINT].includes(type);
-        if (isMainNode && !nodesWithConnections.has(id)) {
-            return false; 
-        }
+        const isMainNode = type !== NODE_TYPES.METHOD && type !== NODE_TYPES.PARAMETER;
 
         return isMainNode || visibleMethodIds.has(id) || visibleParamIds.has(id);
       })
@@ -82,7 +79,7 @@ export const useGraphData = () => {
       }));
 
     const uniqueLayers = [...new Set(filteredNodes
-      .filter(n => [NODE_TYPES.CLASS, NODE_TYPES.EXTERNAL, NODE_TYPES.PYTHON_MODULE, NODE_TYPES.BASE_CLASS, NODE_TYPES.EXTERNAL_MODULE, NODE_TYPES.DATABASE_ENTITY, NODE_TYPES.API_ENDPOINT].includes(n.type))
+      .filter(n => n.type !== NODE_TYPES.METHOD && n.type !== NODE_TYPES.PARAMETER)
       .map(n => n.layer)
     )];
 

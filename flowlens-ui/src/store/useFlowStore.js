@@ -5,7 +5,7 @@ export const useFlowStore = create((set, get) => ({
   settings: null,
   setSettings: (newSettings) => set({ settings: newSettings }),
 
-  blacklistedFolders: ["obj", "bin", ".git", "node_modules"], 
+  blacklistedFolders: ["obj", "bin", ".git", "node_modules", "dist", "build", ".next", "out", "coverage"], 
   setBlacklistedFolders: (folders) => set({ blacklistedFolders: folders }),
   
   maxAnalysisDepth: 3, 

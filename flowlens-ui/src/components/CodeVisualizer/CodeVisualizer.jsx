@@ -90,15 +90,20 @@ const VisualizerContent = ({ graphData }) => {
 
         if (rel === 'DependsOn') { strokeColor = '#475569'; dash = '4 4'; }
         if (rel === 'Instantiates') { strokeColor = '#3b82f6'; dash = '4 4'; label = 'instantiates'; }
-        if (rel === 'Inherits') { strokeColor = '#ef4444'; }
+        if (rel === 'Inherits' || rel === 'InheritsFrom') { strokeColor = '#ef4444'; }
         if (rel === 'Implements') { strokeColor = '#10b981'; dash = '8 4'; }
         if (rel === 'Imports') { strokeColor = '#a855f7'; dash = '5 5'; label = 'imports'; }
         if (rel === 'Calls') { strokeColor = '#f97316'; label = 'calls'; }
         if (rel === 'HasRelation') { strokeColor = '#d946ef'; dash = '6 3'; label = 'relation'; strokeWidthBase = 2; }
+        if (rel === 'DeclaredIn') { strokeColor = '#94a3b8'; dash = '2 2'; label = 'declared in'; }
+        
+        if (rel === 'IncludesScript') { strokeColor = '#fbbf24'; label = 'includes script'; }
+        if (rel === 'IncludesStyle' || rel === 'ImportsStyle') { strokeColor = '#22d3ee'; dash = '4 4'; label = 'style'; strokeWidthBase = 1; }
+        if (rel === 'SubmitsTo') { strokeColor = '#10b981'; label = 'submits to'; strokeWidthBase = 3; }
 
         const shouldAnimate = graphicsSettings.highPerformanceMode 
           ? false 
-          : (isTraceActive || rel === 'Contains' || rel === 'HasParameter');
+          : (isTraceActive || rel === 'Contains' || rel === 'HasParameter' || rel === 'SubmitsTo');
           
         const transitionStyle = graphicsSettings.highPerformanceMode ? 'none' : 'all 0.5s ease';
 

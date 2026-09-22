@@ -1,6 +1,6 @@
 import React from 'react';
 import { Handle, Position } from '@xyflow/react';
-import { FileOutlined, SettingOutlined, AppstoreOutlined, BuildOutlined, DatabaseOutlined, ApiOutlined } from '@ant-design/icons';
+import { FileOutlined, SettingOutlined, AppstoreOutlined, BuildOutlined, DatabaseOutlined, ApiOutlined, GlobalOutlined, BgColorsOutlined } from '@ant-design/icons';
 import { getLayerColor } from '../../utils/graphHelpers';
 import { useFlowStore } from '../../store/useFlowStore';
 
@@ -17,6 +17,8 @@ const getNodeIcon = (type) => {
     case 'Interface': return <ApiOutlined />;
     case 'Database Entity': return <DatabaseOutlined />;
     case 'API Endpoint': return <ApiOutlined />;
+    case 'UI View': return <GlobalOutlined />;
+    case 'Stylesheet': return <BgColorsOutlined />;
     default: return null;
   }
 };
@@ -37,6 +39,21 @@ const FlowNode = ({ id, data }) => {
   const methods = data.metadata?.Methods || data.metadata?.methods || [];
   const properties = data.metadata?.Properties || data.metadata?.properties || [];
 
+  const getLanguageBorder = (type, metadata) => {
+    const isCSharp = metadata?.Language === 'C#' || metadata?.Language === 'CSharp' || ['Class', 'Interface', 'Record', 'Struct', 'Database Entity'].includes(type);
+    const isJS = metadata?.Language === 'JavaScript' || metadata?.Language === 'TypeScript' || ['Module', 'UI Component', 'React Hook', 'Controller', 'External Package'].includes(type) || (metadata?.Frameworks && metadata.Frameworks.some(f => ['React', 'Vue', 'Angular', 'Express', 'Next.js'].includes(f)));
+    const isHTML = metadata?.Language === 'HTML' || type === 'UI View';
+    const isCSS = metadata?.Language === 'CSS' || type === 'Stylesheet';
+    const isAPIEndpoint = type === 'API Endpoint';
+    
+    if (isCSharp) return 'border-blue-500/50 hover:border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.15)]';
+    if (isJS) return 'border-amber-400/50 hover:border-amber-300 shadow-[0_0_15px_rgba(251,191,36,0.15)]';
+    if (isHTML) return 'border-orange-500/50 hover:border-orange-400 shadow-[0_0_15px_rgba(249,115,22,0.15)]';
+    if (isCSS) return 'border-cyan-400/50 hover:border-cyan-300 shadow-[0_0_15px_rgba(34,211,238,0.15)]';
+    if (isAPIEndpoint) return 'border-green-500/50 hover:border-green-400 shadow-[0_0_15px_rgba(34,197,94,0.15)]';
+    return 'border-slate-700 hover:border-slate-500 shadow-xl';
+  };
+
   return (
     <>
       <Handle type="target" position={Position.Top} className="w-2 h-2 !bg-slate-500 opacity-0" />
@@ -45,9 +62,9 @@ const FlowNode = ({ id, data }) => {
         className={`font-mono text-[11px] bg-slate-950 rounded-xl transition-all duration-300
           ${isCompact ? 'px-3 py-2 min-w-[120px] max-w-[180px]' : 'px-4 py-3 min-w-[180px] max-w-[280px]'}
           ${isDimmed ? 'opacity-20 grayscale' : 'opacity-100'}
-          ${isRecording ? 'cursor-crosshair hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'cursor-pointer hover:border-slate-500'}
+          ${isRecording ? 'cursor-crosshair hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'cursor-pointer'}
           ${isTraceActive ? 'border-2 border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.6)] scale-105 z-50' :
-            (isWarning && !isDimmed ? 'border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : 'border border-slate-700 shadow-xl')
+            (isWarning && !isDimmed ? 'border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.3)]' : `border ${getLanguageBorder(data.type, data.metadata)}`)
           }
         `}
       >

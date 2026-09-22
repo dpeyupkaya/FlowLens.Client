@@ -14,11 +14,9 @@ const RepoCard = ({ repo, onAnalyze, isAnalyzing }) => {
   const isCSharp = repo.language?.toLowerCase() === 'c#';
   const isPython = repo.language?.toLowerCase() === 'python';
   const isGo = repo.language?.toLowerCase() === 'go';
-  const isUnknown = !repo.language;
-  const isSupported = isCSharp || isPython || isGo || isUnknown;
 
   const handleCardClick = () => {
-    if (!isSupported || isAnalyzing) return;
+    if (isAnalyzing) return;
     onAnalyze(repo.html_url || repo.htmlUrl);
   };
 
@@ -29,10 +27,10 @@ const RepoCard = ({ repo, onAnalyze, isAnalyzing }) => {
 
   return (
     <Card
-      hoverable={isSupported}
+      hoverable={true}
       onClick={handleCardClick}
       className={`rounded-xl border transition-all duration-300
-        ${isSupported ? 'border-slate-700/50 hover:border-teal-500/50 cursor-pointer bg-slate-900/50 hover:bg-slate-800/80' : 'border-slate-800/30 opacity-50 cursor-not-allowed bg-slate-900/30'}
+        border-slate-700/50 hover:border-teal-500/50 cursor-pointer bg-slate-900/50 hover:bg-slate-800/80
         ${isAnalyzing ? 'border-teal-500/50 bg-slate-800/80 shadow-[0_0_15px_rgba(20,184,166,0.1)]' : ''}`}
       styles={{ body: { padding: '20px' } }}
     >
@@ -73,17 +71,13 @@ const RepoCard = ({ repo, onAnalyze, isAnalyzing }) => {
         </Space>
 
         <div className="flex items-center">
-          {!isSupported ? (
-            <span className="text-red-400/80 text-[11px] uppercase tracking-wider font-semibold flex items-center gap-1">
-              <WarningOutlined /> Desteklenmiyor
-            </span>
-          ) : isAnalyzing ? (
+          {isAnalyzing ? (
             <span className="text-teal-400 text-[11px] uppercase tracking-wider font-semibold animate-pulse flex items-center gap-1.5">
               <RocketOutlined /> Analiz Ediliyor...
             </span>
           ) : (
             <span className="text-teal-500 text-[11px] uppercase tracking-wider font-bold group-hover:text-teal-400 transition-colors flex items-center gap-1">
-              Tarat &rarr;
+              İncele & Tarat &rarr;
             </span>
           )}
         </div>
