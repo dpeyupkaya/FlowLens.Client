@@ -29,7 +29,7 @@ const en = {
 
   // Landing - Hero
   'landing.hero.trueFocus': 'Visualize Your Code Architecture',
-  'landing.hero.subtitle': 'Untangle spaghetti code in seconds. FlowLens maps your C# architecture locally with zero cloud uploads.',
+  'landing.hero.subtitle': 'Untangle spaghetti code in seconds. FlowLens maps your C#, Python, and Go architecture locally with zero cloud uploads.',
   'landing.hero.ctaPrimary': 'Analyze Project',
   'landing.hero.ctaSecondary': 'View on GitHub',
 
@@ -38,8 +38,8 @@ const en = {
   'landing.features.subtitle': 'Everything you need to regain control over complex codebases, built with performance and security in mind.',
   'landing.features.local.title': '100% Local',
   'landing.features.local.desc': 'Privacy first. FlowLens never sends your code to the cloud. All analysis happens safely on your machine.',
-  'landing.features.roslyn.title': 'Roslyn Engine',
-  'landing.features.roslyn.desc': 'Deep C# codebase analysis powered by Roslyn. Understand relationships, dependencies, and complex structures instantly.',
+  'landing.features.roslyn.title': 'Advanced Engine',
+  'landing.features.roslyn.desc': 'Deep C#, Python, and Go codebase analysis. Understand relationships, dependencies, and complex structures instantly.',
   'landing.features.maps.title': 'Interactive Maps',
   'landing.features.maps.desc': 'Navigate your architecture visually with beautifully rendered 2D node graphs that make sense of spaghetti code.',
 
@@ -65,6 +65,9 @@ const en = {
   'sidebar.logout': 'Sign Out',
   'sidebar.logoutSuccess': 'Signed out successfully.',
   'sidebar.logoutError': 'A problem occurred while signing out.',
+  'sidebar.proTitle': 'FlowLens Pro',
+  'sidebar.proDesc': 'Upgrade your version for detailed analysis and unlimited reports.',
+  'sidebar.proButton': 'COMING SOON',
 
   // Dashboard Header
   'dashboard.title': 'Active Repositories',
@@ -78,13 +81,13 @@ const en = {
 
   // About Page
   'about.title': 'About FlowLens',
-  'about.subtitle': 'Privacy-focused code architecture visualization tool for C# developers.',
+  'about.subtitle': 'Privacy-focused code architecture visualization tool for C#, Python, and Go developers.',
   'about.devTitle': 'About the Developer',
   'about.devText1': "Hi, I'm Eyüp Kaya.",
   'about.devText2': 'I am a software enthusiast who loves writing code, exploring modern technologies, and bringing creative ideas to life in the digital world.',
   'about.devText3': 'FlowLens is a personal project I created both to improve myself and to build something enjoyable. I hope you have fun using it!',
   'about.techTitle': 'Technology',
-  'about.techText': 'Currently, our analysis engine only supports C#. However, I plan to add support for other popular languages in the future.',
+  'about.techText': 'Currently, our analysis engine supports C#, Python, and Go. However, I plan to add support for other popular languages in the future.',
   'about.contactTitle': 'Contact',
   'about.contactText': 'You can reach me through the following platforms:',
   'about.backToHome': 'Back to Home',

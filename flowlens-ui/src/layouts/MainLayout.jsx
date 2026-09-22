@@ -17,11 +17,10 @@ const MainLayout = ({ user, setUser }) => {
   };
 
   return (
-    <Layout style={{ minHeight: '100vh' }}>
+    <Layout style={{ minHeight: '100vh' }} hasSider>
       <AppSidebar collapsed={collapsed} onLogout={handleLogout} />
       
       <Layout style={{ 
-        marginLeft: collapsed ? 80 : 200, 
         transition: 'all 0.2s',
         background: '#020617' 
       }}>

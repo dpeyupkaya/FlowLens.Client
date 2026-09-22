@@ -92,12 +92,6 @@ const AppNavbar = ({ collapsed, onToggle, user, onLogout }) => {
           onClick={onToggle}
           className="text-slate-400 hover:text-teal-400 hover:bg-slate-800/50 transition-colors"
         />
-        <div className="hidden sm:flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-teal-500 animate-pulse"></div>
-          <span className="text-slate-500 font-mono text-[10px] tracking-widest uppercase mt-[2px]">
-            FlowLens 
-          </span>
-        </div>
         <LanguageSelector compact />
       </div>
       

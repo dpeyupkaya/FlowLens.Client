@@ -6,8 +6,10 @@ import CodeVisualizer from '../components/CodeVisualizer/CodeVisualizer';
 import RepoStatsViewer from '../components/CodeVisualizer/RepoStatsViewer'; 
 import AnalysisSidebar from '../components/AnalysisResult/AnalysisSidebar';
 import AnalysisLogs from '../components/AnalysisResult/AnalysisLogs';
+import { useTranslation } from '../i18n/LanguageProvider';
 
 const AnalysisResultPage = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const { analysisResult } = location.state || {};
@@ -50,85 +52,77 @@ const AnalysisResultPage = () => {
   if (!analysisResult) {
     return (
       <div className="flex flex-col items-center justify-center h-screen w-full bg-[#020617] text-slate-400">
-        <span className="animate-pulse font-mono tracking-widest text-[11px]">ANALİZ_VERİSİ_BEKLENİYOR...</span>
+        <span className="animate-pulse text-sm">Analiz verisi bekleniyor...</span>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center py-6 min-h-screen w-full bg-[#020617] text-slate-300">
+    <div className="flex flex-col items-center py-6 min-h-screen w-full bg-[#020617] text-slate-300 font-sans">
       
       <Modal
         title={
-          <div className="flex items-center gap-2 text-slate-100 font-mono tracking-wide text-sm">
-            <ExclamationCircleOutlined className="text-amber-500 text-lg" />
-            <span>ANALİZİ_SONLANDIR</span>
+          <div className="flex items-center gap-2 text-slate-100 font-semibold text-base">
+            <ExclamationCircleOutlined className="text-amber-500 text-xl" />
+            <span>Analizi Sonlandır</span>
           </div>
         }
         open={isExitModalVisible}
         onOk={handleConfirmExit}
         onCancel={handleCancelExit}
         centered
-        width={420}
+        width={400}
         closeIcon={<span className="text-slate-500 hover:text-white transition-colors" onClick={handleCancelExit}>✕</span>}
         styles={{
           content: { 
             backgroundColor: '#0f172a', 
             border: '1px solid #1e293b', 
-            borderRadius: '1rem',
-            boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)'
+            borderRadius: '12px',
           },
           header: { 
             backgroundColor: 'transparent', 
             borderBottom: '1px solid #1e293b', 
-            paddingBottom: '16px',
+            paddingBottom: '12px',
             marginBottom: '16px'
-          },
-          mask: { 
-            backdropFilter: 'blur(6px)',
-            backgroundColor: 'rgba(2, 6, 23, 0.7)'
           }
         }}
         okButtonProps={{
-          className: "bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-400 hover:text-red-300 font-mono text-[11px] tracking-[0.1em] rounded-lg shadow-none"
+          className: "bg-red-500/10 text-red-400 border border-red-500/30 hover:bg-red-500/20 hover:border-red-400 hover:text-red-300 font-medium rounded-md shadow-none"
         }}
         cancelButtonProps={{
-          className: "bg-slate-800 text-slate-300 border border-slate-700 hover:text-white hover:border-slate-500 font-mono text-[11px] tracking-[0.1em] rounded-lg shadow-none"
+          className: "bg-transparent text-slate-300 border border-slate-700 hover:text-white hover:border-slate-500 font-medium rounded-md shadow-none"
         }}
-        okText="EVET, ÇIKIŞ YAP"
-        cancelText="İPTAL"
+        okText="Evet, Çıkış Yap"
+        cancelText="İptal"
       >
-        <p className="text-slate-400 font-sans text-sm leading-relaxed mb-2">
+        <p className="text-slate-400 text-sm leading-relaxed mb-4">
           Mevcut analiz grafiğinden ayrılmak üzeresiniz. Dışa aktarılmamış diyagram görünümleri kaybolacaktır.
-        </p>
-        <p className="text-slate-500 font-sans text-xs">
-          Gerçekten çıkış yapmak istiyor musunuz?
         </p>
       </Modal>
 
-      <div className="w-full max-w-[1920px] px-4 lg:px-8">
+      <div className="w-full max-w-[1920px] px-6">
         
         <div className="mb-6 flex justify-between items-center">
           <Button 
-            icon={<LeftOutlined className="text-[10px]" />} 
+            icon={<LeftOutlined className="text-xs" />} 
             onClick={handleGoBack} 
-            className="bg-slate-900 border-slate-800 text-slate-400 hover:text-teal-400 hover:border-teal-500/50 transition-all duration-300 shadow-lg font-mono text-[11px] tracking-[0.15em] flex items-center h-[38px] px-4 rounded-xl"
+            className="bg-transparent border-slate-700 text-slate-300 hover:text-white hover:bg-slate-800 transition-colors shadow-none font-medium h-10 px-5 rounded-lg"
           >
-            Geri Dön
+            {t('common.back')}
           </Button>
         </div>
 
         <RepoStatsViewer stats={analysisResult.repoStats || analysisResult.RepoStats} />
 
-        <div className="bg-[#0f172a]/50 border border-slate-800 rounded-2xl p-4 lg:p-6 backdrop-blur-xl shadow-2xl">
+        <div className="bg-[#0b1120] border border-slate-800/80 rounded-2xl p-6 shadow-xl">
           <Row gutter={[24, 24]}>
             
-            <Col xs={24} lg={6} xl={4}>
+            <Col xs={24} lg={5} xl={4}>
               <AnalysisSidebar stats={roslynStats} />
             </Col>
 
-            <Col xs={24} lg={18} xl={20} className="flex flex-col">
-              <div className="rounded-xl border border-slate-800 bg-[#020617] shadow-2xl relative z-10 flex-grow min-h-[800px]">
+            <Col xs={24} lg={19} xl={20} className="flex flex-col">
+              <div className="rounded-xl border border-slate-700/50 bg-[#020617] relative z-10 flex-grow min-h-[800px] overflow-hidden">
                 <CodeVisualizer graphData={analysisResult.graph || analysisResult.Graph || analysisResult} />
               </div>
 

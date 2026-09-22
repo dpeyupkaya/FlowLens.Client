@@ -15,7 +15,10 @@ export const NODE_TYPES = {
   EXTERNAL_MODULE: 'External Module',
   BASE_CLASS: 'Base Class',
   DATABASE_ENTITY: 'Database Entity',
-  API_ENDPOINT: 'API Endpoint'
+  API_ENDPOINT: 'API Endpoint',
+  STRUCT: 'Struct',
+  INTERFACE: 'Interface',
+  FILE: 'File'
 };
 
 export const getLayerColor = (layerName) => {
@@ -37,6 +40,21 @@ const elk = new ELK();
  */
 export const getLayoutedElements = async (nodes, edges, direction = 'DOWN') => {
   if (!nodes || nodes.length === 0) return { nodes: [], edges: [] };
+
+  if (!edges || edges.length === 0) {
+    const cols = Math.ceil(Math.sqrt(nodes.length));
+    const layoutedNodes = nodes.map((node, index) => {
+      const col = index % cols;
+      const row = Math.floor(index / cols);
+      return {
+        ...node,
+        targetPosition: 'top',
+        sourcePosition: 'bottom',
+        position: { x: col * 300, y: row * 150 }
+      };
+    });
+    return { nodes: layoutedNodes, edges: [] };
+  }
 
   const graph = {
     id: 'root',

@@ -12,6 +12,7 @@ import {
 } from '@ant-design/icons';
 import { useTranslation } from '../i18n/LanguageProvider';
 import LanguageSelector from '../components/layout/LanguageSelector';
+import { Helmet } from 'react-helmet-async';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -28,6 +29,16 @@ const AboutPage = () => {
 
   return (
     <div className="bg-[#020617] text-slate-200 font-sans min-h-screen overflow-x-hidden selection:bg-teal-500/30">
+      <Helmet>
+        <title>{t('about.title')} | FlowLens</title>
+        <meta name="description" content={t('about.subtitle')} />
+        <meta name="keywords" content="FlowLens, C#, Python, Go, Code Architecture, Code Visualization, Developer Tool, Eyüp Kaya" />
+        <meta property="og:title" content={`${t('about.title')} | FlowLens`} />
+        <meta property="og:description" content={t('about.subtitle')} />
+        <meta property="og:type" content="website" />
+        <meta name="author" content="Eyüp Kaya" />
+      </Helmet>
+      
       <nav className="fixed top-0 w-full z-50 bg-[#020617]/70 backdrop-blur-md border-b border-slate-800/60">
         <div className="max-w-5xl mx-auto px-6 h-20 flex items-center justify-between">
           <button

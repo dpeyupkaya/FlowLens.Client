@@ -29,7 +29,7 @@ const tr = {
 
   // Landing - Hero
   'landing.hero.trueFocus': 'Kod Mimarinizi Görselleştirin',
-  'landing.hero.subtitle': 'Spagetti kodu saniyeler içinde çözün. FlowLens, C# mimarinizi sıfır bulut yüklemesiyle yerel olarak haritalandırır.',
+  'landing.hero.subtitle': 'Spagetti kodu saniyeler içinde çözün. FlowLens, C#, Python ve Go mimarinizi sıfır bulut yüklemesiyle yerel olarak haritalandırır.',
   'landing.hero.ctaPrimary': 'Projeyi Analiz Et',
   'landing.hero.ctaSecondary': "GitHub'da İncele",
 
@@ -38,8 +38,8 @@ const tr = {
   'landing.features.subtitle': 'Karmaşık kod tabanlarını kontrol altına almak için ihtiyacınız olan her şey. Performans ve güvenlik odaklı.',
   'landing.features.local.title': '%100 Lokal',
   'landing.features.local.desc': 'Gizlilik öncelikli. FlowLens kodunuzu asla buluta göndermez. Tüm analiz güvenle kendi makinenizde gerçekleşir.',
-  'landing.features.roslyn.title': 'Roslyn Motoru',
-  'landing.features.roslyn.desc': 'Roslyn destekli derin C# kod analizi. İlişkileri, bağımlılıkları ve karmaşık yapıları anında kavrayın.',
+  'landing.features.roslyn.title': 'Gelişmiş Analiz Motoru',
+  'landing.features.roslyn.desc': 'Derin C#, Python ve Go kod analizi. İlişkileri, bağımlılıkları ve karmaşık yapıları anında kavrayın.',
   'landing.features.maps.title': 'İnteraktif Haritalar',
   'landing.features.maps.desc': 'Spagetti kodunu anlamlı kılan, güzel tasarlanmış 2D düğüm grafikleriyle mimarinizi görsel olarak keşfedin.',
 
@@ -65,6 +65,9 @@ const tr = {
   'sidebar.logout': 'Çıkış Yap',
   'sidebar.logoutSuccess': 'Başarıyla çıkış yapıldı.',
   'sidebar.logoutError': 'Çıkış yapılırken bir sorun oluştu.',
+  'sidebar.proTitle': 'FlowLens Pro',
+  'sidebar.proDesc': 'Daha detaylı analiz ve sınırsız raporlar için sürümünüzü yükseltin.',
+  'sidebar.proButton': 'YAKINDA',
 
   // Dashboard Header
   'dashboard.title': 'Aktif Depolar',
@@ -78,13 +81,13 @@ const tr = {
 
   // About Page
   'about.title': 'FlowLens Hakkında',
-  'about.subtitle': 'C# geliştiricileri için gizlilik odaklı kod mimarisi görselleştirme aracı.',
+  'about.subtitle': 'C#, Python ve Go geliştiricileri için gizlilik odaklı kod mimarisi görselleştirme aracı.',
   'about.devTitle': 'Geliştirici Hakkında',
   'about.devText1': 'Selam, ben Eyüp Kaya.',
   'about.devText2': 'Kod yazmayı, modern teknolojileri keşfetmeyi ve yaratıcı fikirleri dijital dünyada hayata geçirmeyi seven bir yazılım tutkunuyum.',
   'about.devText3': 'FlowLens de hem kendimi geliştirmek hem de ortaya keyifli bir iş çıkarmak için hazırladığım kişisel bir proje. Umarım kullanırken eğlenirsiniz!',
   'about.techTitle': 'Teknoloji',
-  'about.techText': 'Şu an için analiz motorumuzda sadece C# dil desteği bulunmaktadır. Ancak önümüzdeki zamanlarda diğer popüler diller için de destek eklemeyi planlıyorum.',
+  'about.techText': 'Şu an için analiz motorumuzda C#, Python ve Go dil destekleri bulunmaktadır. Ancak önümüzdeki zamanlarda diğer popüler diller için de destek eklemeyi planlıyorum.',
   'about.contactTitle': 'İletişim',
   'about.contactText': 'Bana aşağıdaki platformlar üzerinden ulaşabilirsiniz:',
   'about.backToHome': 'Ana Sayfaya Dön',

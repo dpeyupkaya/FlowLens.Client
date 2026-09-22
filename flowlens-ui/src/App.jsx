@@ -13,7 +13,6 @@ import AuthGuard from './components/Guard/AuthGuard';
 import CookieGuard from './components/Guard/CookieGuard';
 import AnalyticsTracker from './utils/AnalyticsTracker'; 
 import { LanguageProvider } from './i18n/LanguageProvider';
-import { fetchCsrfToken } from './services/axiosClient';
 
 const LandingPage = lazy(() => import('./pages/LandingPage'));
 const CallbackPage = lazy(() => import('./pages/CallbackPage'));
@@ -41,12 +40,10 @@ const RootLayout = () => (
   </>
 );
 
+import { HelmetProvider } from 'react-helmet-async';
+
 function App() {
   const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    fetchCsrfToken();
-  }, []);
 
   const router = useMemo(() => createBrowserRouter(
     createRoutesFromElements(
@@ -79,25 +76,27 @@ function App() {
   ), [user]);
 
   return (
-    <MobileBlocker>
-      <CookieGuard>
-        <LanguageProvider>
-          <ConfigProvider
-            theme={{
-              algorithm: theme.darkAlgorithm,
-              token: { 
-                colorPrimary: '#14b8a6',
-                fontFamily: 'Inter, sans-serif'
-              },
-            }}
-          >
-            <Suspense fallback={<FullScreenLoader />}>
-              <RouterProvider router={router} />
-            </Suspense>
-          </ConfigProvider>
-        </LanguageProvider>
-      </CookieGuard>
-    </MobileBlocker>
+    <HelmetProvider>
+      <MobileBlocker>
+        <CookieGuard>
+          <LanguageProvider>
+            <ConfigProvider
+              theme={{
+                algorithm: theme.darkAlgorithm,
+                token: { 
+                  colorPrimary: '#14b8a6',
+                  fontFamily: 'Inter, sans-serif'
+                },
+              }}
+            >
+              <Suspense fallback={<FullScreenLoader />}>
+                <RouterProvider router={router} />
+              </Suspense>
+            </ConfigProvider>
+          </LanguageProvider>
+        </CookieGuard>
+      </MobileBlocker>
+    </HelmetProvider>
   );
 }
 

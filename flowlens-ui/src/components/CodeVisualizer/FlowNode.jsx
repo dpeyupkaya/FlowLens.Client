@@ -7,11 +7,14 @@ import { useFlowStore } from '../../store/useFlowStore';
 const getNodeIcon = (type) => {
   switch (type) {
     case 'Python Module': return <FileOutlined />;
+    case 'File': return <FileOutlined />;
     case 'Function': return <span className="font-serif italic font-bold">f()</span>;
     case 'Method': return <SettingOutlined />;
     case 'External Module': return <AppstoreOutlined />;
     case 'Base Class': return <BuildOutlined />;
     case 'Class': return <BuildOutlined />;
+    case 'Struct': return <DatabaseOutlined />;
+    case 'Interface': return <ApiOutlined />;
     case 'Database Entity': return <DatabaseOutlined />;
     case 'API Endpoint': return <ApiOutlined />;
     default: return null;

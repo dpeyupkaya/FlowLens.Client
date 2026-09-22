@@ -10,13 +10,14 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
     if (!activeNode) return null;
 
     const type = activeNode.type || activeNode.Type;
-    if (!['Class', 'Interface', 'Record', 'Python Module', 'Base Class', 'Database Entity', 'API Endpoint'].includes(type)) return null;
+    if (!['Class', 'Interface', 'Record', 'Python Module', 'Base Class', 'Database Entity', 'API Endpoint', 'Struct', 'File'].includes(type)) return null;
 
     const metadata = activeNode.metadata || activeNode.Metadata || {};
     const rawMethods = metadata.Methods || metadata.methods || [];
     const rawProperties = metadata.Properties || metadata.properties || [];
     const frameworks = metadata.Frameworks || metadata.frameworks || [];
     const route = metadata.Route || metadata.route || null;
+    const pkg = metadata.Package || metadata.package || null;
 
     const methods = rawMethods.map(m => {
       const parameters = (m.Parameters || m.parameters || []).map(pString => {
@@ -47,13 +48,14 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
       methods,
       properties,
       frameworks,
-      route
+      route,
+      pkg
     };
   }, [activeNodeId, rawNodes]);
 
-  if (!contextData || (contextData.methods.length === 0 && contextData.properties.length === 0 && contextData.frameworks.length === 0 && !contextData.route)) return null;
+  if (!contextData || (contextData.methods.length === 0 && contextData.properties.length === 0 && contextData.frameworks.length === 0 && !contextData.route && !contextData.pkg)) return null;
 
-  const { name, layer, methods, properties, frameworks, route } = contextData;
+  const { name, layer, methods, properties, frameworks, route, pkg } = contextData;
   const nodeColor = getLayerColor(layer);
 
   return (
@@ -86,6 +88,15 @@ const ContextInspector = ({ activeNodeId, rawNodes }) => {
             <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-2 pl-1">URL Yolu / Endpoint</div>
             <div className="bg-slate-900/50 rounded-lg border border-slate-800 p-2.5 shadow-inner">
               <span className="text-[12px] font-mono text-emerald-400 break-all">{route}</span>
+            </div>
+          </div>
+        )}
+
+        {pkg && (
+          <div className="mb-1">
+            <div className="text-[10px] text-slate-500 font-mono uppercase tracking-widest mb-2 pl-1">Paket / Modül</div>
+            <div className="bg-slate-900/50 rounded-lg border border-slate-800 p-2.5 shadow-inner">
+              <span className="text-[12px] font-mono text-teal-400 break-all">{pkg}</span>
             </div>
           </div>
         )}

@@ -103,6 +103,8 @@ const DashboardPage = () => {
         targetLang = "CSharp";
       } else if (targetLang?.toLowerCase() === "python") {
         targetLang = "Python";
+      } else if (targetLang?.toLowerCase() === "go") {
+        targetLang = "Go";
       } else {
         targetLang = null;
       }
@@ -185,8 +187,9 @@ const DashboardPage = () => {
               className="w-40"
               options={[
                 { value: 'All', label: 'Tüm Diller' },
-                { value: 'CSharp', label: 'C#' },
-                { value: 'Python', label: 'Python' }
+                { value: 'C#', label: 'C#' },
+                { value: 'Python', label: 'Python' },
+                { value: 'Go', label: 'Go' }
               ]}
             />
           </div>
@@ -200,7 +203,7 @@ const DashboardPage = () => {
             </span>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 animate-fade-in">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5 animate-fade-in">
             {repos.map((repo) => (
               <RepoCard
                 key={repo.id}
