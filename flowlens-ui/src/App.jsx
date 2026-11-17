@@ -1,103 +1,22 @@
-import React, { useState, useEffect, Suspense, lazy, useMemo } from 'react';
-import { 
-  createBrowserRouter, 
-  RouterProvider, 
-  Route, 
-  Navigate, 
-  createRoutesFromElements,
-  Outlet 
-} from 'react-router-dom';
-import { ConfigProvider, theme, Spin } from 'antd';
-import MobileBlocker from './components/MobileBlocker/MobileBlocker'; 
-import AuthGuard from './components/Guard/AuthGuard';
-import CookieGuard from './components/Guard/CookieGuard';
-import AnalyticsTracker from './utils/AnalyticsTracker'; 
-import { LanguageProvider } from './i18n/LanguageProvider';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
+import PublicLayout from './layouts/PublicLayout';
+import MaintenancePage from './pages/MaintenancePage';
+import AboutPage from './pages/AboutPage';
+import PrivacyPage from './pages/PrivacyPage';
+import TermsOfServicePage from './pages/TermsOfServicePage';
 
-const LandingPage = lazy(() => import('./pages/LandingPage'));
-const CallbackPage = lazy(() => import('./pages/CallbackPage'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const MainLayout = lazy(() => import('./layouts/MainLayout'));
-const DashboardPage = lazy(() => import('./pages/DashboardPage'));
-const AnalysisResultPage = lazy(() => import('./pages/AnalysisResultPage'));
-const SettingsPage = lazy(() => import('./pages/SettingsPage'));
-const TermsOfServicePage = lazy(() => import('./pages/TermsOfServicePage'));
-const UnauthorizedPage = lazy(() => import('./pages/UnauthorizedPage'));
-const RateLimitPage = lazy(() => import('./pages/RateLimitPage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
-const AboutPage = lazy(() => import('./pages/AboutPage'));
-
-const FullScreenLoader = () => (
-  <div className="flex justify-center items-center h-screen bg-[#141414]">
-    <Spin size="large" />
-  </div>
-);
-
-const RootLayout = () => (
-  <>
-    <AnalyticsTracker />
-    <Outlet /> 
-  </>
-);
-
-import { HelmetProvider } from 'react-helmet-async';
-
-function App() {
-  const [user, setUser] = useState(null);
-
-  const router = useMemo(() => createBrowserRouter(
-    createRoutesFromElements(
-      <Route element={<RootLayout />}>
-        
-        <Route path="/api/auth/callback" element={<CallbackPage setUser={setUser} />} />
-        <Route path="/terms" element={<TermsOfServicePage />} />
-        <Route path="/about" element={<AboutPage />} />
-        <Route path="/" element={<LandingPage />} />
-        
-        <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
-
-        <Route 
-          element={
-            <AuthGuard setUser={setUser}>
-              <MainLayout user={user} setUser={setUser} />
-            </AuthGuard>
-          }
-        >
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/analysis/results" element={<AnalysisResultPage />} />
-          <Route path="/settings" element={<SettingsPage />} />
-        </Route>
-        
-        <Route path="/*" element={<NotFoundPage />} />
-        <Route path="/rate-limit" element={<RateLimitPage />} />
-        <Route path="/401" element={<UnauthorizedPage />} />
-      </Route>
-    )
-  ), [user]);
-
+export default function App() {
   return (
-    <HelmetProvider>
-      <MobileBlocker>
-        <CookieGuard>
-          <LanguageProvider>
-            <ConfigProvider
-              theme={{
-                algorithm: theme.darkAlgorithm,
-                token: { 
-                  colorPrimary: '#14b8a6',
-                  fontFamily: 'Inter, sans-serif'
-                },
-              }}
-            >
-              <Suspense fallback={<FullScreenLoader />}>
-                <RouterProvider router={router} />
-              </Suspense>
-            </ConfigProvider>
-          </LanguageProvider>
-        </CookieGuard>
-      </MobileBlocker>
-    </HelmetProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route index element={<MaintenancePage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="privacy" element={<PrivacyPage />} />
+          <Route path="terms" element={<TermsOfServicePage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </BrowserRouter>
   );
 }
-
-export default App;

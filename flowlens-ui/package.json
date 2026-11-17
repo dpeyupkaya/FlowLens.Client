@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "test:maintenance": "node --test test/maintenance.test.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -39,7 +40,6 @@
     "eslint-plugin-react-hooks": "^7.0.1",
     "eslint-plugin-react-refresh": "^0.5.2",
     "globals": "^17.4.0",
-    "vite": "^8.0.1",
-    "vite-plugin-pwa": "^1.3.0"
+    "vite": "^8.0.1"
   }
 }
