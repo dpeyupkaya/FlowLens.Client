@@ -1,5 +1,5 @@
 export const projectLinks = {
-  repository: 'https://github.com/dpeyupkaya/FlowLens.Client',
+  repository: 'https://github.com/dpeyupkaya/FlowLens.API',
   portfolio: 'https://ekaya.com.tr/',
 };
 
